@@ -1,0 +1,139 @@
+/* You can add global styles to this file, and also import other style files */
+/***html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}**/
+
+@keyframes section-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes row-rise {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(7px);
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .events-page,
+  .events-page > *,
+  .categories-page,
+  .categories-page > *,
+  .stat-card,
+  .event-card,
+  tbody tr,
+  .modal-backdrop,
+  .event-modal,
+  .confirm-modal,
+  .category-modal {
+    animation: none;
+  }
+}
+
+.categories-page > .module-header,
+.categories-page > .stats-grid,
+.categories-page > .backend-panel,
+.categories-page > .toolbar-card,
+.categories-page > .notice,
+.categories-page > .categories-list-panel {
+  animation: section-rise 0.62s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.categories-page > .module-header { animation-delay: 0.03s; }
+.categories-page > .stats-grid { animation-delay: 0.10s; }
+.categories-page > .backend-panel { animation-delay: 0.17s; }
+.categories-page > .toolbar-card { animation-delay: 0.22s; }
+.categories-page > .notice { animation-delay: 0.27s; }
+.categories-page > .categories-list-panel { animation-delay: 0.31s; }
+
+.categories-page .stat-card {
+  animation: card-rise 0.56s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.categories-page .stat-card:nth-child(1) { animation-delay: 0.16s; }
+.categories-page .stat-card:nth-child(2) { animation-delay: 0.22s; }
+.categories-page .stat-card:nth-child(3) { animation-delay: 0.28s; }
+.categories-page .stat-card:nth-child(4) { animation-delay: 0.34s; }
+
+.categories-page tbody tr {
+  animation: row-rise 0.48s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.categories-page tbody tr:nth-child(1) { animation-delay: 0.38s; }
+.categories-page tbody tr:nth-child(2) { animation-delay: 0.43s; }
+.categories-page tbody tr:nth-child(3) { animation-delay: 0.48s; }
+.categories-page tbody tr:nth-child(4) { animation-delay: 0.53s; }
+.categories-page tbody tr:nth-child(5) { animation-delay: 0.58s; }
+.categories-page tbody tr:nth-child(n + 6) { animation-delay: 0.63s; }
+
+.category-modal {
+  animation: modal-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.delete-illustration {
+  width: 94px;
+  height: 94px;
+  display: grid;
+  place-items: center;
+  margin: -10px auto 22px;
+  padding: 18px;
+  border-radius: 24px;
+  background: #fff1f1;
+  border: 1px solid rgba(185, 28, 28, 0.14);
+}
+
+.delete-illustration img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}

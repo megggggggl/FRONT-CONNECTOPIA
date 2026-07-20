@@ -1,0 +1,228 @@
+/* ════════════════ッ GENERAL ッ════════════════ */
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.profile-page {
+  display: flex;
+  min-height: 100vh;
+  background: #eef6fa;
+}
+
+/* ════════════════ッ SIDEBAR ッ════════════════ */
+
+.sidebar {
+  width: 250px;
+  background: #2e8b6c;
+  color: white;
+  padding: 24px;
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.brand img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+.brand h2 {
+  margin-top: 10px;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar nav a {
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.sidebar nav a:hover {
+  background: rgba(255,255,255,.15);
+}
+
+.sidebar nav .active {
+  background: #4a84c4;
+}
+
+/* ════════════════ッ CONTENIDO ッ════════════════ */
+
+.profile-content {
+  flex: 1;
+  padding: 24px;
+}
+
+/* ════════════════ッ TOPBAR ッ════════════════ */
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-mini {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-mini img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+
+/* ════════════════ッ CABECERA PERFIL ッ════════════════ */
+
+.profile-hero {
+  margin-top: 20px;
+  background: white;
+  border-radius: 22px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+}
+
+.avatar-box {
+  position: relative;
+}
+
+.avatar-box img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+}
+
+.avatar-box button {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  border: none;
+  background: #2e8b6c;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-info h1 {
+  margin: 0;
+  color: #2f5f9e;
+}
+
+.profile-info p {
+  margin: 8px 0;
+}
+
+.edit-button {
+  height: 50px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    #2e8b6c,
+    #2f5f9e,
+    #4a84c4
+  );
+  color: white;
+  font-weight: 700;
+  padding: 0 24px;
+  cursor: pointer;
+}
+
+/* ════════════════ッ TABS ッ════════════════ */
+
+.profile-tabs {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.profile-tabs button {
+  border: none;
+  background: white;
+  padding: 12px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.profile-tabs .active {
+  background: #4a84c4;
+  color: white;
+}
+
+/* ════════════════ッ GRID ッ════════════════ */
+
+.profile-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* ════════════════ッ POSTS ッ════════════════ */
+
+.posts-card {
+  background: white;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+}
+
+.post-item {
+  display: flex;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.post-item img {
+  width: 180px;
+  height: 110px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.post-item h3 {
+  margin: 0;
+}
+
+.post-item p {
+  margin-top: 8px;
+}
+
+/* ════════════════ッ PANEL DERECHO ッ════════════════ */
+
+.profile-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+}
+
+.summary-card h3 {
+  margin-top: 0;
+  color: #2f5f9e;
+}

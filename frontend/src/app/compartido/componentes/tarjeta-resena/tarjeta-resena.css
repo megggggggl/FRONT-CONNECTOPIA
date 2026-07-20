@@ -1,0 +1,65 @@
+.tarjeta-resena {
+  padding: 18px;
+  border: 1px solid #e5eaf3;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.encabezado-resena {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.usuario-resena {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.foto-usuario,
+.foto-usuario-vacia {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.foto-usuario-vacia {
+  background: linear-gradient(135deg, #e5e7eb, #cbd5e1);
+}
+
+.usuario-resena h4 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 15px;
+}
+
+.usuario-resena p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.calificacion-resena {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff3d6;
+  color: #b36b00;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.comentario-resena {
+  margin: 14px 0 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.fecha-resena {
+  margin: 12px 0 0;
+  color: #94a3b8;
+  font-size: 12px;
+}

@@ -1,0 +1,110 @@
+.encabezado-perfil {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  padding: 34px 48px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, #ffffff, #f4f2ee);
+  border: 1px solid #c9cdd2;
+  box-shadow: 0 18px 45px rgba(47, 95, 158, 0.10);
+}
+
+.foto-contenedor {
+  width: 132px;
+  height: 132px;
+  flex: 0 0 132px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #2e8b6c;
+  box-shadow: 0 0 34px rgba(46, 139, 108, 0.28);
+}
+
+.foto-perfil {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.foto-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #2e8b6c;
+  color: #ffffff;
+  font-size: 52px;
+  font-weight: 800;
+}
+
+.informacion-perfil {
+  flex: 1;
+}
+
+.tipo-perfil {
+  margin: 0 0 8px;
+  color: #2f5f9e;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.informacion-perfil h1 {
+  margin: 0;
+  font-size: 40px;
+  color: #1f6b53;
+}
+
+.correo {
+  margin: 6px 0 14px;
+  color: #5e646a;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.chip.rol {
+  background: #e8f0fa;
+  color: #2f5f9e;
+}
+
+.chip.activo {
+  background: rgba(46, 139, 108, 0.14);
+  color: #1f6b53;
+}
+
+.boton-principal {
+  border: none;
+  padding: 15px 28px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2e8b6c, #2f5f9e, #4a84c4);
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 24px rgba(47, 95, 158, 0.35);
+}
+
+@media (max-width: 800px) {
+  .encabezado-perfil {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px 22px;
+  }
+
+  .informacion-perfil h1 {
+    font-size: 34px;
+  }
+}

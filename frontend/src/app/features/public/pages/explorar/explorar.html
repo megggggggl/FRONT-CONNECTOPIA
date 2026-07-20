@@ -1,0 +1,90 @@
+<!-- src/app/features/public/pages/explorar/explorar.html -->
+<div class="explorar-container">
+  
+  <!-- === FILTROS === -->
+  <section class="filtros-section">
+    <div class="filtros-grid">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Buscar servicios o lugares..."
+        class="search-input"
+      />
+      <select
+        [(ngModel)]="filtroCategoria"
+        (change)="onCategoryChange()"
+        class="filtro-select"
+      >
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let cat of categorias" [value]="cat.id">
+          {{ cat.name }}
+        </option>
+      </select>
+      <select
+        [(ngModel)]="ordenPor"
+        (change)="onOrderChange()"
+        class="filtro-select"
+      >
+        <option value="reciente">Más reciente</option>
+        <option value="nombre">Nombre</option>
+        <option value="popular">Más popular</option>
+      </select>
+      <button (click)="limpiarFiltros()" class="btn-limpiar">Limpiar filtros</button>
+    </div>
+  </section>
+
+  <!-- === CARGA === -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando contenido...</p>
+  </div>
+
+  <!-- === ERROR === -->
+  <div *ngIf="error && !loading" class="error-state">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- === CONTENIDO PRINCIPAL === -->
+  <div *ngIf="!loading && !error" class="contenido-principal">
+    
+    <!-- Contadores -->
+    <div class="contadores">
+      <span class="contador-item">📦 Servicios: {{ serviciosFiltrados.length }}</span>
+      <span class="contador-item">📍 Lugares: {{ lugaresFiltrados.length }}</span>
+    </div>
+
+    <!-- === SERVICIOS (usa TarjetaServicio) === -->
+    <section class="servicios-section">
+      <h2>Servicios ({{ serviciosFiltrados.length }})</h2>
+      <div *ngIf="serviciosFiltrados.length > 0" class="servicios-grid">
+        <app-tarjeta-servicio
+          *ngFor="let servicio of serviciosFiltrados"
+          [servicio]="servicio"
+          [mostrarAccionCita]="true"
+          (solicitarCita)="onSolicitarCita($event)"
+        >
+        </app-tarjeta-servicio>
+      </div>
+      <div *ngIf="serviciosFiltrados.length === 0" class="vacio">
+        <p>No hay servicios que coincidan con los filtros.</p>
+      </div>
+    </section>
+
+    <!-- === LUGARES === -->
+    <section class="lugares-section">
+      <h2>Lugares turísticos ({{ lugaresFiltrados.length }})</h2>
+      <div *ngIf="lugaresFiltrados.length > 0" class="lugares-grid">
+        <app-lugar-card
+          *ngFor="let lugar of lugaresFiltrados"
+          [lugar]="lugar"
+        >
+        </app-lugar-card>
+      </div>
+      <div *ngIf="lugaresFiltrados.length === 0" class="vacio">
+        <p>No hay lugares que coincidan con los filtros.</p>
+      </div>
+    </section>
+
+  </div>
+</div>

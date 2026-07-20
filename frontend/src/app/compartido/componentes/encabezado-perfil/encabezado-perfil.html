@@ -1,0 +1,34 @@
+<section class="encabezado-perfil">
+  <div class="foto-contenedor">
+    <img
+      *ngIf="perfil.avatar_url"
+      [src]="perfil.avatar_url"
+      alt="Foto de perfil"
+      class="foto-perfil"
+    />
+
+    <div *ngIf="!perfil.avatar_url" class="foto-placeholder">
+      {{ inicialPerfil }}
+    </div>
+  </div>
+
+  <div class="informacion-perfil">
+    <p class="tipo-perfil">
+      PERFIL DE {{ perfil.role === 'vecino' ? 'VECINO' : 'PRESTADOR' }}
+    </p>
+
+    <h1>{{ perfil.name }}</h1>
+    <p class="correo">{{ perfil.email }}</p>
+
+    <div class="chips">
+      <span class="chip rol">{{ perfil.role }}</span>
+      <span class="chip activo">
+        {{ perfil.is_active ? 'Cuenta activa' : 'Cuenta inactiva' }}
+      </span>
+    </div>
+  </div>
+
+  <button class="boton-principal" type="button" (click)="abrirEdicion()">
+    Editar perfil
+  </button>
+</section>

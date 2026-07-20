@@ -1,0 +1,183 @@
+/* Formulario de login con el estilo original de Connectopia */
+.mini-form {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.login-message {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.login-message.success {
+  background: rgba(46, 139, 108, 0.15);
+  color: #2e8b6c;
+  border: 1px solid rgba(46, 139, 108, 0.3);
+}
+
+.login-message.error {
+  background: rgba(231, 76, 60, 0.12);
+  color: #c0392b;
+  border: 1px solid rgba(231, 76, 60, 0.25);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid rgba(200, 205, 210, 0.5);
+  border-radius: 14px;
+  font-size: 15px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  color: #1a1a1a;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #2f5f9e;
+  box-shadow: 0 0 0 4px rgba(47, 95, 158, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.form-group input.error {
+  border-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.06);
+}
+
+.form-group input.error:focus {
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.12);
+}
+
+.form-group input::placeholder {
+  color: #8a9098;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 76px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 58px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(47, 95, 158, 0.08);
+  color: #2f5f9e;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 8px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.toggle-password:hover {
+  background: rgba(47, 95, 158, 0.14);
+  color: #214b7e;
+}
+
+.error-text {
+  color: #e74c3c;
+  font-size: 12px;
+  display: block;
+  padding-left: 4px;
+}
+
+.mini-form .login-button {
+  height: 52px;
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2e8b6c, #2f5f9e, #4a84c4);
+  color: #f4f2ee;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.mini-form .login-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 60%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: skewX(-25deg);
+  transition: left 0.65s ease;
+}
+
+.mini-form .login-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 18px rgba(74, 132, 196, 0.55),
+    0 0 32px rgba(46, 139, 108, 0.35),
+    0 18px 36px rgba(47, 95, 158, 0.34);
+}
+
+.mini-form .login-button:hover:not(:disabled)::before {
+  left: 130%;
+}
+
+.mini-form .login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.mini-form .login-button:disabled::before {
+  display: none;
+}
+
+.spinner {
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-height: 760px) and (min-width: 821px) {
+  .mini-form {
+    gap: 12px;
+    max-width: 360px;
+  }
+
+  .form-group input {
+    padding: 12px 16px;
+  }
+
+  .mini-form .login-button {
+    height: 50px;
+  }
+}

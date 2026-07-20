@@ -1,0 +1,284 @@
+<app-admin-layout>
+  <section class="categories-page">
+    <header class="module-header">
+      <div class="module-title">
+        <div class="title-icon">
+          <img src="Kat.png" alt="" />
+        </div>
+
+        <div>
+          <h1>Categorias</h1>
+          <p>Gestiona clasificaciones reutilizadas por eventos, publicaciones, servicios y lugares.</p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="shine-button"
+        [disabled]="!endpointDisponible"
+        (click)="abrirCrear()">
+        <span>+</span>
+        Nueva categoria
+      </button>
+    </header>
+
+    <section class="stats-grid">
+      <article class="stat-card">
+        <div class="stat-icon green"><img src="presentacion.gif" alt="" /></div>
+        <div>
+          <p>Total</p>
+          <h2>{{ categorias.length }}</h2>
+          <span>Categorias recibidas</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon blue"><img src="demostracion.gif" alt="" /></div>
+        <div>
+          <p>Activas</p>
+          <h2>{{ categoriasActivas }}</h2>
+          <span>Disponibles para uso</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon purple"><img src="exito.gif" alt="" /></div>
+        <div>
+          <p>Tipos</p>
+          <h2>{{ tiposEntidad.length }}</h2>
+          <span>Entidades cubiertas</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon orange"><img src="permisos.gif" alt="" /></div>
+        <div>
+          <p>Inactivas</p>
+          <h2>{{ categoriasInactivas }}</h2>
+          <span>Ocultas temporalmente</span>
+        </div>
+      </article>
+    </section>
+
+    <section *ngIf="!endpointDisponible" class="backend-panel">
+      <div>
+        <span class="eyebrow">Backend pendiente</span>
+        <h2>El endpoint de categorias aun no existe</h2>
+        <p>
+          La pantalla esta conectada a WebServices y lista para consumir el CRUD, pero
+          <code>/api/categories</code> responde 404 en este momento.
+        </p>
+      </div>
+
+      <ul>
+        <li *ngFor="let endpoint of backendRequerido">{{ endpoint }}</li>
+      </ul>
+    </section>
+
+    <section class="toolbar-card">
+      <div class="search-box">
+        <img src="lupa.png" alt="" />
+        <input
+          type="search"
+          placeholder="Buscar por nombre, tipo o descripcion"
+          [(ngModel)]="busqueda"
+          (ngModelChange)="aplicarFiltros()"
+        />
+      </div>
+
+      <button type="button" class="ghost-button" (click)="cargarCategorias()" [disabled]="cargando">
+        {{ cargando ? 'Cargando...' : 'Actualizar' }}
+      </button>
+    </section>
+
+    <p *ngIf="exito" class="notice success">{{ exito }}</p>
+    <p *ngIf="error" class="notice error">{{ error }}</p>
+
+    <section class="categories-list-panel">
+      <header>
+        <div>
+          <h2>Listado de categorias</h2>
+          <p>{{ categoriasFiltradas.length }} resultado(s)</p>
+        </div>
+      </header>
+
+      <div *ngIf="cargando" class="skeleton-grid">
+        <div class="skeleton-card" *ngFor="let item of [1, 2, 3]"></div>
+      </div>
+
+      <div *ngIf="!cargando && categoriasFiltradas.length === 0" class="empty-state">
+        <img src="categoria.png" alt="" />
+        <h3>No hay categorias para mostrar</h3>
+        <p>
+          {{ endpointDisponible ? 'Crea la primera categoria o ajusta tu busqueda.' : 'El backend debe exponer /api/categories para mostrar datos reales.' }}
+        </p>
+      </div>
+
+      <div *ngIf="!cargando && categoriasFiltradas.length > 0" class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+              <th>Descripcion</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let categoria of categoriasFiltradas; trackBy: trackById">
+              <td class="category-cell">
+                <div class="category-avatar">{{ categoria.name.charAt(0) }}</div>
+                <div>
+                  <strong>{{ categoria.name }}</strong>
+                  <span>{{ categoria.icon || 'Sin icono' }}</span>
+                </div>
+              </td>
+              <td><span class="type-pill">{{ obtenerEtiquetaTipo(categoria.entity_type) }}</span></td>
+              <td><span [class]="obtenerEstadoClase(categoria)">{{ obtenerEtiquetaEstado(categoria) }}</span></td>
+              <td>{{ categoria.description || 'Sin descripcion' }}</td>
+              <td class="actions">
+                <button type="button" class="icon-button" (click)="abrirEditar(categoria)">
+                  <img src="lapiz.png" alt="" />
+                </button>
+                <button
+                  type="button"
+                  class="icon-button danger"
+                  [disabled]="eliminandoId === categoria.id"
+                  (click)="abrirConfirmacionEliminar(categoria)">
+                  <img src="borrador.png" alt="" />
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+
+  <div class="modal-backdrop" *ngIf="modalAbierto">
+    <section class="category-modal">
+      <button type="button" class="modal-close" (click)="cerrarModal()">x</button>
+
+      <div class="modal-header">
+        <div class="modal-icon">
+          <img src="crear.png" alt="" />
+        </div>
+
+        <div>
+          <h2>{{ editandoId == null ? 'Nueva categoria' : 'Editar categoria' }}</h2>
+          <p>Define el nombre, tipo y estado de la categoria.</p>
+        </div>
+      </div>
+
+      <form class="category-form" (ngSubmit)="guardarCategoria()">
+        <div class="form-row">
+          <label>
+            Nombre *
+            <input type="text" name="name" [(ngModel)]="form.name" required />
+          </label>
+
+          <label>
+            Tipo de entidad *
+            <select name="entity_type" [(ngModel)]="form.entity_type" required>
+              <option *ngFor="let tipo of tiposSugeridos" [value]="tipo.value">{{ tipo.label }}</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>
+            Icono
+            <input type="text" name="icon" [(ngModel)]="form.icon" />
+          </label>
+
+          <label class="switch-label">
+            Estado
+            <button
+              type="button"
+              class="toggle-switch"
+              [class.active]="form.is_active"
+              (click)="form.is_active = !form.is_active">
+              <span></span>
+            </button>
+          </label>
+        </div>
+
+        <label class="wide">
+          Descripcion
+          <textarea name="description" rows="4" [(ngModel)]="form.description"></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" class="cancel-button" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="save-button" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar categoria' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div
+    class="modal-backdrop"
+    *ngIf="confirmacionEliminarAbierta && categoriaPendienteEliminar as categoriaAEliminar"
+    (click)="cerrarConfirmacionEliminar()"
+    (keydown.escape)="cerrarConfirmacionEliminar()"
+    tabindex="-1">
+    <section
+      class="confirm-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-delete-category-title"
+      aria-describedby="confirm-delete-category-description"
+      (click)="$event.stopPropagation()">
+      <button
+        type="button"
+        class="modal-close"
+        aria-label="Cerrar confirmacion"
+        [disabled]="eliminandoId === categoriaAEliminar.id"
+        (click)="cerrarConfirmacionEliminar()">
+        x
+      </button>
+
+      <div class="modal-header">
+        <div class="modal-icon danger">
+          <span aria-hidden="true">!</span>
+        </div>
+
+        <div>
+          <h2 id="confirm-delete-category-title">Eliminar categoria</h2>
+          <p id="confirm-delete-category-description">Esta accion quitara la categoria del listado administrativo.</p>
+        </div>
+      </div>
+
+      <div class="delete-illustration" aria-hidden="true">
+        <img src="boton-x.png" alt="" />
+      </div>
+
+      <div class="confirm-body">
+        <span>Categoria seleccionada</span>
+        <strong>{{ categoriaAEliminar.name }}</strong>
+        <p>Si confirmas, el listado, los filtros y las estadisticas se actualizaran inmediatamente.</p>
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="cancel-button"
+          [disabled]="eliminandoId === categoriaAEliminar.id"
+          (click)="cerrarConfirmacionEliminar()">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="danger-solid-button"
+          [disabled]="eliminandoId === categoriaAEliminar.id"
+          (click)="confirmarEliminarCategoria()">
+          {{ eliminandoId === categoriaAEliminar.id ? 'Eliminando...' : 'Eliminar categoria' }}
+        </button>
+      </div>
+    </section>
+  </div>
+</app-admin-layout>

@@ -1,0 +1,44 @@
+<!-- features/public/pages/mapa/mapa.html -->
+<app-main-layout>
+  <div class="mapa-page">
+    <header class="mapa-header">
+      <div>
+        <h1>🗺️ Mapa interactivo</h1>
+        <p>Explora servicios y lugares turísticos en tu comunidad</p>
+      </div>
+      <div class="mapa-actions">
+        <button class="btn-refresh" (click)="recargarDatos()" [disabled]="loading">
+          {{ loading ? 'Cargando...' : '⟳ Actualizar' }}
+        </button>
+        <button class="btn-location" (click)="obtenerUbicacion()" title="Ir a mi ubicación">
+          📍
+        </button>
+      </div>
+    </header>
+
+    <div *ngIf="loading" class="loading-overlay">
+      <p>Cargando datos...</p>
+    </div>
+    <div *ngIf="error" class="error-message">{{ error }}</div>
+
+    <div #mapContainer class="map-container"></div>
+
+    <div class="mapa-leyenda">
+      <div class="leyenda-item">
+        <span class="marcador-icon verde"></span>
+        <span>Servicios</span>
+      </div>
+      <div class="leyenda-item">
+        <span class="marcador-icon azul"></span>
+        <span>Lugares turísticos</span>
+      </div>
+      <div class="leyenda-item">
+        <span class="marcador-icon gris"></span>
+        <span>Tu ubicación</span>
+      </div>
+      <div class="leyenda-item">
+        <span>Total: {{ servicios.length + lugares.length }} puntos</span>
+      </div>
+    </div>
+  </div>
+</app-main-layout>

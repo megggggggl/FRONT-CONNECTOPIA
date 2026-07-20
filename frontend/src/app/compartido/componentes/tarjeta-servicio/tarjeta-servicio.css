@@ -1,0 +1,175 @@
+.tarjeta-servicio {
+  overflow: hidden;
+  border: 1px solid #e5eaf3;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.imagen-servicio-contenedor {
+  position: relative;
+  height: 180px;
+  background: #e9edf5;
+}
+
+.imagen-servicio,
+.imagen-servicio-vacia {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagen-servicio-vacia {
+  background: linear-gradient(135deg, #e5e7eb, #cbd5e1);
+}
+
+.estado-servicio {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.estado-activo {
+  background: #d8f7e6;
+  color: #0f8f4f;
+}
+
+.estado-pendiente {
+  background: #fff3d6;
+  color: #b36b00;
+}
+
+.estado-inactivo {
+  background: #fee2e2;
+  color: #c62828;
+}
+
+.contenido-servicio {
+  padding: 20px;
+}
+
+.categoria-servicio {
+  margin: 0 0 8px;
+  color: #155bd5;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.titulo-servicio {
+  margin: 0;
+  color: #0f172a;
+  font-size: 19px;
+}
+
+.descripcion-servicio {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 10px 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.precio-servicio {
+  margin: 12px 0;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.metricas-servicio {
+  display: flex;
+  gap: 16px;
+  padding-top: 13px;
+  border-top: 1px solid #edf0f5;
+}
+
+.metrica {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.icono-metrica {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.acciones-servicio {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.boton-principal,
+.boton-secundario,
+.boton-telegram,
+.boton-peligro {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.boton-principal {
+  border: 1px solid #155bd5;
+  background: #155bd5;
+  color: #ffffff;
+}
+
+.boton-secundario {
+  border: 1px solid #d9e1ef;
+  background: #ffffff;
+  color: #334155;
+}
+
+.boton-peligro {
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  color: #991b1b;
+}
+
+.boton-peligro:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.boton-telegram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  background: linear-gradient(135deg, #229ed9, #1578b4);
+  color: #ffffff;
+}
+
+.boton-telegram span {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.boton-telegram:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.boton-peligro:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}

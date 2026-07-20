@@ -1,0 +1,31 @@
+<article class="tarjeta-resena">
+  <div class="encabezado-resena">
+    <div class="usuario-resena">
+      <img
+        *ngIf="resena.author?.avatar_url"
+        [src]="resena.author.avatar_url"
+        [alt]="resena.author.name"
+        class="foto-usuario"
+      />
+
+      <div *ngIf="!resena.author?.avatar_url" class="foto-usuario-vacia"></div>
+
+      <div>
+        <h4>{{ resena.author?.name || 'Usuario' }}</h4>
+        <p>{{ resena.servicio_nombre || 'Servicio' }}</p>
+      </div>
+    </div>
+
+    <div class="calificacion-resena">
+      {{ obtenerCalificacionTexto() }}
+    </div>
+  </div>
+
+  <p class="comentario-resena">
+    {{ resena.comment || 'Sin comentario.' }}
+  </p>
+
+  <p class="fecha-resena">
+    {{ resena.created_at | date:'mediumDate' }}
+  </p>
+</article>

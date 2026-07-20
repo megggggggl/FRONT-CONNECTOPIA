@@ -1,0 +1,26 @@
+.seccion-dashboard {
+  margin-top: 28px;
+}
+
+.encabezado-seccion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.encabezado-seccion h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 22px;
+}
+
+.encabezado-seccion p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.contenido-seccion {
+  width: 100%;
+}

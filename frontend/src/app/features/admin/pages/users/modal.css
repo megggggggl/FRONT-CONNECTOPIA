@@ -1,0 +1,152 @@
+.user-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 7, 9, 0.55);
+  backdrop-filter: blur(6px);
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+}
+
+.user-modal {
+  width: min(1050px, 92vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 34px 38px;
+  position: relative;
+  box-shadow: 0 28px 90px rgba(6, 7, 9, 0.28);
+}
+
+.user-modal-close {
+  position: absolute;
+  top: 22px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  color: #060709;
+  font-size: 30px;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(6, 7, 9, 0.12);
+}
+
+.user-modal h2 {
+  margin: 0 0 10px;
+  color: #181a35;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.user-modal > p {
+  margin: 0 0 28px;
+  color: #5e646a;
+  font-size: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(123, 97, 255, 0.22);
+}
+
+
+.user-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+.user-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #181a35;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.user-form-grid input,
+.user-form-grid select {
+  height: 54px;
+  border: 1px solid rgba(123, 97, 255, 0.35);
+  border-radius: 12px;
+  padding: 0 16px;
+  outline: none;
+  font-size: 15px;
+  background: white;
+}
+
+.user-form-grid input:focus,
+.user-form-grid select:focus {
+  border-color: #7b61ff;
+  box-shadow: 0 0 0 4px rgba(123, 97, 255, 0.12);
+}
+
+.modal-actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.cancel-btn,
+.save-btn {
+  height: 46px;
+  padding: 0 28px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  border: 1px solid rgba(123, 97, 255, 0.45);
+  background: white;
+  color: #7b61ff;
+}
+
+.save-btn {
+  border: 0;
+  background: linear-gradient(135deg, #7b61ff, #2f5f9e);
+  color: white;
+  box-shadow: 0 12px 28px rgba(123, 97, 255, 0.28);
+}
+
+
+.avatar-field {
+  align-items: right;
+}
+
+.avatar-upload {
+  width: 180px;
+  height: 180px;
+  border: 2px dashed #d7cdfd;
+  border-radius: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  background: #faf8ff;
+}
+
+.avatar-upload img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.upload-button {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #7b61ff, #2f5f9e);
+  color: white !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+

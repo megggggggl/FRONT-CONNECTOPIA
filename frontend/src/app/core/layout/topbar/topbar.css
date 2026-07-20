@@ -1,0 +1,45 @@
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: white;
+  border-bottom: 1px solid #e8e8e8;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+}
+.topbar-left .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 20px;
+  color: #060709;
+}
+.topbar-left .logo img {
+  height: 40px;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.topbar-right a {
+  text-decoration: none;
+  color: #5e646a;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.topbar-right a:hover {
+  color: #2e8b6c;
+}
+.btn-login {
+  padding: 8px 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2e8b6c, #1f6b53);
+  color: white !important;
+  font-weight: 700;
+}

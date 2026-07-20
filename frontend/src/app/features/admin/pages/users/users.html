@@ -1,0 +1,179 @@
+<app-admin-layout>
+
+  <section class="users-header">
+    <div>
+       <div class="title-icon">
+        <img src="../../igualdad.gif" alt="" />
+      </div>
+      <div>
+        <h1>Gestión de Usuarios</h1>
+        <p>Administra los usuarios registrados en la plataforma Connectopia.</p>
+      </div>
+    </div>
+
+    
+
+    
+      <button type="button" class="new-user-button" (click)="openUserModal()">
+  <span>+</span>
+  Nuevo usuario
+</button>
+  </section>
+
+  <section class="users-card">
+ 
+    <div class="users-toolbar">
+      <div class="search-user">
+         <input
+            type="text"
+            placeholder="Buscar usuario..."
+            [(ngModel)]="searchText"
+          />
+        <img src="lupa.png" alt="Buscar" />
+      </div>
+
+         <select [(ngModel)]="selectedRole">
+            <option>Todos los roles</option>
+            <option>Administrador</option>
+            <option>Moderador</option>
+            <option>Usuario</option>
+            <option>Prestador</option>
+            <option>Turista</option>
+          </select>
+
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Foto</th>
+            <th>Nombre</th>
+            <th>Correo electrónico</th>
+            <th>Rol</th>
+    
+            <th>Fecha de registro</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+                   <tbody>
+                          @for (user of paginatedUsers; track user.email) {
+                                <tr>
+                                  <td class="photo-cell">
+                                    <img [src]="user.photo" alt="" />
+                                  </td>
+                                  <td>{{ user.name }}</td>
+                                  <td>{{ user.email }}</td>
+                                  <td><span class="role admin">{{ user.role }}</span></td>
+                                  <td>{{ user.date }}</td>
+                                  <td class="actions">
+                                    <button type="button" (click)="openEditUserModal(user)">
+                                      <img src="lapiz.png" alt="Editar" />
+                                    </button>
+                                    <button type="button">
+                                      <img src="bloquear.png" alt="Bloquear" />
+                                    </button>
+                                    <button type="button" class="delete">
+                                      <img src="borrador.png" alt="Eliminar" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              }
+                        </tbody>
+              
+      </table>
+    </div>
+
+       <div class="users-footer">
+            <p>
+              Mostrando página {{ currentPage }} de {{ totalPages }}
+            </p>
+
+            <div class="pagination centered">
+              <button type="button" (click)="changePage(currentPage - 1)">‹</button>
+
+              @for (page of [].constructor(totalPages); track $index) {
+                <button
+                  type="button"
+                  [class.active]="currentPage === $index + 1"
+                  (click)="changePage($index + 1)"
+                >
+                  {{ $index + 1 }}
+                </button>
+              }
+
+              <button type="button" (click)="changePage(currentPage + 1)">›</button>
+            </div>
+          </div>
+  </section>
+
+  @if (isUserModalOpen) {
+  <div class="user-modal-backdrop">
+    <section class="user-modal">
+      <button type="button" class="user-modal-close" (click)="closeUserModal()">×</button>
+
+     
+      <h2>{{ modalMode === 'create' ? 'Crear nuevo usuario' : 'Editar usuario' }}</h2>
+      <p>Completa la información para registrar un nuevo usuario.</p>
+
+      <div class="user-form-grid">
+        <label>Nombre completo
+          <input
+            type="text"
+            [value]="selectedUser?.fullName || ''"
+            placeholder="Ej: Nathalia Pérez"
+          />
+        </label>
+
+
+              <label>Correo electrónico
+                <input
+                  type="email"
+                  [value]="selectedUser?.email || ''"
+                  placeholder="Ej: nathalia@example.com"
+                />
+              </label>
+         
+
+        <label>Rol
+          <select [value]="selectedUser?.role || 'Administrador'">
+            <option>Administrador</option>
+            <option>Moderador</option>
+            <option>Usuario</option>
+            <option>Prestador</option>
+            <option>Turista</option>
+          </select>
+        </label>
+        
+
+      
+                 <label class="avatar-field">
+                      Foto de perfil
+
+                      <div class="avatar-upload">
+
+                     
+                        <img [src]="avatarPreview" >
+
+                        <label class="upload-button">
+                          Seleccionar imagen
+                          
+                          <input type="file" accept="image/*" hidden (change)="onAvatarSelected($event)">
+                        </label>
+
+                      </div>
+                    </label>
+        
+
+       
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" (click)="closeUserModal()">Cancelar</button>
+        <button type="button" class="save-btn">{{ modalMode === 'create' ? 'Crear usuario' : 'Guardar cambios' }}</button>
+      </div>
+    </section>
+  </div>
+}
+
+</app-admin-layout>

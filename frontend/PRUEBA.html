@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Registro y Verificación (ngrok)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 {
+            font-size: 22px;
+            color: #1a202c;
+            margin-bottom: 6px;
+        }
+        .sub {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .url-box {
+            background: #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #0f172a;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .url-box input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            background: white;
+            min-width: 200px;
+        }
+        .url-box button {
+            padding: 8px 18px;
+            background: #2f5f9e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .url-box button:hover { background: #1f4a7a; }
+        .seccion {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .seccion h2 {
+            font-size: 18px;
+            color: #0f172a;
+            margin-bottom: 14px;
+        }
+        .campo {
+            margin-bottom: 12px;
+        }
+        .campo label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+        .campo input, .campo select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        .campo input:focus, .campo select:focus {
+            outline: none;
+            border-color: #2f5f9e;
+            box-shadow: 0 0 0 3px rgba(47,95,158,0.12);
+        }
+        .campo input[type="file"] {
+            padding: 8px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        .btn-primary { background: #2f5f9e; color: white; }
+        .btn-primary:hover { background: #1f4a7a; }
+        .btn-success { background: #2e8b6c; color: white; }
+        .btn-success:hover { background: #1f6b53; }
+        .btn-secondary { background: #64748b; color: white; }
+        .btn-secondary:hover { background: #475569; }
+        .btn-danger { background: #b91c1c; color: white; }
+        .btn-danger:hover { background: #991b1b; }
+        .output {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            max-height: 350px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-top: 16px;
+            border: 1px solid #1e293b;
+        }
+        .output .ok { color: #4ade80; }
+        .output .error { color: #f87171; }
+        .output .info { color: #60a5fa; }
+        .output .warn { color: #fbbf24; }
+        .flex-row { display: flex; gap: 10px; margin-top: 10px; }
+        .flex-row .btn { width: auto; flex: 1; }
+        .token-box {
+            background: #fef9c3;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #854d0e;
+            word-break: break-all;
+            margin-top: 8px;
+            display: none;
+        }
+        .token-box.show { display: block; }
+        .status {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .status-online { background: #dcfce7; color: #166534; }
+        .status-offline { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Prueba: Registro y Verificacion</h1>
+    <p class="sub">Backend Connectopia (ngrok)</p>
+
+    <!-- URL del backend (ya con ngrok) -->
+    <div class="url-box">
+        <span style="font-weight:600;">Backend:</span>
+        <input type="text" id="apiUrl" value="https://rethink-relight-prong.ngrok-free.dev/api">
+        <button onclick="guardarUrl()">Guardar</button>
+        <span id="statusBadge" class="status status-offline">Desconocido</span>
+    </div>
+
+    <!-- REGISTRO -->
+    <div class="seccion">
+        <h2>Registro</h2>
+        <div class="campo">
+            <label>Nombre completo</label>
+            <input type="text" id="regName" value="Usuario Test">
+        </div>
+        <div class="campo">
+            <label>Correo electronico</label>
+            <input type="email" id="regEmail" value="test@prueba.com">
+        </div>
+        <div class="campo">
+            <label>Contraseña</label>
+            <input type="password" id="regPass" value="123456">
+        </div>
+        <div class="campo">
+            <label>Rol</label>
+            <select id="regRole">
+                <option value="vecino">Vecino</option>
+                <option value="prestador">Prestador</option>
+                <option value="turista">Turista</option>
+            </select>
+        </div>
+        <button class="btn btn-success" onclick="registrar()">Registrarse</button>
+    </div>
+
+    <!-- VERIFICACION -->
+    <div class="seccion">
+        <h2>Verificacion de identidad</h2>
+        <p style="font-size:14px; color:#64748b; margin-bottom:14px;">Sube las imagenes de tu documento y una selfie.</p>
+        <div class="campo">
+            <label>Documento (anverso)</label>
+            <input type="file" id="docFront" accept="image/*">
+        </div>
+        <div class="campo">
+            <label>Documento (reverso)</label>
+            <input type="file" id="docBack" accept="image/*">
+        </div>
+        <div class="campo">
+            <label>Selfie</label>
+            <input type="file" id="selfie" accept="image/*">
+        </div>
+        <div class="campo">
+            <label>Email (para asociar la verificacion)</label>
+            <input type="email" id="verifEmail" placeholder="El mismo correo del registro" value="test@prueba.com">
+        </div>
+        <button class="btn btn-primary" onclick="enviarVerificacion()">Enviar verificacion</button>
+    </div>
+
+    <!-- Token (opcional) -->
+    <div id="tokenBox" class="token-box">Token: <span id="tokenValue"></span></div>
+
+    <!-- Botones extras -->
+    <div class="flex-row">
+        <button class="btn btn-secondary" onclick="limpiarOutput()">Limpiar consola</button>
+        <button class="btn btn-danger" onclick="limpiarToken()">Limpiar token</button>
+    </div>
+
+    <!-- Consola de salida -->
+    <div class="output" id="output">
+        <span class="info">Esperando accion...</span>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // CONFIGURACION
+    // ============================================================
+    let API_URL = localStorage.getItem('apiUrl') || 'https://rethink-relight-prong.ngrok-free.dev/api';
+    let TOKEN = localStorage.getItem('access_token') || '';
+
+    const outputEl = document.getElementById('output');
+    const urlInput = document.getElementById('apiUrl');
+    const tokenBox = document.getElementById('tokenBox');
+    const tokenValue = document.getElementById('tokenValue');
+    const statusBadge = document.getElementById('statusBadge');
+
+    urlInput.value = API_URL;
+    if (TOKEN) {
+        tokenBox.classList.add('show');
+        tokenValue.textContent = TOKEN.substring(0, 30) + '...';
+    }
+
+    // ============================================================
+    // LOG
+    // ============================================================
+    function log(texto, tipo = 'info') {
+        const colores = { info: '#60a5fa', ok: '#4ade80', error: '#f87171', warn: '#fbbf24' };
+        const prefijos = { info: '[INFO]', ok: '[OK]', error: '[ERROR]', warn: '[WARN]' };
+        const linea = `<span style="color:${colores[tipo] || '#e2e8f0'}">${prefijos[tipo] || '[INFO]'} ${texto}</span>`;
+        outputEl.innerHTML += '\n' + linea;
+        outputEl.scrollTop = outputEl.scrollHeight;
+    }
+
+    function limpiarOutput() {
+        outputEl.innerHTML = '';
+        log('Consola limpia', 'info');
+    }
+
+    function setStatus(online) {
+        statusBadge.textContent = online ? 'Online' : 'Offline';
+        statusBadge.className = `status ${online ? 'status-online' : 'status-offline'}`;
+    }
+
+    // ============================================================
+    // URL
+    // ============================================================
+    function guardarUrl() {
+        API_URL = urlInput.value.trim();
+        localStorage.setItem('apiUrl', API_URL);
+        log('URL guardada: ' + API_URL, 'ok');
+    }
+
+    // ============================================================
+    // TOKEN
+    // ============================================================
+    function guardarToken(token) {
+        TOKEN = token;
+        localStorage.setItem('access_token', token);
+        tokenBox.classList.add('show');
+        tokenValue.textContent = token.substring(0, 30) + '...';
+        log('Token guardado', 'ok');
+    }
+
+    function limpiarToken() {
+        TOKEN = '';
+        localStorage.removeItem('access_token');
+        tokenBox.classList.remove('show');
+        tokenValue.textContent = '';
+        log('Token eliminado', 'warn');
+    }
+
+    // ============================================================
+    // FETCH HELPER
+    // ============================================================
+    async function peticion(endpoint, opciones = {}) {
+        const url = `${API_URL}${endpoint}`;
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(opciones.headers || {})
+        };
+        if (TOKEN) {
+            headers['Authorization'] = `Bearer ${TOKEN}`;
+        }
+
+        const config = {
+            ...opciones,
+            headers
+        };
+
+        log(`${config.method || 'GET'} ${endpoint}`, 'info');
+
+        try {
+            const res = await fetch(url, config);
+            const contentType = res.headers.get('content-type') || '';
+            let data;
+            if (contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                data = await res.text();
+            }
+
+            const statusText = `${res.status} ${res.statusText}`;
+            if (res.ok) {
+                log(`${statusText}`, 'ok');
+            } else {
+                log(`${statusText}`, 'error');
+            }
+            log(`Respuesta: ${typeof data === 'string' ? data : JSON.stringify(data, null, 2)}`, res.ok ? 'ok' : 'error');
+            return { ok: res.ok, status: res.status, data };
+        } catch (err) {
+            log(`Error: ${err.message}`, 'error');
+            return { ok: false, status: 0, data: null };
+        }
+    }
+
+    // ============================================================
+    // REGISTRO
+    // ============================================================
+    async function registrar() {
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPass').value;
+        const role = document.getElementById('regRole').value;
+
+        if (!name || !email || !password) {
+            log('Completa todos los campos', 'warn');
+            return;
+        }
+
+        limpiarOutput();
+        log('Registrando usuario...', 'info');
+        const result = await peticion('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({ name, email, password, role })
+        });
+
+        if (result.ok) {
+            log('Registro exitoso', 'ok');
+            document.getElementById('verifEmail').value = email;
+        }
+    }
+
+    // ============================================================
+    // VERIFICACION (envío de archivos)
+    // ============================================================
+    async function enviarVerificacion() {
+        const docFront = document.getElementById('docFront').files[0];
+        const docBack = document.getElementById('docBack').files[0];
+        const selfie = document.getElementById('selfie').files[0];
+        const email = document.getElementById('verifEmail').value.trim();
+
+        if (!docFront || !docBack || !selfie) {
+            log('Selecciona las tres imagenes', 'warn');
+            return;
+        }
+        if (!email) {
+            log('Ingresa el email', 'warn');
+            return;
+        }
+
+        limpiarOutput();
+        log('Enviando verificacion...', 'info');
+
+        const formData = new FormData();
+        formData.append('document_front', docFront);
+        formData.append('document_back', docBack);
+        formData.append('selfie', selfie);
+        formData.append('email', email);
+
+        const url = `${API_URL}/verification/document`;
+        const headers = TOKEN ? { 'Authorization': `Bearer ${TOKEN}` } : {};
+
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers,
+                body: formData
+            });
+
+            const contentType = res.headers.get('content-type') || '';
+            let data;
+            if (contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                data = await res.text();
+            }
+
+            log(`${res.status} ${res.statusText}`, res.ok ? 'ok' : 'error');
+            log(`Respuesta: ${typeof data === 'string' ? data : JSON.stringify(data, null, 2)}`, res.ok ? 'ok' : 'error');
+
+            if (res.ok) {
+                log('Verificacion enviada exitosamente', 'ok');
+            }
+        } catch (err) {
+            log(`Error: ${err.message}`, 'error');
+        }
+    }
+
+    // ============================================================
+    // INICIALIZAR (health check con ngrok)
+    // ============================================================
+    setTimeout(async () => {
+        log('Verificando backend...', 'info');
+        const result = await peticion('/health');
+        setStatus(result.ok);
+        if (result.ok) {
+            log('Backend disponible', 'ok');
+        } else {
+            log('No se pudo conectar al backend', 'error');
+        }
+    }, 500);
+</script>
+</body>
+</html>
