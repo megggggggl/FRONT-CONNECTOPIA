@@ -1,0 +1,404 @@
+
+<main class="pagina-perfil">
+  <section *ngIf="cargando" class="estado-pagina">
+    <p>Cargando perfil del prestador...</p>
+  </section>
+
+  <section *ngIf="!cargando && error" class="estado-pagina estado-error">
+    <p>{{ error }}</p>
+  </section>
+
+  <ng-container *ngIf="!cargando && !error && perfil">
+    <app-encabezado-perfil
+      [perfil]="perfil"
+      (editarPerfil)="abrirModalEditar()">
+    </app-encabezado-perfil>
+
+<section class="grid-estadisticas">
+  <app-tarjeta-estadistica
+    titulo="Servicios publicados"
+    [valor]="totalServicios"
+    descripcion="Servicios registrados en la plataforma"
+    icono="p3.png">
+  </app-tarjeta-estadistica>
+
+  <app-tarjeta-estadistica
+    titulo="Servicios activos"
+    [valor]="serviciosActivos"
+    descripcion="Servicios visibles para los vecinos"
+    icono="p4.png">
+  </app-tarjeta-estadistica>
+
+  <app-tarjeta-estadistica
+    titulo="Calificación promedio"
+    [valor]="calificacionPromedio"
+    descripcion="Promedio según reseñas reales"
+    icono="p5.png">
+  </app-tarjeta-estadistica>
+
+  <app-tarjeta-estadistica
+    titulo="Reseñas recibidas"
+    [valor]="totalResenas"
+    descripcion="Comentarios recibidos en servicios"
+    icono="p6.png">
+  </app-tarjeta-estadistica>
+</section>
+
+    <section class="grid-resumen">
+      <article class="panel-resumen">
+        <h2>Resumen del prestador</h2>
+
+        <div class="lista-resumen">
+          <div><span>Servicios pendientes</span><strong>{{ serviciosPendientes }}</strong></div>
+          <div><span>Servicios inactivos</span><strong>{{ serviciosInactivos }}</strong></div>
+          <div><span>Total de reseñas</span><strong>{{ totalResenas }}</strong></div>
+          <div><span>Mejor calificado</span><strong>{{ servicioMejorCalificado }}</strong></div>
+        </div>
+      </article>
+
+      <article class="panel-resumen">
+        <h2>Estado de cuenta</h2>
+
+        <div class="lista-resumen">
+          <div><span>Rol</span><strong>{{ perfil.role }}</strong></div>
+          <div><span>Cuenta activa</span><strong>{{ perfil.is_active ? 'Sí' : 'No' }}</strong></div>
+          <div><span>Verificación</span><strong>{{ perfil.id_verified ? 'Verificado' : 'Sin verificar' }}</strong></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="seccion-simple telegram-panel">
+      <div class="telegram-header">
+        <div class="telegram-icon" aria-hidden="true">TG</div>
+        <div>
+          <h2>Telegram</h2>
+          <p>Vincula tu cuenta para recibir solicitudes desde @ConnectopiaHNBot.</p>
+        </div>
+        <button
+          type="button"
+          class="boton-actualizar"
+          (click)="actualizarEstadoTelegram()"
+          [disabled]="telegramCargando">
+          {{ telegramCargando ? 'Actualizando...' : 'Actualizar estado' }}
+        </button>
+      </div>
+
+      <div class="telegram-status" [class.vinculado]="telegramVinculado" [class.error]="telegramError">
+        <span>
+          {{
+            telegramCargando
+              ? 'Verificando'
+              : (telegramError ? 'Error' : (telegramVinculado ? 'Vinculado' : 'No vinculado'))
+          }}
+        </span>
+        <strong>{{ telegramVinculado ? 'Telegram vinculado' : 'Sin Telegram vinculado' }}</strong>
+      </div>
+
+      <p *ngIf="telegramExito" class="mensaje-telegram exito">{{ telegramExito }}</p>
+      <p *ngIf="telegramError" class="mensaje-telegram error">{{ telegramError }}</p>
+
+      <div *ngIf="telegramEnlaceGenerado && !telegramTokenVencido" class="telegram-manual" [class.vencido]="telegramTokenVencido">
+        <div>
+          <strong>{{ telegramTokenVencido ? 'Token vencido' : 'Enlace generado' }}</strong>
+          <span *ngIf="telegramExpiraEn">Vence en {{ telegramExpiraEn }} minutos.</span>
+          <span>
+            Si Telegram no se abre automaticamente, copia este comando y envialo a @ConnectopiaHNBot.
+          </span>
+        </div>
+
+        <div class="telegram-actions">
+          <button
+            type="button"
+            class="boton-telegram secundario"
+            (click)="abrirTelegramDesktop()"
+            [disabled]="telegramTokenVencido">
+            Abrir Telegram Desktop
+          </button>
+
+          <button
+            type="button"
+            class="boton-telegram secundario"
+            (click)="abrirTelegramWeb()"
+            [disabled]="telegramTokenVencido">
+            Abrir Telegram Web
+          </button>
+
+          <button
+            type="button"
+            class="boton-telegram secundario"
+            (click)="copiarComandoTelegram()"
+            [disabled]="telegramTokenVencido">
+            Copiar comando
+          </button>
+        </div>
+
+        <label>
+          Comando para pegar en @ConnectopiaHNBot
+          <input type="text" [value]="telegramComando" readonly />
+        </label>
+      </div>
+
+      <button
+        type="button"
+        class="boton-telegram"
+        [disabled]="telegramCargando"
+        (click)="vincularTelegram()">
+        {{
+          telegramCargando
+            ? 'Generando enlace...'
+            : (
+              telegramTokenVencido
+                ? 'Generar enlace nuevo'
+                : (telegramEnlaceGenerado ? 'Abrir Telegram' : (telegramVinculado ? 'Volver a vincular' : 'Vincular Telegram'))
+            )
+        }}
+      </button>
+    </section>
+
+    <section class="seccion-simple citas-recibidas-panel">
+      <div class="citas-header">
+        <div>
+          <h2>Solicitudes recibidas</h2>
+          <p>Citas que los vecinos iniciaron desde Telegram.</p>
+        </div>
+
+        <button
+          type="button"
+          class="boton-actualizar"
+          (click)="actualizarCitasRecibidas()"
+          [disabled]="citasRecibidasCargando()">
+          {{ citasRecibidasCargando() ? 'Actualizando...' : 'Actualizar citas' }}
+        </button>
+      </div>
+
+      <div class="citas-resumen">
+        <div>
+          <span>Pendientes</span>
+          <strong>{{ citasRecibidasPendientes }}</strong>
+        </div>
+        <div>
+          <span>Aceptadas</span>
+          <strong>{{ citasRecibidasAceptadas }}</strong>
+        </div>
+        <div>
+          <span>Rechazadas</span>
+          <strong>{{ citasRecibidasRechazadas }}</strong>
+        </div>
+      </div>
+
+      <p *ngIf="citasRecibidasCargando()" class="estado-citas">Cargando solicitudes...</p>
+      <p *ngIf="!citasRecibidasCargando() && citasRecibidasError()" class="estado-citas error">
+        {{ citasRecibidasError() }}
+      </p>
+      <p *ngIf="citaHistorialError()" class="estado-citas error">{{ citaHistorialError() }}</p>
+      <p *ngIf="citaHistorialExito()" class="estado-citas exito">{{ citaHistorialExito() }}</p>
+      <p
+        *ngIf="!citasRecibidasCargando() && !citasRecibidasError() && citasRecibidas().length === 0"
+        class="estado-citas">
+        Todavia no hay solicitudes recibidas.
+      </p>
+
+      <div *ngIf="!citasRecibidasCargando() && citasRecibidas().length > 0" class="lista-citas">
+        <article *ngFor="let cita of citasRecibidas()">
+          <div class="cita-info">
+            <div class="cita-titulo">
+              <strong>{{ obtenerNombreServicioCita(cita) }}</strong>
+              <span>Vecino: {{ obtenerNombreVecinoCita(cita) }}</span>
+            </div>
+
+            <div class="cita-detalles">
+              <div>
+                <span>Codigo</span>
+                <strong>{{ obtenerCodigoCita(cita) }}</strong>
+              </div>
+              <div>
+                <span>Fecha y hora</span>
+                <strong>{{ obtenerFechaHoraCita(cita) }}</strong>
+              </div>
+              <div>
+                <span>Direccion</span>
+                <strong>{{ obtenerDireccionCita(cita) }}</strong>
+              </div>
+              <div class="detalle-completo">
+                <span>Descripcion</span>
+                <strong>{{ obtenerDescripcionCita(cita) }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="cita-lateral">
+            <span class="estado-cita" [ngClass]="obtenerClaseEstadoCita(cita.status)">
+              {{ obtenerEtiquetaCita(cita.status) }}
+            </span>
+
+            <div *ngIf="puedeAdministrarHistorial(cita)" class="acciones-historial">
+              <button type="button" (click)="ocultarCitaRecibida(cita)" [disabled]="citaHistorialId() === cita.id">
+                Ocultar
+              </button>
+              <button type="button" (click)="archivarCitaRecibida(cita)" [disabled]="citaHistorialId() === cita.id">
+                Archivar
+              </button>
+              <button
+                type="button"
+                class="peligro"
+                (click)="eliminarCitaRecibida(cita)"
+                [disabled]="citaHistorialId() === cita.id">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="seccion-simple servicios-panel">
+      <div class="servicios-header">
+        <div>
+          <h2>Mis servicios</h2>
+          <p>Publica servicios para que los vecinos puedan solicitar citas.</p>
+        </div>
+
+        <button type="button" class="boton-crear-servicio" (click)="abrirModalCrearServicio()">
+          Crear servicio
+        </button>
+      </div>
+
+      <p *ngIf="citaError" class="mensaje-telegram error">{{ citaError }}</p>
+      <p *ngIf="servicioError" class="mensaje-telegram error">{{ servicioError }}</p>
+      <p *ngIf="servicioExito" class="mensaje-telegram exito">{{ servicioExito }}</p>
+
+      <div *ngIf="servicios.length > 0" class="lista-servicios-prestador">
+        <app-tarjeta-servicio
+          *ngFor="let servicio of servicios"
+          [servicio]="servicio"
+          [mostrarAccionCita]="puedeSolicitarCita(servicio)"
+          [solicitandoCita]="citaServicioId === servicio.id"
+          [eliminando]="eliminandoServicioId === servicio.id"
+          (solicitarCita)="solicitarCitaTelegram($event)"
+          (eliminarServicio)="eliminarServicio($event)">
+        </app-tarjeta-servicio>
+      </div>
+
+      <p *ngIf="servicios.length === 0">
+        No tenés servicios publicados todavía.
+      </p>
+    </section>
+
+    <section class="seccion-simple">
+      <h2>Reseñas recientes</h2>
+      <p *ngIf="resenas.length === 0">
+        Todavía no hay reseñas para mostrar.
+      </p>
+    </section>
+  </ng-container>
+
+  <div class="modal-backdrop" *ngIf="modalServicioAbierto">
+    <section class="modal-perfil modal-servicio">
+      <button class="cerrar-modal" type="button" (click)="cerrarModalServicio()">×</button>
+
+      <div class="modal-header">
+        <div>
+          <h2>Crear servicio</h2>
+          <p>Agrega un servicio para que los vecinos puedan solicitar cita.</p>
+        </div>
+      </div>
+
+      <form class="form-modal form-servicio">
+        <label>
+          Nombre del servicio
+          <input type="text" [(ngModel)]="formServicio.name" name="service_name" />
+        </label>
+
+        <label>
+          Precio
+          <input type="text" [(ngModel)]="formServicio.price" name="service_price" placeholder="Opcional" />
+        </label>
+
+        <label>
+          Telefono
+          <input type="text" [(ngModel)]="formServicio.phone" name="service_phone" placeholder="Opcional" />
+        </label>
+
+        <label>
+          Direccion
+          <input type="text" [(ngModel)]="formServicio.address" name="service_address" placeholder="Opcional" />
+        </label>
+
+        <label class="campo-completo">
+          Imagen
+          <input type="text" [(ngModel)]="formServicio.image" name="service_image" placeholder="URL opcional" />
+        </label>
+
+        <label class="campo-completo">
+          Descripcion
+          <textarea [(ngModel)]="formServicio.description" name="service_description"></textarea>
+        </label>
+      </form>
+
+      <p class="nota-servicio">
+        Si Telegram ya esta vinculado, el servicio se publica activo. Si no, se activara al vincular Telegram.
+      </p>
+
+      <div class="acciones-modal">
+        <button type="button" class="boton-secundario" (click)="cerrarModalServicio()" [disabled]="servicioGuardando">
+          Cancelar
+        </button>
+
+        <button type="button" class="boton-guardar" (click)="guardarServicio()" [disabled]="servicioGuardando">
+          {{ servicioGuardando ? 'Guardando...' : 'Publicar servicio' }}
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="modalEditarAbierto">
+    <section class="modal-perfil">
+      <button class="cerrar-modal" type="button" (click)="cerrarModalEditar()">×</button>
+
+      <div class="modal-header">
+        <div class="avatar-preview">
+          <img *ngIf="formPerfil.avatar_url" [src]="formPerfil.avatar_url" alt="Foto de perfil" />
+          <span *ngIf="!formPerfil.avatar_url">{{ formPerfil.name.charAt(0) || 'P' }}</span>
+        </div>
+
+        <div>
+          <h2>Editar perfil</h2>
+          <p>Actualizá la información visible de tu cuenta.</p>
+        </div>
+      </div>
+
+      <form class="form-modal">
+        <label>
+          Nombre completo
+          <input type="text" [(ngModel)]="formPerfil.name" name="name" />
+        </label>
+
+        <label>
+          Teléfono
+          <input type="text" [(ngModel)]="formPerfil.phone" name="phone" />
+        </label>
+
+        <label class="campo-completo">
+          Dirección
+          <input type="text" [(ngModel)]="formPerfil.address" name="address" />
+        </label>
+
+        <label class="campo-completo">
+          URL de foto
+          <input type="text" [(ngModel)]="formPerfil.avatar_url" name="avatar_url" />
+        </label>
+      </form>
+
+      <div class="acciones-modal">
+        <button type="button" class="boton-secundario" (click)="cerrarModalEditar()">
+          Cancelar
+        </button>
+
+        <button type="button" class="boton-guardar" (click)="guardarPerfil()">
+          Guardar cambios
+        </button>
+      </div>
+    </section>
+  </div>
+</main>
+

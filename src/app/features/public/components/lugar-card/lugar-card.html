@@ -1,0 +1,53 @@
+<article class="tarjeta-lugar">
+  <!-- Imagen -->
+  <div class="imagen-lugar-contenedor">
+    <img
+      *ngIf="tieneImagen"
+      [src]="imagenPrincipal"
+      [alt]="nombre"
+      class="imagen-lugar"
+    />
+    <div *ngIf="!tieneImagen" class="imagen-lugar-vacia">
+      <span>🏞️</span>
+    </div>
+
+    <!-- Badge de estado (destacado / normal) -->
+    <span class="estado-lugar" [ngClass]="estadoClase">
+      {{ estadoTexto }}
+    </span>
+  </div>
+
+  <!-- Contenido -->
+  <div class="contenido-lugar">
+    <p class="categoria-lugar">Lugar turístico</p>
+
+    <h3 class="titulo-lugar">{{ nombre }}</h3>
+
+    <p class="descripcion-lugar">{{ descripcion }}</p>
+
+    <p class="precio-lugar">{{ precioEntrada }}</p>
+
+    <!-- Métricas -->
+    <div class="metricas-lugar">
+      <div class="metrica">
+        <span>⭐</span>
+        <span>{{ calificacion | number:'1.1-1' }} / 5</span>
+      </div>
+      <div class="metrica">
+        <span>📝</span>
+        <span>{{ totalResenas }} reseñas</span>
+      </div>
+    </div>
+
+    <!-- Botón de acción (opcional) -->
+    <div class="acciones-lugar" *ngIf="mostrarAccion">
+      <button
+        type="button"
+        class="boton-accion"
+        (click)="emitirAccion()"
+      >
+        Ver lugar
+      </button>
+    </div>
+  </div>
+</article>

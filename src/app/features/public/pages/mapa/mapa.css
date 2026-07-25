@@ -1,0 +1,152 @@
+/* features/public/pages/mapa/mapa.css */
+.mapa-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+  padding: 0;
+  gap: 12px;
+}
+
+.mapa-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.mapa-header h1 {
+  font-size: 28px;
+  color: #060709;
+  margin: 0;
+}
+
+.mapa-header p {
+  color: #5e646a;
+  margin: 4px 0 0;
+}
+
+.mapa-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-refresh,
+.btn-location {
+  padding: 10px 16px;
+  border: 1px solid #c9cdd2;
+  border-radius: 12px;
+  background: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-refresh:hover:not(:disabled) {
+  background: #f0f2f5;
+}
+.btn-refresh:disabled {
+  opacity: 0.6;
+}
+.btn-location {
+  font-size: 20px;
+  padding: 8px 12px;
+}
+.btn-location:hover {
+  background: #e8f0fe;
+}
+
+.map-container {
+  flex: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  background: #f0f2f5;
+  min-height: 400px;
+  position: relative;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  z-index: 1000;
+}
+
+.error-message {
+  padding: 12px 16px;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 12px;
+  margin: 8px 0;
+}
+
+.mapa-leyenda {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 8px 4px;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 12px;
+  padding: 10px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #060709;
+}
+
+.marcador-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
+}
+
+.marcador-icon.verde {
+  background: #2e8b6c;
+}
+.marcador-icon.azul {
+  background: #4a84c4;
+}
+.marcador-icon.gris {
+  background: #888;
+}
+
+/* Estilos para los marcadores personalizados (si quieres diferenciarlos) */
+:host ::ng-deep .lugar-marker .leaflet-marker-icon {
+  filter: hue-rotate(200deg);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .mapa-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .mapa-actions {
+    justify-content: stretch;
+  }
+  .btn-refresh,
+  .btn-location {
+    flex: 1;
+    text-align: center;
+  }
+  .mapa-leyenda {
+    gap: 12px;
+    justify-content: center;
+  }
+}

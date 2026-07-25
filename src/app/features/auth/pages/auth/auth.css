@@ -1,0 +1,319 @@
+/* ════════════════ッ PANTALLA GENERAL ッ════════════════ */
+:host {
+  display: block;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.auth-page {
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  background: url('/fondo.jpg') center/cover no-repeat;
+  padding: 18px;
+  overflow: hidden;
+}
+
+/* ════════════════ッ CAJA PRINCIPAL ッ════════════════ */
+.auth-container {
+  width: min(1050px, 94vw);
+  height: min(620px, 90dvh);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+  backdrop-filter: blur(14px);
+  background: rgba(244, 242, 238, 0.42);
+  box-shadow: 0 24px 80px rgba(47, 95, 158, 0.22);
+}
+
+/* ════════════════ッ PANEL BASE ッ════════════════ */
+.auth-panel {
+  padding: 34px 54px;
+  transition: transform 0.75s ease, opacity 0.55s ease;
+}
+
+/* ════════════════ッ PANEL LOGIN ッ════════════════ */
+.auth-info {
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.auth-logo {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+}
+
+.auth-info h1 {
+  color: #2f5f9e;
+  font-size: 34px;
+  line-height: 1;
+  margin: 0;
+}
+
+.brand-green {
+  color: #2e8b6c;
+}
+
+.auth-info p {
+  max-width: 390px;
+  font-size: 17px;
+  color: #5e646a;
+  margin: 0;
+}
+
+/* ════════════════ッ TEXTO REGISTRO ッ════════════════ */
+.auth-register-text {
+  font-size: 15px;
+  color: #5e646a;
+}
+
+.auth-link {
+  border: 0;
+  background: transparent;
+  color: #2e8b6c;
+  font-weight: 800;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ════════════════ッ PANEL REGISTRO ッ════════════════ */
+.auth-register {
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(40px);
+  transition: opacity 0.55s ease 0.35s, transform 0.55s ease 0.35s;
+}
+
+.register-content {
+  width: 360px;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  text-align: center;
+}
+
+.register-content h2 {
+  color: #2f5f9e;
+  font-size: 42px;
+  margin: 0 0 8px;
+}
+
+.register-subtitle {
+  color: #2f5f9e;
+  font-size: 16px;
+  margin: 8px 0 20px;
+}
+
+.register-icon-line,
+.guest-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.register-icon-line span,
+.guest-line span {
+  width: 55px;
+  height: 2px;
+  background: #c9cdd2;
+}
+
+.register-icon-line img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.guest-line img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.guest-button {
+  border: 0;
+  background: transparent;
+  color: #2f5f9e;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+/* ════════════════ッ PANEL VISUAL DERECHO ッ════════════════ */
+.auth-preview {
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 5;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  padding: 34px 42px;
+  box-sizing: border-box;
+  background: rgba(244, 242, 238, 0.45);
+  clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%);
+  overflow: hidden;
+  transition: transform 0.85s ease-in-out, clip-path 0.85s ease-in-out;
+}
+
+.auth-preview::before {
+  content: '';
+  position: absolute;
+  width: 430px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(47, 95, 158, 0.22),
+    rgba(46, 139, 108, 0.12),
+    transparent 70%
+  );
+  filter: blur(28px);
+}
+
+.auth-preview h1 {
+  max-width: 430px;
+  margin: 0;
+  font-size: 31px;
+  line-height: 1.12;
+  text-align: center;
+  color: #2f5f9e;
+  font-weight: 800;
+}
+
+.community-image {
+  position: relative;
+  z-index: 1;
+  width: min(360px, 78%);
+  max-height: 260px;
+  object-fit: contain;
+  filter: drop-shadow(0 24px 28px rgba(47, 95, 158, 0.24));
+}
+
+.preview-login-button {
+  width: 230px;
+  height: 52px;
+  border: 0;
+  border-radius: 16px;
+  background: rgba(47, 95, 158, 0.9);
+  color: #f4f2ee;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.preview-location {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #1f6b53;
+  font-weight: 800;
+}
+
+.preview-location img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+/* ════════════════ッ EFECTO BRILLO DE BOTONES ッ════════════════ */
+.auth-main-button,
+.preview-login-button,
+.mini-form .login-button {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.auth-main-button::before,
+.preview-login-button::before,
+.mini-form .login-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 60%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: skewX(-25deg);
+  transition: left 0.65s ease;
+}
+
+.auth-main-button:hover,
+.preview-login-button:hover,
+.mini-form .login-button:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 18px rgba(74, 132, 196, 0.55),
+    0 0 32px rgba(46, 139, 108, 0.35),
+    0 18px 36px rgba(47, 95, 158, 0.34);
+}
+
+.auth-main-button:hover::before,
+.preview-login-button:hover::before,
+.mini-form .login-button:hover::before {
+  left: 130%;
+}
+
+/* ════════════════ッ IMAGEN LANDING ッ════════════════ */
+.landing-image {
+  position: absolute;
+  z-index: 10;
+  width: min(380px, 80%);
+  object-fit: contain;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease;
+}
+
+/* ════════════════ッ ESTADO LANDING ッ════════════════ */
+.auth-container.landing-mode .landing-image {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.auth-container.landing-mode .auth-preview h1,
+.auth-container.landing-mode .community-image,
+.auth-container.landing-mode .preview-login-button,
+.auth-container.landing-mode .preview-location {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ════════════════ッ MODO REGISTRO ッ════════════════ */
+.auth-container.register-mode .auth-preview {
+  transform: translateX(-100%);
+  clip-path: polygon(0 0, 88% 0, 100% 100%, 0 100%);
+}
+
+.auth-container.register-mode .auth-info {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-30px);
+}
+
+.auth-container.register-mode .auth-register {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}

@@ -1,0 +1,102 @@
+<div class="publicidad-container">
+
+  <!-- ===== CREAR PUBLICACIÓN ===== -->
+  <div class="crear-post">
+    <img src="assets/avatar.png" class="avatar" alt="Avatar">
+    <input
+      type="text"
+      id="publicarInput"
+      name="publicarInput"
+      placeholder="¿Qué quieres publicar hoy?"
+      (click)="abrirModal()"
+      readonly
+    >
+    <button (click)="abrirModal()">Publicar</button>
+  </div>
+
+  <!-- ===== ESTADOS DE CARGA Y ERROR ===== -->
+  <div *ngIf="loading" class="loading">Cargando publicaciones...</div>
+  <div *ngIf="error && !loading" class="error">{{ error }}</div>
+
+  <!-- ===== LISTA DE PUBLICACIONES ===== -->
+  <div *ngIf="!loading && !error" class="publicaciones">
+    <!-- SI HAY POSTS, MOSTRARLOS -->
+    <div *ngIf="posts.length > 0">
+      <div *ngFor="let post of posts" class="post-facebook">
+        <div class="post-top">
+          <!-- Avatar del autor (si no existe, mostrar por defecto) -->
+          <img [src]="post.author?.avatar_url || 'assets/avatar.png'" class="avatar" alt="Avatar">
+          <div>
+            <h4>{{ post.author?.name || 'Usuario' }}</h4>
+            <small>{{ post.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
+          </div>
+          <!-- Tipo de publicación -->
+          <span>{{ post.type | titlecase }}</span>
+        </div>
+
+        <!-- Contenido -->
+        <p>{{ post.content }}</p>
+
+        <!-- Imagen (si existe) -->
+        <img *ngIf="post.images && post.images.length > 0" [src]="post.images[0]" class="post-img" alt="Imagen">
+
+        <!-- Acciones (me gusta / comentar) -->
+        <div class="acciones">
+          <button>👍 Me gusta</button>
+          <button>💬 Comentar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SI NO HAY POSTS -->
+    <div *ngIf="posts.length === 0" class="no-posts">
+      <p>No hay publicaciones aún. ¡Sé el primero en publicar!</p>
+    </div>
+  </div>
+
+  <!-- ===== MODAL PARA CREAR PUBLICACIÓN ===== -->
+  <div class="modal-backdrop" *ngIf="modalAbierto">
+    <div class="modal-publicidad">
+      <button class="cerrar" (click)="cerrarModal()">×</button>
+      <h2>Crear publicación</h2>
+
+      <input
+        type="text"
+        id="tituloPost"
+        name="tituloPost"
+        [(ngModel)]="nombre"
+        placeholder="Título (opcional)"
+      >
+
+      <textarea
+        id="contenidoPost"
+        name="contenidoPost"
+        [(ngModel)]="contenido"
+        placeholder="Escribe tu publicación..."
+      ></textarea>
+
+      <div class="opciones">
+        <label>
+          <input type="checkbox" [(ngModel)]="isUrgent"> Urgente
+        </label>
+        <select id="tipoPost" name="tipoPost" [(ngModel)]="tipoPost">
+          <option value="general">General</option>
+          <option value="anuncio">Anuncio</option>
+          <option value="alerta">Alerta</option>
+          <option value="evento">Evento</option>
+        </select>
+      </div>
+
+      <input
+        type="file"
+        id="imagenPost"
+        name="imagenPost"
+        (change)="seleccionarImagen($event)"
+        accept="image/*"
+      >
+
+      <button (click)="crearPublicacion()">Publicar</button>
+    </div>
+  </div>
+
+</div>

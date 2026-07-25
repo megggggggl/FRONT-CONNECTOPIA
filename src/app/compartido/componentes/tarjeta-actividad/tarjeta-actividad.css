@@ -1,0 +1,46 @@
+.tarjeta-actividad {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #e5eaf3;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.imagen-actividad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: #eef4ff;
+}
+
+.imagen-actividad img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.titulo-actividad {
+  margin: 0 0 5px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.valor-actividad {
+  display: block;
+  color: #0f172a;
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.descripcion-actividad {
+  margin: 7px 0 0;
+  color: #94a3b8;
+  font-size: 13px;
+}

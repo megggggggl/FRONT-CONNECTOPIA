@@ -1,0 +1,28 @@
+<app-main-layout>
+  <section class="lugares-page">
+    <header class="page-header">
+      <div>
+        <h1>Lugares turísticos</h1>
+        <p>Descubre los mejores destinos</p>
+      </div>
+    </header>
+
+    <div class="filtros">
+      <select [(ngModel)]="filtroCategoria" (change)="cargarLugares()">
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.name }}</option>
+      </select>
+    </div>
+
+    <div *ngIf="loading" class="loading">Cargando...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div class="lugares-grid">
+      <app-lugar-card
+        *ngFor="let lugar of lugares"
+        [lugar]="lugar"
+      ></app-lugar-card>
+      <p *ngIf="lugares.length === 0 && !loading">No hay lugares disponibles</p>
+    </div>
+  </section>
+</app-main-layout>

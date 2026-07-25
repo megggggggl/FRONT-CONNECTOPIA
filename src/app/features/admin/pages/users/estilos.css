@@ -1,0 +1,162 @@
+/* ════════════════ッ Tabla usuarios estilo roles ッ════════════════ */
+
+.users-card thead th {
+  background: #0b0f16;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 1px solid #1d2635;
+}
+
+.users-card td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.role {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #050b14 !important;
+  color: #5ec8ff !important;
+  border: 1px solid #1ea7ff;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(30, 167, 255, .25);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status.active {
+  color: #111;
+  background: #19f21f;
+  box-shadow:
+    0 4px 0 #10b915,
+    0 8px 14px rgba(25, 242, 31, 0.25);
+}
+
+.status.active::before {
+  content: "O";
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: white;
+  color: #19d821;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.status.inactive {
+  color: #111;
+  background: #d9d9d9;
+  box-shadow:
+    0 4px 0 #b5b5b5,
+    0 8px 14px rgba(0, 0, 0, 0.08);
+}
+
+.status.inactive::before {
+  content: "O";
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: white;
+  color: #666;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+td:nth-child(6) {
+  color: #3dbbff;
+  font-weight: 800;
+}
+
+.actions {
+  justify-content: center;
+}
+
+.actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions button img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+
+.photo-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.photo-cell img {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+.users-footer {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.users-footer p {
+  margin: 0;
+  color: #5e646a;
+  font-weight: 600;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.pagination button {
+  min-width: 44px;
+  height: 44px;
+  border: 1px solid #c9cdd2;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  font-weight: 800;
+  transition: 0.25s ease;
+}
+
+.pagination button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(31, 107, 83, 0.18);
+}
+
+.pagination .active {
+  background: #2e8b6c;
+  color: white;
+  border-color: #2e8b6c;
+}

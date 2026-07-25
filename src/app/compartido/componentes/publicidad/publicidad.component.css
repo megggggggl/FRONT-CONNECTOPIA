@@ -1,0 +1,253 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.publicidad-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* ===== CREAR POST ===== */
+.crear-post {
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 100%;
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.crear-post input {
+  flex: 1;
+  background: #f0f2f5;
+  border: none;
+  border-radius: 25px;
+  padding: 13px;
+  outline: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.crear-post button {
+  background: #2e8b6c;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.crear-post button:hover {
+  background: #1f6b53;
+}
+
+/* ===== LISTA DE POSTS ===== */
+.publicaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+/* ===== POST INDIVIDUAL (ESTILO FACEBOOK) ===== */
+.post-facebook {
+  background: white;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 100%;
+}
+
+.post-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.post-top .avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.post-top h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.post-top small {
+  color: #65676b;
+  font-size: 12px;
+}
+
+.post-top span {
+  margin-left: auto;
+  background: #f1c6ff;
+  color: #8a329f;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.post-facebook p {
+  font-size: 15px;
+  margin: 12px 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.post-img {
+  width: 100%;
+  max-height: 430px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-top: 10px;
+  display: block;
+}
+
+.acciones {
+  display: flex;
+  border-top: 1px solid #ddd;
+  margin-top: 12px;
+  padding-top: 8px;
+  gap: 10px;
+}
+
+.acciones button {
+  flex: 1;
+  background: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #65676b;
+  cursor: pointer;
+}
+
+.acciones button:hover {
+  background: #f0f2f5;
+}
+
+/* ===== ESTADOS ===== */
+.loading, .error {
+  text-align: center;
+  padding: 20px;
+  color: #5e646a;
+}
+
+.error {
+  color: #b91c1c;
+  background: #fee2e2;
+  border-radius: 8px;
+}
+
+.no-posts {
+  text-align: center;
+  padding: 40px 20px;
+  color: #94a3b8;
+  font-size: 16px;
+  background: #f8fafc;
+  border-radius: 15px;
+  border: 2px dashed #e2e8f0;
+}
+
+/* ===== MODAL ===== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-publicidad {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal-publicidad .cerrar {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #5e646a;
+}
+
+.modal-publicidad h2 {
+  margin-top: 0;
+  color: #060709;
+}
+
+.modal-publicidad input[type="text"],
+.modal-publicidad textarea,
+.modal-publicidad select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #c9cdd2;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.modal-publicidad textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modal-publicidad .opciones {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modal-publicidad .opciones label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.modal-publicidad input[type="file"] {
+  margin-bottom: 12px;
+}
+
+.modal-publicidad button {
+  width: 100%;
+  padding: 12px;
+  background: #2e8b6c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.modal-publicidad button:hover {
+  background: #1f6b53;
+}

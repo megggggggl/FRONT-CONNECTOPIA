@@ -1,0 +1,303 @@
+<app-admin-layout>
+
+  <section class="roles-header">
+    <div class="roles-title">
+      <div class="title-icon">
+        <img src="../../igualdad.gif" alt="" />
+      </div>
+
+      <div>
+        <h1>Gestión de roles</h1>
+        <p>Administra los roles del sistema y los permisos asociados a cada uno.</p>
+      </div>
+    </div>
+
+    <button type="button" class="create-role-button" (click)="openCreateRoleModal()">
+    <span>+</span>
+        Crear nuevo rol
+    </button>
+  </section>
+
+  <section class="roles-stats">
+    <article class="stat-card">
+      <div class="stat-icon">
+        <img src="../../presentacion.gif" alt="" />
+      </div>
+      <div>
+        <p>Total de roles</p>
+        <h2>4</h2>
+        <span>Roles activos en el sistema</span>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon blue">
+        <img src="../../demostracion.gif" alt="" />
+      </div>
+      <div>
+        <p>Roles activos</p>
+        <h2>4</h2>
+        <span>Todos los roles están activos</span>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon purple">
+        <img src="../../exito.gif" alt="" />
+      </div>
+      <div>
+        <p>Usuarios asignados</p>
+        <h2>128</h2>
+        <span>Usuarios con roles asignados</span>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon orange">
+        <img src="../../permisos.gif" alt="" />
+      </div>
+      <div>
+        <p>Permisos totales</p>
+        <h2>28</h2>
+        <span>Permisos configurados</span>
+      </div>
+    </article>
+  </section>
+
+
+   <div class="search-user">
+        
+        <input
+            type="text"
+            placeholder="Buscar rol o permiso..."
+            [(ngModel)]="searchText"
+          />
+        <img src="lupa.png" alt="Buscar" />
+      </div><br>
+
+  <section class="roles-table-card">
+    <h2>Lista de roles</h2>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Rol</th>
+            <th>Descripción</th>
+            <th>Permisos principales</th>
+            <th>Usuarios asignados</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+                        
+                 <tbody>
+    @for (role of filteredRoles; track role.name) {
+    <tr>
+      <td class="role-cell">
+        <div>
+          <strong>{{ role.name }}</strong>
+          <span>{{ role.type }}</span>
+        </div>
+      </td>
+
+      <td>{{ role.description }}</td>
+
+      <td>
+        <div class="permissions-list">
+          @for (permission of role.permissions; track permission) {
+            <span class="permission-pill">{{ permission }}</span>
+          }
+        </div>
+      </td>
+
+      <td class="users-count">
+        <strong>{{ role.users }}</strong>
+        <span>usuarios</span>
+      </td>
+
+      <td>
+        <span class="status" [class.active]="role.status">
+          {{ role.status ? 'Activo' : 'Inactivo' }}
+        </span>
+      </td>
+
+      <td class="actions">
+      
+        <button type="button" (click)="openEditRoleModal(role)">
+        <img src="lapiz.png" alt="" />
+      </button>
+       
+
+        <button type="button">
+          <img src="borrador.png" alt="" />
+        </button>
+      </td>
+    </tr>
+  }
+</tbody>
+      </table>
+    </div>
+
+    <div class="roles-help">
+      <div>
+        <strong>¿Qué son los roles?</strong>
+        <p>
+          Los roles permiten controlar qué puede hacer cada tipo de usuario dentro de Connectopia.
+        </p>
+      </div>
+
+      <button>Ver guía de roles</button>
+    </div>
+  </section>
+
+  @if (isCreateRoleModalOpen) {
+  <div class="modal-backdrop">
+    <section class="role-modal">
+
+      <button type="button" class="modal-close" (click)="closeCreateRoleModal()">×</button>
+      
+
+      <div class="modal-header">
+        <div class="modal-icon">
+          <img src="crear.png" alt="" />
+        </div>
+
+        <div>
+          
+          <h2>{{ modalMode === 'create' ? 'Crear nuevo rol' : 'Editar rol' }}</h2>
+          <p>Define la información y permisos para el nuevo rol.</p>
+        </div>
+      </div>
+
+      <h3>Información general</h3>
+
+      <div class="form-grid">
+        <label>
+          Nombre del rol *
+          <input type="text" placeholder="Ej: Gestor de turismo" />
+        </label>
+
+        <label>
+          Descripción
+          <input type="text" placeholder="Describe las responsabilidades de este rol." />
+        </label>
+
+        <label>
+          Tipo de rol
+          <select>
+            <option>Personalizado</option>
+            <option>Sistema</option>
+          </select>
+        </label>
+
+       <label>
+  Estado
+
+  <button
+    type="button"
+    class="toggle-switch"
+    [class.active]="roleStatusActive"
+    (click)="toggleRoleStatus()"
+  >
+    <span></span>
+  </button>
+</label>
+      </div>
+
+      <div class="permissions-header">
+        <div>
+          <h3>Permisos del sistema</h3>
+          <p>Define qué módulos y acciones puede realizar este rol.</p>
+        </div>
+
+        <div class="permission-buttons">
+
+                <button
+                    type="button"
+                    class="select-all-btn"
+                    (click)="selectAllPermissions()">
+                    Seleccionar todo
+                </button>
+
+                <button
+                    type="button"
+                    class="clear-all-btn"
+                    (click)="clearAllPermissions()">
+                    Deseleccionar todo
+                </button>
+
+                </div>
+      </div>
+
+      <div class="permissions-table">
+        <div class="permissions-row permissions-head">
+          <span>Módulos del sistema</span>
+          <span>Ver</span>
+          <span>Crear</span>
+          <span>Editar</span>
+          <span>Eliminar</span>
+          <span>Aprobar / Rechazar</span>
+        </div>
+
+        @for (module of permissionModules; track module.name) {
+          <div class="permissions-row">
+            <span class="module-name">
+             
+              {{ module.name }}
+            </span>
+
+            @for (permission of module.permissions; track permission.action) {
+             <button
+                type="button"
+                class="toggle-switch"
+                [class.active]="permission.enabled"
+                (click)="permission.enabled = !permission.enabled"
+            >
+                <span></span>
+            </button>
+            }
+          </div>
+        }
+      </div>
+
+      <h3>Restricciones adicionales</h3>
+
+                <div class="restrictions">
+
+                @for (restriction of restrictions; track restriction.name) {
+                    <label>
+                    <button
+                        type="button"
+                        class="toggle-switch"
+                        [class.active]="restriction.enabled"
+                        (click)="restriction.enabled = !restriction.enabled"
+                    >
+                        <span></span>
+                    </button>
+
+                    <div>
+                        <strong>{{ restriction.name }}</strong>
+                        <p>{{ restriction.description }}</p>
+                    </div>
+                    </label>
+                }
+
+                </div>
+
+                <div class="modal-actions">
+                <button type="button" class="cancel-btn" (click)="closeCreateRoleModal()">
+                    Cancelar
+                </button>
+
+                <button type="button" class="save-btn">
+                    {{ modalMode === 'create' ? 'Crear rol' : 'Guardar cambios' }}
+                </button>
+                </div>
+
+    </section>
+  </div>
+}
+
+</app-admin-layout>

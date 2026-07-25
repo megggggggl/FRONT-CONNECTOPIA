@@ -1,0 +1,13 @@
+.terminos-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.terminos-page h1 {
+  font-size: 32px;
+  color: #060709;
+  margin-bottom: 16px;
+}

@@ -1,0 +1,15 @@
+<article class="tarjeta-actividad">
+  <div class="imagen-actividad">
+    <img
+      *ngIf="rutaImagen"
+      [src]="rutaImagen"
+      [alt]="titulo"
+    />
+  </div>
+
+  <div>
+    <p class="titulo-actividad">{{ titulo }}</p>
+    <strong class="valor-actividad">{{ valor }}</strong>
+    <p class="descripcion-actividad">{{ descripcion }}</p>
+  </div>
+</article>

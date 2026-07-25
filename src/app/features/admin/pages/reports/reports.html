@@ -1,0 +1,275 @@
+<app-admin-layout>
+  <section class="dashboard-header">
+    <div>
+      <h1>Turimos y Seguridad</h1>
+      <p>Explora mejores destinos y rincones de nuestra comunidad</p>
+    </div>
+
+    <button class="date-button"> 22 de junio de 2026</button>
+  </section>
+
+
+
+<div class="pagina">
+
+  <!-- IZQUIERDA -->
+  <main class="contenido">
+
+    <div class="filtros">
+  <button class="activo" onclick="filtrar('todas', this)">Todas</button>
+  <button onclick="filtrar('pendiente', this)">Pendientes</button>
+  <button onclick="filtrar('proceso', this)">En Proceso</button>
+  <button onclick="filtrar('resuelta', this)">Resueltas</button>
+
+  <input type="text" id="buscador" placeholder="Buscar denuncia..." onkeyup="buscarDenuncias()">
+</div>
+
+    <h3>Denuncias recientes</h3>
+
+    <div class="lista-denuncias" id="listaDenuncias">
+
+      <div class="denuncia">
+        <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=500">
+        <span class="estado pendiente">Pendiente</span>
+        <div>
+          <h4>Alumbrado público dañado</h4>
+          <p>Lámpara de alumbrado apagada desde hace varios días en la calle principal.</p>
+          <small>📍 Col. Villa Nueva, Calle Principal</small>
+          <small>Hace 30 min</small>
+        </div>
+        <div class="acciones">
+  <button onclick="darLike(this)">👍 Me gusta <span>0</span></button>
+  <button onclick="mostrarComentario(this)">💬 Comentar</button>
+
+</div>
+
+<div class="comentarios">
+  <input type="text" placeholder="Escribe un comentario..." onkeypress="agregarComentario(event, this)">
+  <div class="lista-comentarios"></div>
+</div>
+      </div>
+
+      <div class="denuncia">
+        <img src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?w=500">
+        <span class="estado proceso">En proceso</span>
+        <div>
+          <h4>Basura acumulada</h4>
+          <p>Hay acumulación de basura en esquina del parque.</p>
+          <small>📍 Barrio el Centro, 2da Avenida</small>
+          <small>Hace 2 horas</small>
+        </div>
+        <div class="acciones">
+  <button onclick="darLike(this)">👍 Me gusta <span>0</span></button>
+  <button onclick="mostrarComentario(this)">💬 Comentar</button>
+
+</div>
+
+<div class="comentarios">
+  <input type="text" placeholder="Escribe un comentario..." onkeypress="agregarComentario(event, this)">
+  <div class="lista-comentarios"></div>
+</div>
+      </div>
+
+      <div class="denuncia">
+        <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?w=500">
+        <span class="estado urgente">Urgente</span>
+        <div>
+          <h4>Hueco en la vía</h4>
+          <p>Gran hueco en la carretera, peligroso para automovilistas.</p>
+          <small>📍 Carretera Valle Verde, Km 3</small>
+          <small>Hace 5 horas</small>
+          <div class="acciones">
+  <button onclick="darLike(this)">👍 Me gusta <span>0</span></button>
+  <button onclick="mostrarComentario(this)">💬 Comentar</button>
+
+</div>
+
+<div class="comentarios">
+  <input type="text" placeholder="Escribe un comentario..." onkeypress="agregarComentario(event, this)">
+  <div class="lista-comentarios"></div>
+</div>
+        </div>
+      </div>
+
+      <div class="denuncia">
+        <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=500">
+        <span class="estado resuelta">Resuelta</span>
+        <div>
+          <h4>Perro callejero agresivo</h4>
+          <p>Perro agresivo suelto en la zona.</p>
+          <small>📍 Colonia San Miguel</small>
+          <small>Hace 1 día</small>
+        </div>
+        <div class="acciones">
+  <button onclick="darLike(this)">👍 Me gusta <span>0</span></button>
+  <button onclick="mostrarComentario(this)">💬 Comentar</button>
+
+</div>
+
+<div class="comentarios">
+  <input type="text" placeholder="Escribe un comentario..." onkeypress="agregarComentario(event, this)">
+  <div class="lista-comentarios"></div>
+</div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- DERECHA FIJA -->
+  <aside class="panel-fijo">
+
+    <form id="formDenuncia" class="formulario">
+      <h3>🚨 Nueva Denuncia</h3>
+
+      <label>Título</label>
+      <input type="text" id="titulo" placeholder="Ej: Alumbrado público dañado" required>
+
+      <label>Descripción</label>
+      <input type="text" id="descripcion" placeholder="Describe detalladamente la situación..." required>
+
+      <label>Ubicación</label>
+      <input type="text" id="ubicacion" placeholder="Selecciona o escribe tu ubicación" required>
+
+      <label>Foto o video</label>
+      <input type="file" id="foto" accept="image/*">
+
+      <button type="submit">Reportar denuncia</button>
+    </form>
+
+    <div class="card-info">
+      <h4>🛡 ¿Sabías qué?</h4>
+      <p>Tus denuncias ayudan a mantener nuestra ciudad segura.</p>
+    </div>
+
+    <div class="card-info">
+      <h4>☎ Emergencias</h4>
+      <p>Si es una emergencia, llama al 911.</p>
+    </div>
+
+  </aside>
+
+</div>
+
+<script >
+ const form = document.getElementById("formDenuncia");
+const lista = document.getElementById("listaDenuncias");
+
+form.insertAdjacentHTML("beforeend", `<div class="mensaje-exito" id="mensajeExito">Denuncia creada correctamente ✅</div>`);
+
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const titulo = document.getElementById("titulo").value;
+  const descripcion = document.getElementById("descripcion").value;
+  const ubicacion = document.getElementById("ubicacion").value;
+  const foto = document.getElementById("foto").files[0];
+
+  let imagen = "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=500";
+
+  if (foto) {
+    imagen = URL.createObjectURL(foto);
+  }
+
+  const nueva = document.createElement("div");
+  nueva.classList.add("denuncia");
+  nueva.setAttribute("data-estado", "pendiente");
+
+  nueva.innerHTML = `
+    <img src="${imagen}">
+    <span class="estado pendiente">Pendiente</span>
+
+    <div>
+      <h4>${titulo}</h4>
+      <p>${descripcion}</p>
+      <small>📍 ${ubicacion}</small>
+      <small>Hace un momento</small>
+    </div>
+
+    <div class="acciones">
+      <button onclick="darLike(this)">👍 Me gusta <span>0</span></button>
+      <button onclick="mostrarComentario(this)">💬 Comentar</button>
+      <button onclick="compartir()">🔗 Compartir</button>
+    </div>
+
+    <div class="comentarios">
+      <input type="text" placeholder="Escribe un comentario..." onkeypress="agregarComentario(event, this)">
+      <div class="lista-comentarios"></div>
+    </div>
+  `;
+
+  lista.prepend(nueva);
+  form.reset();
+
+  const mensaje = document.getElementById("mensajeExito");
+  mensaje.style.display = "block";
+
+  setTimeout(() => {
+    mensaje.style.display = "none";
+  }, 2500);
+});
+
+function darLike(boton) {
+  const span = boton.querySelector("span");
+  span.textContent = parseInt(span.textContent) + 1;
+}
+
+function mostrarComentario(boton) {
+  const denuncia = boton.closest(".denuncia");
+  const comentarios = denuncia.querySelector(".comentarios");
+
+  comentarios.style.display =
+    comentarios.style.display === "block" ? "none" : "block";
+}
+
+function agregarComentario(event, input) {
+  if (event.key === "Enter" && input.value.trim() !== "") {
+    const listaComentarios = input.nextElementSibling;
+
+    const comentario = document.createElement("p");
+    comentario.innerHTML = `<b>Usuario:</b> ${input.value}`;
+
+    listaComentarios.prepend(comentario);
+    input.value = "";
+  }
+}
+
+function compartir() {
+  alert("Enlace de denuncia copiado ✅");
+}
+
+function filtrar(estado, boton) {
+  const botones = document.querySelectorAll(".filtros button");
+  botones.forEach(b => b.classList.remove("activo"));
+  boton.classList.add("activo");
+
+  const denuncias = document.querySelectorAll(".denuncia");
+
+  denuncias.forEach(denuncia => {
+    const estadoDenuncia = denuncia.getAttribute("data-estado");
+
+    if (estado === "todas" || estadoDenuncia === estado) {
+      denuncia.style.display = "grid";
+    } else {
+      denuncia.style.display = "none";
+    }
+  });
+}
+
+function buscarDenuncias() {
+  const texto = document.getElementById("buscador").value.toLowerCase();
+  const denuncias = document.querySelectorAll(".denuncia");
+
+  denuncias.forEach(denuncia => {
+    const contenido = denuncia.innerText.toLowerCase();
+
+    if (contenido.includes(texto)) {
+      denuncia.style.display = "grid";
+    } else {
+      denuncia.style.display = "none";
+    }
+  });
+}
+</script>
+
+
+</app-admin-layout>

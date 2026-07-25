@@ -1,0 +1,41 @@
+.explorar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+  min-height: 100%; /* Ocupa todo el espacio disponible */
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 32px;
+  color: #060709;
+}
+
+.dashboard-header p {
+  margin: 6px 0 0;
+  color: #5e646a;
+}
+
+.date-button {
+  border: 1px solid #c9cdd2;
+  background: white;
+  border-radius: 12px;
+  padding: 12px 18px;
+  color: #060709;
+  font-weight: 700;
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}

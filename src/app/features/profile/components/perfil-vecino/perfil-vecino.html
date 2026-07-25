@@ -1,0 +1,344 @@
+<main class="pagina-perfil">
+  <section *ngIf="cargando" class="estado-pagina">
+    <p>Cargando perfil de vecino...</p>
+  </section>
+
+  <section *ngIf="!cargando && error" class="estado-pagina estado-error">
+    <p>{{ error }}</p>
+  </section>
+
+  <ng-container *ngIf="!cargando && !error && perfil">
+    <app-encabezado-perfil
+      [perfil]="perfil"
+      (editarPerfil)="abrirModalEditar()">
+    </app-encabezado-perfil>
+
+  <section class="grid-estadisticas">
+  <app-tarjeta-estadistica
+    titulo="Publicaciones"
+    [valor]="publicaciones"
+    descripcion="Publicaciones creadas"
+    icono="mega.png">
+    
+  </app-tarjeta-estadistica>
+
+  <app-tarjeta-estadistica
+    titulo="Denuncias"
+    [valor]="denuncias"
+    descripcion="Denuncias ciudadanas realizadas"
+    icono="denunciante.png">
+  </app-tarjeta-estadistica>
+
+  <app-tarjeta-estadistica
+    titulo="Favoritos"
+    [valor]="favoritos"
+    descripcion="Lugares o servicios guardados"
+    icono="corazon.png">
+  </app-tarjeta-estadistica>
+
+  <app-tarjeta-estadistica
+    titulo="Eventos inscritos"
+    [valor]="eventos"
+    descripcion="Eventos próximos registrados"
+    icono="e.png">
+  </app-tarjeta-estadistica>
+
+  <app-tarjeta-estadistica
+    titulo="Comentarios"
+    [valor]="comentarios"
+    descripcion="Comentarios realizados"
+   
+    icono="bueno.png">
+  </app-tarjeta-estadistica>
+</section>
+
+    <section class="panel-resumen citas-panel">
+      <div class="citas-header">
+        <div>
+          <h2>Mis citas</h2>
+          <p>Solicitudes iniciadas desde Telegram.</p>
+        </div>
+
+        <button type="button" class="boton-actualizar" (click)="actualizarCitas()" [disabled]="citasCargando()">
+          {{ citasCargando() ? 'Actualizando...' : 'Actualizar citas' }}
+        </button>
+      </div>
+
+      <div class="citas-resumen">
+        <div>
+          <span>Pendientes</span>
+          <strong>{{ citasPendientes }}</strong>
+        </div>
+        <div>
+          <span>Confirmadas</span>
+          <strong>{{ citasConfirmadas }}</strong>
+        </div>
+        <div>
+          <span>Rechazadas</span>
+          <strong>{{ citasRechazadas }}</strong>
+        </div>
+      </div>
+
+      <p *ngIf="citasCargando()" class="estado-citas">Cargando citas...</p>
+      <p *ngIf="!citasCargando() && citasError()" class="estado-citas error">{{ citasError() }}</p>
+      <p *ngIf="citaHistorialError()" class="estado-citas error">{{ citaHistorialError() }}</p>
+      <p *ngIf="citaHistorialExito()" class="estado-citas exito">{{ citaHistorialExito() }}</p>
+      <p *ngIf="!citasCargando() && !citasError() && citas().length === 0" class="estado-citas">
+        Todavia no tenes citas registradas.
+      </p>
+
+      <div *ngIf="!citasCargando() && citas().length > 0" class="lista-citas">
+        <article *ngFor="let cita of citas()">
+          <div class="cita-info">
+            <div class="cita-titulo">
+              <strong>{{ obtenerNombreServicio(cita) }}</strong>
+              <span>Prestador: {{ obtenerNombrePrestadorCita(cita) }}</span>
+            </div>
+
+            <div class="cita-detalles">
+              <div>
+                <span>Codigo</span>
+                <strong>{{ obtenerCodigoCita(cita) }}</strong>
+              </div>
+              <div>
+                <span>Fecha y hora</span>
+                <strong>{{ obtenerFechaHoraCita(cita) }}</strong>
+              </div>
+              <div>
+                <span>Direccion</span>
+                <strong>{{ obtenerDireccionCita(cita) }}</strong>
+              </div>
+              <div class="detalle-completo">
+                <span>Descripcion</span>
+                <strong>{{ obtenerDescripcionCita(cita) }}</strong>
+              </div>
+            </div>
+          </div>
+          <div class="cita-lateral">
+            <span class="estado-cita" [ngClass]="obtenerClaseEstadoCita(cita.status)">
+              {{ obtenerEtiquetaCita(cita.status) }}
+            </span>
+
+            <div *ngIf="puedeAdministrarHistorial(cita)" class="acciones-historial">
+              <button type="button" (click)="ocultarCita(cita)" [disabled]="citaHistorialId() === cita.id">
+                Ocultar
+              </button>
+              <button type="button" (click)="archivarCita(cita)" [disabled]="citaHistorialId() === cita.id">
+                Archivar
+              </button>
+              <button type="button" class="peligro" (click)="eliminarCita(cita)" [disabled]="citaHistorialId() === cita.id">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel-resumen servicios-cita-panel">
+      <div class="citas-header">
+        <div>
+          <h2>Servicios disponibles para solicitar cita</h2>
+          <p>Servicios activos que pueden iniciar una solicitud por Telegram.</p>
+        </div>
+
+        <button
+          type="button"
+          class="boton-actualizar"
+          (click)="actualizarServiciosDisponibles()"
+          [disabled]="serviciosDisponiblesCargando()">
+          {{ serviciosDisponiblesCargando() ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+      </div>
+
+      <p *ngIf="serviciosDisponiblesCargando()" class="estado-citas">
+        Cargando servicios disponibles...
+      </p>
+      <p *ngIf="!serviciosDisponiblesCargando() && serviciosDisponiblesError()" class="estado-citas error">
+        {{ serviciosDisponiblesError() }}
+      </p>
+      <p *ngIf="solicitudCitaError()" class="estado-citas error">
+        {{ solicitudCitaError() }}
+      </p>
+      <p *ngIf="solicitudCitaExito()" class="estado-citas exito">
+        {{ solicitudCitaExito() }}
+      </p>
+
+      <div
+        *ngIf="solicitudCitaEnlaceGenerado && !solicitudCitaTokenVencido"
+        class="telegram-cita-manual"
+        [class.vencido]="solicitudCitaTokenVencido">
+        <div>
+          <strong>{{ solicitudCitaTokenVencido ? 'Token vencido' : 'Enlace generado' }}</strong>
+          <span *ngIf="solicitudCitaTelegramServicioNombre()">
+            Servicio: {{ solicitudCitaTelegramServicioNombre() }}
+          </span>
+          <span *ngIf="solicitudCitaTelegramExpiraEn()">
+            Vence en {{ solicitudCitaTelegramExpiraEn() }} minutos.
+          </span>
+          <span>
+            Si Telegram no se abre, copia este comando y envialo a @ConnectopiaHNBot.
+          </span>
+        </div>
+
+        <div class="acciones-telegram-cita">
+          <button
+            type="button"
+            class="boton-telegram-cita secundario"
+            (click)="abrirCitaTelegramDesktop()"
+            [disabled]="solicitudCitaTokenVencido">
+            Abrir Telegram Desktop
+          </button>
+
+          <button
+            type="button"
+            class="boton-telegram-cita secundario"
+            (click)="abrirCitaTelegramWeb()"
+            [disabled]="solicitudCitaTokenVencido">
+            Abrir Telegram Web
+          </button>
+
+          <button
+            type="button"
+            class="boton-telegram-cita secundario"
+            (click)="copiarComandoCitaTelegram()"
+            [disabled]="solicitudCitaTokenVencido">
+            Copiar comando
+          </button>
+        </div>
+
+        <label class="campo-comando-cita">
+          Comando para pegar en @ConnectopiaHNBot
+          <input type="text" [value]="solicitudCitaTelegramComando()" readonly />
+        </label>
+      </div>
+
+      <p
+        *ngIf="!serviciosDisponiblesCargando() && !serviciosDisponiblesError() && serviciosDisponibles().length === 0"
+        class="estado-citas">
+        No hay servicios activos disponibles para solicitar cita.
+      </p>
+
+      <div *ngIf="!serviciosDisponiblesCargando() && serviciosDisponibles().length > 0" class="lista-servicios-cita">
+        <article *ngFor="let servicio of serviciosDisponibles()">
+          <div class="servicio-cita-info">
+            <span class="estado-cita">{{ obtenerEstadoServicio(servicio) }}</span>
+            <h3>{{ obtenerNombreServicioDisponible(servicio) }}</h3>
+            <p>{{ obtenerDescripcionServicioDisponible(servicio) }}</p>
+            <div class="servicio-cita-meta">
+              <span>Prestador: <strong>{{ obtenerNombrePrestador(servicio) }}</strong></span>
+              <span>Estado: <strong>{{ obtenerEstadoServicio(servicio) }}</strong></span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="boton-telegram-cita"
+            [disabled]="solicitudCitaServicioId() !== null"
+            (click)="solicitarCitaPorTelegram(servicio)">
+            {{
+              solicitudCitaServicioId() === (servicio.service_id || servicio.id)
+                ? 'Generando enlace...'
+                : 'Solicitar cita por Telegram'
+            }}
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <section class="grid-resumen">
+      <article class="panel-resumen">
+        <h2>Actividad reciente</h2>
+
+        <div
+          *ngIf="publicaciones > 0 || denuncias > 0"
+          class="lista-lugares">
+          <div>
+            <strong>Publicaciones creadas</strong>
+            <span>{{ publicaciones }}</span>
+          </div>
+          <div>
+            <strong>Denuncias realizadas</strong>
+            <span>{{ denuncias }}</span>
+          </div>
+        </div>
+
+        <p *ngIf="publicaciones === 0 && denuncias === 0">
+          Todavía no hay actividad reciente para mostrar.
+        </p>
+      </article>
+
+      <article class="panel-resumen">
+        <h2>Lugares más visitados</h2>
+
+        <div *ngIf="lugaresMasVisitados.length > 0" class="lista-lugares">
+          <div *ngFor="let lugar of lugaresMasVisitados">
+            <strong>{{ lugar.name }}</strong>
+            <span>{{ lugar.address }}</span>
+          </div>
+        </div>
+
+        <p *ngIf="lugaresMasVisitados.length === 0">
+          Aún no hay lugares visitados registrados.
+        </p>
+      </article>
+    </section>
+
+    <section class="panel-resumen accesos-panel">
+      <h2>Mis accesos</h2>
+
+      <div class="lista-accesos">
+        <button>Mis publicaciones</button>
+        <button>Mis denuncias</button>
+        <button>Mis favoritos</button>
+        <button>Mis eventos</button>
+        <button>Mis notificaciones</button>
+      </div>
+    </section>
+  </ng-container>
+
+  <div class="modal-backdrop" *ngIf="modalEditarAbierto">
+    <section class="modal-perfil">
+      <button class="cerrar-modal" type="button" (click)="cerrarModalEditar()">×</button>
+
+      <div class="modal-header">
+        <div class="avatar-preview">
+          <img *ngIf="formPerfil.avatar_url" [src]="formPerfil.avatar_url" alt="Foto de perfil" />
+          <span *ngIf="!formPerfil.avatar_url">{{ formPerfil.name.charAt(0) || 'V' }}</span>
+        </div>
+
+        <div>
+          <h2>Editar perfil</h2>
+          <p>Actualizá tus datos visibles en Connectopia.</p>
+        </div>
+      </div>
+
+      <form class="form-modal">
+        <label>
+          Nombre completo
+          <input type="text" [(ngModel)]="formPerfil.name" name="name" />
+        </label>
+
+        <label>
+          Teléfono
+          <input type="text" [(ngModel)]="formPerfil.phone" name="phone" />
+        </label>
+
+        <label class="campo-completo">
+          Dirección
+          <input type="text" [(ngModel)]="formPerfil.address" name="address" />
+        </label>
+
+        <label class="campo-completo">
+          URL de foto
+          <input type="text" [(ngModel)]="formPerfil.avatar_url" name="avatar_url" />
+        </label>
+      </form>
+
+      <div class="acciones-modal">
+        <button type="button" class="boton-secundario" (click)="cerrarModalEditar()">Cancelar</button>
+        <button type="button" class="boton-guardar" (click)="guardarPerfil()">Guardar cambios</button>
+      </div>
+    </section>
+  </div>
+</main>

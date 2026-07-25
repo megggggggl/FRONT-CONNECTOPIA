@@ -1,0 +1,65 @@
+<section class="auth-page">
+  <div class="auth-container"
+       [class.register-mode]="isRegisterMode"
+       [class.landing-mode]="isLandingMode">
+
+    <!-- ════════════ LOGIN ════════════ -->
+    <div class="auth-panel auth-info">
+      <img src="logo.png" alt="Logo Connectopia" class="auth-logo"
+           (click)="showLanding()" style="cursor:pointer" />
+      <h1>Únete a <span class="brand-green">Connectopia</span></h1>
+      <p>Conecta con tu comunidad, comparte, encuentra servicios,
+        eventos, anuncios y oportunidades cerca de ti.</p>
+      
+      <app-login-form></app-login-form>
+      
+      <p class="auth-register-text">
+        ¿Aún no tienes una cuenta?
+        <button type="button" class="auth-link" (click)="showRegister()">
+          Regístrate
+        </button>
+      </p>
+    </div>
+
+    <!-- ════════════ REGISTRO ════════════ -->
+    <div class="auth-panel auth-register">
+      <div class="register-content">
+        <h2>Crear Cuenta</h2>
+        <div class="register-icon-line">
+          <span></span>
+          <img src="acceso.png" alt="Icono registro" />
+          <span></span>
+        </div>
+        <p class="register-subtitle">usa tu email para registrarte</p>
+
+        <app-register-form (onRegistered)="showLogin()"></app-register-form><br>
+
+        <div class="guest-line">
+          <span></span>
+          <br><br>
+          <img src="cheque.png" />
+          <span></span>
+        </div>
+        <button type="button" class="guest-button" (click)="showLogin()">
+          continuar como invitado
+        </button>
+      </div>
+    </div>
+
+    <!-- ════════════ PANEL VISUAL ════════════ -->
+    <div class="auth-preview">
+      <img src="co.png" alt="Bienvenida" class="landing-image" />
+      <h1>Únete a <span class="brand-green">Connectopia</span><br />
+        y forma parte del cambio</h1>
+      <img src="pu.png" class="community-image" />
+      <button type="button" class="preview-login-button" (click)="showLogin()">
+        Iniciar Sesión
+      </button>
+      <div class="preview-location">
+        <img src="marcador.png" alt="" />
+        <span>Connectopia</span>
+      </div>
+    </div>
+
+  </div>
+</section>

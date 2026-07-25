@@ -1,0 +1,13 @@
+<div class="filtros-busqueda">
+  <select [(ngModel)]="filtros.categoria" (change)="aplicarFiltros()">
+    <option value="">Todas las categorías</option>
+    <option value="restaurante">Restaurantes</option>
+    <option value="hotel">Hoteles</option>
+    <option value="transporte">Transporte</option>
+  </select>
+  <select [(ngModel)]="filtros.orden" (change)="aplicarFiltros()">
+    <option value="reciente">Más reciente</option>
+    <option value="popular">Más popular</option>
+    <option value="nombre">Alfabético</option>
+  </select>
+</div>

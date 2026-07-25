@@ -1,0 +1,66 @@
+<app-main-layout>
+  <div class="servicios-container">
+    <section class="filtros-section">
+      <div class="filtros-grid">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          placeholder="Buscar servicios..."
+          class="search-input"
+        />
+        <select
+          [(ngModel)]="filtroCategoria"
+          (change)="onCategoryChange()"
+          class="filtro-select"
+        >
+          <option value="">Todas las categorías</option>
+          <option *ngFor="let cat of categorias" [value]="cat.id">
+            {{ cat.name }}
+          </option>
+        </select>
+        <select
+          [(ngModel)]="ordenPor"
+          (change)="onOrderChange()"
+          class="filtro-select"
+        >
+          <option value="reciente">Más reciente</option>
+          <option value="nombre">Nombre</option>
+          <option value="popular">Más popular</option>
+        </select>
+        <button (click)="limpiarFiltros()" class="btn-limpiar">Limpiar filtros</button>
+      </div>
+    </section>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando servicios...</p>
+    </div>
+
+    <div *ngIf="error && !loading" class="error-state">
+      <p>{{ error }}</p>
+    </div>
+
+    <div *ngIf="!loading && !error" class="contenido-principal">
+      <div class="contadores">
+        <span class="contador-item">Servicios: {{ serviciosFiltrados.length }}</span>
+      </div>
+
+      <section class="servicios-section">
+        <h2>Servicios ({{ serviciosFiltrados.length }})</h2>
+        <div *ngIf="serviciosFiltrados.length > 0" class="servicios-grid">
+          <app-tarjeta-servicio
+            *ngFor="let servicio of serviciosFiltrados"
+            [servicio]="servicio"
+            [mostrarAccionCita]="true"
+            (solicitarCita)="onSolicitarCita($event)"
+          >
+          </app-tarjeta-servicio>
+        </div>
+        <div *ngIf="serviciosFiltrados.length === 0" class="vacio">
+          <p>No hay servicios que coincidan con los filtros.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</app-main-layout>

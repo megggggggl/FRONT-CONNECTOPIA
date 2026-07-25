@@ -1,0 +1,12 @@
+<section class="seccion-dashboard">
+  <div class="encabezado-seccion">
+    <div>
+      <h2>{{ titulo }}</h2>
+      <p *ngIf="descripcion">{{ descripcion }}</p>
+    </div>
+  </div>
+
+  <div class="contenido-seccion">
+    <ng-content></ng-content>
+  </div>
+</section>

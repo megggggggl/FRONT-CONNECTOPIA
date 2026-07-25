@@ -1,0 +1,78 @@
+<div class="auth-wrapper">
+  <section class="main-card-container">
+    <div class="columna-izquierda">
+      <div class="brand-header">
+        <img src="logo.png" alt="Connectopia Logo" class="brand-logo" />
+        <h2 class="form-title">Verifica tu identidad</h2>
+        <p class="form-subtitle">Sube tu documento y una selfie para proteger la comunidad.</p>
+      </div>
+
+      <div class="mini-form">
+        <div *ngIf="exito" class="login-message success">{{ exito }}</div>
+        <div *ngIf="error" class="login-message error">{{ error }}</div>
+
+        <div *ngIf="step === 1" class="step-content">
+          <div class="form-group">
+            <label class="file-label">Anverso del documento</label>
+            <input type="file" accept="image/*" (change)="onDocumentFrontSelected($event)" class="file-input" />
+            <div *ngIf="documentFrontPreview" class="preview-thumb">
+              <img [src]="documentFrontPreview" alt="Anverso" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="file-label">Reverso del documento</label>
+            <input type="file" accept="image/*" (change)="onDocumentBackSelected($event)" class="file-input" />
+            <div *ngIf="documentBackPreview" class="preview-thumb">
+              <img [src]="documentBackPreview" alt="Reverso" />
+            </div>
+            <div *ngIf="qrCargando" class="qr-status loading">⏳ Leyendo QR...</div>
+<div *ngIf="!qrCargando && qrMensaje" 
+     [class.qr-ok]="qrValidado" 
+     [class.qr-error]="!qrValidado" 
+     class="qr-status">
+  {{ qrMensaje }}
+</div>
+          </div>
+
+          <button
+            type="button"
+            (click)="siguienteStep()"
+            [disabled]="!documentFrontFile || !documentBackFile"
+            class="login-button"
+          >
+            Siguiente
+          </button>
+        </div>
+
+        <div *ngIf="step === 2" class="step-content">
+          <div class="form-group">
+            <label class="file-label">Selfie</label>
+            <input type="file" accept="image/*" (change)="onSelfieSelected($event)" class="file-input" />
+            <div *ngIf="selfiePreview" class="preview-thumb">
+              <img [src]="selfiePreview" alt="Selfie" />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" (click)="step = 1" class="login-button secondary">Volver</button>
+            <button
+              type="button"
+              (click)="enviarVerificacion()"
+              [disabled]="cargando || !selfieFile"
+              class="login-button"
+            >
+              <span *ngIf="!cargando">Enviar</span>
+              <span *ngIf="cargando" class="spinner">Enviando...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columna-derecha">
+      <h1>Connectopia verifica perfiles para crear confianza</h1>
+      <img src="pu.png" alt="Comunidad Connectopia" class="side-illustration" />
+    </div>
+  </section>
+</div>

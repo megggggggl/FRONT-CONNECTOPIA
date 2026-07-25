@@ -1,0 +1,41 @@
+<aside class="admin-sidebar">
+  <!-- Logo -->
+  <div class="admin-brand">
+    <div class="logo-circle">
+      <img src="assets/logo.png" alt="Connectopia" />
+    </div>
+    <div>
+      <h2>Connectopia</h2>
+      <span>Comunidad activa</span>
+    </div>
+  </div>
+
+  <!-- Menú -->
+  <nav class="admin-nav">
+    <div class="nav-section" *ngIf="menuItems.length > 0">Menú</div>
+    <a
+      *ngFor="let item of menuItems"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <i [class]="item.icon"></i>
+      {{ item.label }}
+    </a>
+  </nav>
+
+  <!-- Footer con usuario y logout -->
+  <div class="admin-footer">
+    <div class="admin-user" *ngIf="user">
+      <div class="admin-avatar">{{ getIniciales() }}</div>
+      <div>
+        <strong>{{ user.name || 'Usuario' }}</strong>
+        <span>{{ getRolLabel() }}</span>
+      </div>
+    </div>
+    <button class="logout-button" (click)="logout()">
+      <i class="bi bi-box-arrow-right"></i>
+      Cerrar sesión
+    </button>
+  </div>
+</aside>
