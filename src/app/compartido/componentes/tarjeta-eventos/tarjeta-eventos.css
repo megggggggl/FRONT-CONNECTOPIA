@@ -1,0 +1,181 @@
+.tarjeta-evento {
+  overflow: hidden;
+  border: 1px solid #e5eaf3;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.tarjeta-evento:hover {
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.1);
+}
+
+.imagen-evento-contenedor {
+  position: relative;
+  height: 180px;
+  background: #e9edf5;
+}
+
+.imagen-evento,
+.imagen-evento-vacia {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagen-evento-vacia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  background: linear-gradient(135deg, #e5e7eb, #cbd5e1);
+}
+
+.estado-evento {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.estado-programado {
+  background: #d8f7e6;
+  color: #0f8f4f;
+}
+
+.estado-en_curso {
+  background: #fff3d6;
+  color: #b36b00;
+}
+
+.estado-finalizado {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.estado-cancelado {
+  background: #fee2e2;
+  color: #c62828;
+}
+
+.contenido-evento {
+  padding: 20px;
+}
+
+.categoria-evento {
+  margin: 0 0 6px;
+  color: #155bd5;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.titulo-evento {
+  margin: 0;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.descripcion-evento {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 10px 0 14px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.detalles-evento {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  padding-top: 14px;
+  border-top: 1px solid #edf0f5;
+  margin-bottom: 12px;
+}
+
+.detalle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.detalle-icono {
+  font-size: 16px;
+}
+
+.cupo-evento {
+  margin: 8px 0 16px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.acciones-evento {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.boton-registrarse,
+.boton-cancelar,
+.boton-eliminar {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  flex: 1 1 auto;
+}
+
+.boton-registrarse {
+  background: #155bd5;
+  color: #ffffff;
+}
+.boton-registrarse:hover:not(:disabled) {
+  background: #0f4aad;
+}
+
+.boton-cancelar {
+  background: #fff1f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+.boton-cancelar:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.boton-eliminar {
+  background: #fff1f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+.boton-eliminar:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.boton-registrarse:disabled,
+.boton-cancelar:disabled,
+.boton-eliminar:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .acciones-evento {
+    flex-direction: column;
+  }
+}

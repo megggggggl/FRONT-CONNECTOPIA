@@ -1,0 +1,61 @@
+<div class="detalle-container">
+  <div class="volver">
+    <a routerLink="/lugares-turisticos">← Volver a lugares</a>
+  </div>
+
+  <div *ngIf="loading" class="loading">Cargando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && lugar" class="detalle-content">
+    <div class="detalle-imagenes">
+      <img
+        *ngIf="lugar.images?.length"
+        [src]="lugar.images[0]"
+        [alt]="lugar.name"
+        class="imagen-principal"
+      />
+      <div *ngIf="!lugar.images?.length" class="imagen-vacia">🏛️</div>
+      <div class="miniaturas" *ngIf="lugar.images?.length > 1">
+        <img *ngFor="let img of lugar.images.slice(1, 4)" [src]="img" [alt]="lugar.name" />
+      </div>
+    </div>
+
+    <div class="detalle-info">
+      <h1>{{ lugar.name }}</h1>
+      <p class="descripcion">{{ lugar.description }}</p>
+
+      <div class="info-grid">
+        <div *ngIf="lugar.address" class="info-item">
+          <span class="icono">📍</span> {{ lugar.address }}
+        </div>
+        <div *ngIf="lugar.phone" class="info-item">
+          <span class="icono">📞</span> {{ lugar.phone }}
+        </div>
+        <div *ngIf="lugar.website" class="info-item">
+          <span class="icono">🌐</span> <a [href]="lugar.website" target="_blank">{{ lugar.website }}</a>
+        </div>
+        <div *ngIf="lugar.entrance_fee" class="info-item">
+          <span class="icono">🎟️</span> {{ lugar.entrance_fee }}
+        </div>
+        <div *ngIf="lugar.avg_rating > 0" class="info-item">
+          <span class="icono">⭐</span> {{ lugar.avg_rating }} ({{ lugar.reviews_count }} reseñas)
+        </div>
+      </div>
+
+      <div *ngIf="obtenerHorario().length > 0" class="horario">
+        <h3>🕐 Horario</h3>
+        <ul>
+          <li *ngFor="let h of obtenerHorario()">{{ h }}</li>
+        </ul>
+      </div>
+
+      <div class="mapa-detalle">
+        <h3>📍 Ubicación</h3>
+        <app-mapa-ubicacion
+          [lat]="obtenerCoordenadas()?.lat || 0"
+          [lng]="obtenerCoordenadas()?.lng || 0"
+        ></app-mapa-ubicacion>
+      </div>
+    </div>
+  </div>
+</div>

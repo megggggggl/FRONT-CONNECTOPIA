@@ -5,7 +5,7 @@ import { VecinoRoutingModule } from './vecino-routing.module';
 import { PublicPageComponent } from './pages/public/public';
 
 // Layout
-import { AdminLayout } from '../../core/layout/admin-layout/admin-layout';
+import { MainLayout } from '../../core/layout/main-layout/main-layout';
 
 @NgModule({
   imports: [
@@ -13,7 +13,7 @@ import { AdminLayout } from '../../core/layout/admin-layout/admin-layout';
     RouterModule,
     VecinoRoutingModule,
     PublicPageComponent, // standalone
-    AdminLayout
+    MainLayout
   ]
 })
 export class VecinoModule { }

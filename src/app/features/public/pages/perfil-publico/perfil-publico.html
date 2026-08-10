@@ -1,0 +1,77 @@
+<div class="perfil-publico-container" *ngIf="!loading && !error && perfil">
+  <div class="perfil-header">
+    <div class="avatar-container">
+      <img
+        [src]="perfil.perfil.avatar_url || 'assets/avatar-default.png'"
+        alt="Avatar"
+        class="avatar-grande"
+      />
+      <div *ngIf="perfil.perfil.id_verified" class="badge-verificado">✅ Verificado</div>
+    </div>
+    <div class="info-header">
+      <h1>{{ perfil.perfil.name }}</h1>
+      <p class="rol">{{ perfil.perfil.role | titlecase }}</p>
+      <p *ngIf="perfil.perfil.phone" class="contacto">📞 {{ perfil.perfil.phone }}</p>
+      <p *ngIf="perfil.perfil.address" class="contacto">📍 {{ perfil.perfil.address }}</p>
+      <div class="badges">
+        <span *ngFor="let badge of perfil.badges" class="badge">
+          {{ badge.icon }} {{ badge.label }}
+        </span>
+      </div>
+      <div *ngIf="esPropietario()" class="btn-editar-perfil">
+        <a routerLink="/perfil" class="btn-editar">Editar mi perfil</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="estadisticas-grid">
+    <div class="estadistica-card">
+      <span class="numero">{{ perfil.estadisticas.posts }}</span>
+      <span class="etiqueta">Publicaciones</span>
+    </div>
+    <div class="estadistica-card">
+      <span class="numero">{{ perfil.estadisticas.servicios }}</span>
+      <span class="etiqueta">Servicios</span>
+    </div>
+    <div class="estadistica-card">
+      <span class="numero">{{ perfil.estadisticas.resenas }}</span>
+      <span class="etiqueta">Resenas</span>
+    </div>
+    <div class="estadistica-card">
+      <span class="numero">{{ perfil.estadisticas.calificacion_promedio | number:'1.1' }}</span>
+      <span class="etiqueta">⭐ Calificación</span>
+    </div>
+  </div>
+
+  <div class="seccion">
+    <h2>📝 Últimas publicaciones</h2>
+    <div *ngIf="perfil.publicaciones_recientes.length === 0" class="sin-datos">
+      No hay publicaciones
+    </div>
+    <div *ngFor="let pub of perfil.publicaciones_recientes" class="publicacion-card">
+      <span class="tipo">{{ pub.type }}</span>
+      <h3>{{ pub.title }}</h3>
+      <p>{{ pub.content | slice:0:150 }}...</p>
+      <small>{{ pub.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
+    </div>
+  </div>
+
+  <div class="seccion">
+    <h2>⭐ Últimas resenas</h2>
+    <div *ngIf="perfil.resenas_recientes.length === 0" class="sin-datos">
+      No hay resenas
+    </div>
+    <div *ngFor="let resena of perfil.resenas_recientes" class="reseña-card">
+      <div class="reseña-header">
+        <img [src]="resena.author?.avatar_url || 'assets/avatar-default.png'" class="avatar-mini" />
+        <span>{{ resena.author?.name || 'Usuario' }}</span>
+        <span class="rating">⭐ {{ resena.rating }}</span>
+      </div>
+      <p>{{ resena.comment }}</p>
+      <small>{{ resena.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading">Cargando perfil...</div>
+<div *ngIf="error" class="error">{{ error }}</div>

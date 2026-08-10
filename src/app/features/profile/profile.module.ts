@@ -23,8 +23,6 @@ import { MainLayout } from '../../core/layout/main-layout/main-layout';
     FormsModule,
     ProfileRoutingModule,
 
-    // Layout principal
-    MainLayout,
 
     // Si los componentes compartidos SON standalone, impórtalos aquí
     EncabezadoPerfil,

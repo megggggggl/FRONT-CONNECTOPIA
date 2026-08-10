@@ -1,0 +1,153 @@
+/* src/app/features/admin/pages/verifications/verifications.css */
+
+.admin-page {
+  padding: 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #0f172a;
+}
+
+/* Alertas */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+.alert.error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.alert.success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+/* Grid */
+.verificaciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+}
+
+.verificacion-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #f0f4f8;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s;
+}
+.verificacion-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.card-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+.badge {
+  background: #e6f7f4;
+  color: #0a7e6f;
+  padding: 2px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.verificacion-card p {
+  margin: 4px 0;
+  color: #475569;
+  font-size: 14px;
+}
+.verificacion-card p strong {
+  color: #0f172a;
+}
+
+.fotos {
+  margin: 10px 0 14px;
+}
+.fotos button {
+  padding: 6px 14px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+.fotos button:hover {
+  background: #e2e8f0;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.acciones button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+  flex: 1;
+  min-width: 100px;
+}
+.btn-approve {
+  background: #0a7e6f;
+  color: white;
+}
+.btn-approve:hover {
+  background: #0d9488;
+}
+.btn-reject {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.btn-reject:hover {
+  background: #fecaca;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+@media (max-width: 640px) {
+  .verificaciones-grid {
+    grid-template-columns: 1fr;
+  }
+  .acciones button {
+    min-width: auto;
+    flex: 1 1 100%;
+  }
+}

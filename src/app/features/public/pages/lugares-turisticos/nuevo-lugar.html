@@ -1,0 +1,57 @@
+<div class="nuevo-lugar-container">
+  <h1>➕ Nuevo Lugar Turístico</h1>
+
+  <form (ngSubmit)="guardar()">
+    <div class="campo">
+      <label>Nombre *</label>
+      <input type="text" [(ngModel)]="lugar.name" name="name" required />
+    </div>
+
+    <div class="campo">
+      <label>Descripción</label>
+      <textarea [(ngModel)]="lugar.description" name="description" rows="4"></textarea>
+    </div>
+
+    <div class="campo-row">
+      <div class="campo">
+        <label>Dirección</label>
+        <input type="text" [(ngModel)]="lugar.address" name="address" />
+      </div>
+      <div class="campo">
+        <label>Teléfono</label>
+        <input type="text" [(ngModel)]="lugar.phone" name="phone" />
+      </div>
+    </div>
+
+    <div class="campo-row">
+      <div class="campo">
+        <label>Website</label>
+        <input type="text" [(ngModel)]="lugar.website" name="website" />
+      </div>
+      <div class="campo">
+        <label>Costo de entrada</label>
+        <input type="text" [(ngModel)]="lugar.entrance_fee" name="entrance_fee" />
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Imágenes (URLs separadas por coma)</label>
+      <input type="text" [(ngModel)]="lugar.images" name="images" />
+    </div>
+
+    <div class="campo">
+      <label>Ubicación</label>
+      <button type="button" (click)="obtenerUbicacion()" class="btn-secundario">📍 Obtener ubicación</button>
+      <span *ngIf="lugar.location">
+        (Lat: {{ lugar.location.lat }}, Lng: {{ lugar.location.lng }})
+      </span>
+    </div>
+
+    <div class="acciones">
+      <button type="button" routerLink="/lugares-turisticos" class="btn-cancelar">Cancelar</button>
+      <button type="submit" class="btn-guardar" [disabled]="enviando">
+        {{ enviando ? 'Guardando...' : 'Guardar lugar' }}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,52 @@
+<div class="denuncias-container">
+  <div class="header">
+    <h1>🚧 Denuncias Comunitarias</h1>
+    <button class="btn-nueva" routerLink="/denuncia/nueva">+ Nueva denuncia</button>
+  </div>
+
+  <!-- Filtro -->
+  <div class="filtros">
+    <select [(ngModel)]="filtroEstado" (change)="cargarDenuncias()">
+      <option value="todas">Todas</option>
+      <option value="pendiente">Pendiente</option>
+      <option value="en_proceso">En proceso</option>
+      <option value="resuelto">Resuelto</option>
+      <option value="rechazado">Rechazado</option>
+    </select>
+  </div>
+
+  <!-- Carga / Error -->
+  <div *ngIf="loading" class="loading">Cargando denuncias...</div>
+  <div *ngIf="error && !loading" class="error">{{ error }}</div>
+
+  <!-- Sin resultados -->
+  <div *ngIf="!loading && !error && denunciasFiltradas.length === 0">
+    No hay denuncias con este estado.
+  </div>
+
+  <!-- Tarjetas -->
+  <div class="denuncia-card" *ngFor="let d of denunciasFiltradas">
+    <div class="card-header">
+      <span class="tipo">{{ tipos[d.type] }}</span>
+      <span class="prioridad" [ngClass]="obtenerClasePrioridad(d.priority)">
+        {{ prioridades[d.priority] }}
+      </span>
+      <span class="estado" [ngClass]="obtenerClaseEstado(d.status)">
+        {{ estados[d.status] }}
+      </span>
+    </div>
+    <h3>{{ d.title }}</h3>
+    <p>{{ d.description }}</p>
+    <p *ngIf="d.address" class="direccion">📍 {{ d.address }}</p>
+    <img *ngIf="d.photo_url" [src]="d.photo_url" class="foto" alt="Foto de la denuncia" />
+    <div class="footer">
+      <small>Reportado: {{ d.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
+      <small *ngIf="d.resolved_at">✅ Resuelto: {{ d.resolved_at | date:'dd/MM/yyyy HH:mm' }}</small>
+    </div>
+    <div *ngIf="esAdmin" class="acciones-admin">
+      <button (click)="cambiarEstado(d, 'en_proceso')">En proceso</button>
+      <button (click)="cambiarEstado(d, 'resuelto')">Resolver</button>
+      <button (click)="cambiarEstado(d, 'rechazado')">Rechazar</button>
+    </div>
+  </div>
+</div>

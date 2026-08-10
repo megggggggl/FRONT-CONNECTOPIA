@@ -1,0 +1,75 @@
+<div class="bus-routes-container">
+  <h1>🚌 Rutas de Buses</h1>
+  <button (click)="abrirModal()" class="btn-nuevo">+ Agregar Ruta</button>
+
+  <!-- Búsqueda -->
+  <div class="busqueda">
+    <input [(ngModel)]="origen" placeholder="Origen" />
+    <input [(ngModel)]="destino" placeholder="Destino" />
+    <button (click)="buscarRutas()">Buscar</button>
+    <button (click)="cargarRutas()">Mostrar todas</button>
+  </div>
+
+  <!-- Lista de rutas -->
+  <div *ngIf="rutas.length === 0" class="sin-resultados">
+    No hay rutas disponibles.
+  </div>
+
+  <div *ngFor="let ruta of rutas" class="ruta-card">
+    <h3>{{ ruta.name }}</h3>
+    <p>🟢 {{ ruta.origin }} → 🔴 {{ ruta.destination }}</p>
+
+    <div *ngIf="getStops(ruta).length > 0" class="paradas">
+      <strong>Paradas:</strong>
+      <div *ngFor="let parada of getStops(ruta)" class="parada">
+        {{ parada.order_index + 1 }}. {{ parada.name }}
+      </div>
+    </div>
+
+    <div *ngIf="getSchedules(ruta).length > 0" class="horarios">
+      <strong>Horarios:</strong>
+      <div *ngFor="let horario of getSchedules(ruta)" class="horario">
+        {{ horario.day }}: {{ horario.departure }} - {{ horario.arrival }}
+      </div>
+    </div>
+
+    <button class="btn-eliminar" (click)="eliminarRuta(ruta.id!)">🗑️ Eliminar</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" *ngIf="modalAbierto" (click)="cerrarModal()">
+    <div class="modal-contenido" (click)="$event.stopPropagation()">
+      <h2>{{ editando ? 'Editar' : 'Nueva' }} Ruta</h2>
+      <form (ngSubmit)="guardarRuta()">
+        <div class="campo">
+          <label>Nombre de la ruta *</label>
+          <input [(ngModel)]="form.name" name="name" required />
+        </div>
+        <div class="campo-row">
+          <div class="campo">
+            <label>Origen *</label>
+            <input [(ngModel)]="form.origin" name="origin" required />
+          </div>
+          <div class="campo">
+            <label>Destino *</label>
+            <input [(ngModel)]="form.destination" name="destination" required />
+          </div>
+        </div>
+
+        <div class="paradas-form">
+          <label>Paradas</label>
+          <button type="button" (click)="agregarParada()" class="btn-agregar">+ Agregar parada</button>
+          <div *ngFor="let parada of form.stops; let i = index" class="parada-input">
+            <input [(ngModel)]="parada.name" [name]="'stop'+i" placeholder="Nombre de la parada" />
+            <button type="button" (click)="eliminarParada(i)" class="btn-eliminar-parada">✕</button>
+          </div>
+        </div>
+
+        <div class="acciones-modal">
+          <button type="button" (click)="cerrarModal()" class="btn-cancelar">Cancelar</button>
+          <button type="submit" class="btn-guardar">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { catchError, finalize, forkJoin, map, of, timeout } from 'rxjs';
-import { MainLayout } from '../../../../core/layout/main-layout/main-layout'; // ✅ Importar MainLayout
 import { WebServices } from '../../../../core';
 import { EncabezadoPerfil } from '../../../../compartido/componentes/encabezado-perfil/encabezado-perfil';
 import { TarjetaEstadistica } from '../../../../compartido/componentes/tarjeta-estadistica/tarjeta-estadistica';
@@ -30,7 +29,7 @@ interface ServicioForm {
     EncabezadoPerfil,
     TarjetaEstadistica,
     TarjetaServicio,
-    MainLayout
+    
     
   ],
   templateUrl: './perfil-prestador.html',
@@ -315,14 +314,14 @@ export class PerfilPrestador implements OnInit, OnDestroy {
 
         this.telegramPayload = payload;
         this.telegramComando = comando;
-        this.telegramDeepLink = this.telegramCitas.crearDeepLinkTelegramDesktop(payload);
-        this.telegramUrl = this.telegramCitas.crearLinkTelegramWeb(payload, urlBackend);
+        this.telegramDeepLink = this.telegramCitas.crearComandoInicioDesdePayload(payload);
+        this.telegramUrl = this.telegramCitas.crearLinkTelegramWeb(payload) ;
         this.telegramExpiraEn = respuesta.expires_in_minutes
           ?? respuesta.data?.expires_in_minutes
           ?? null;
         this.telegramGeneradoEn = Date.now();
 
-        this.telegramCitas.abrirTelegramDesktop(this.telegramDeepLink);
+        this.telegramCitas.abrirTelegram(this.telegramDeepLink);
         this.programarLimpiezaTelegram();
         this.telegramExito = 'Enlace generado. Intentamos abrir Telegram Desktop. Si no se abre automaticamente, copia el comando y envialo a @ConnectopiaHNBot.';
       },
@@ -347,7 +346,7 @@ export class PerfilPrestador implements OnInit, OnDestroy {
       return;
     }
 
-    this.telegramCitas.abrirTelegramDesktop(this.telegramDeepLink);
+    this.telegramCitas.abrirTelegram(this.telegramDeepLink);
     this.telegramExito = 'Intentamos abrir Telegram Desktop. Si no aparece, usa Telegram Web o copia el comando.';
     this.telegramError = '';
   }

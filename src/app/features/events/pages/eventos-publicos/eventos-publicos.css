@@ -1,0 +1,60 @@
+.evento-acciones {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+}
+
+.btn-registrar {
+  background: #2e8b6c;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+}
+.btn-registrar:hover { background: #1f6b53; }
+
+.btn-cancelar {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+}
+.btn-cancelar:hover { background: #d97706; }
+
+.acciones-admin {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.btn-editar {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.btn-editar:hover { background: #2563eb; }
+
+.btn-eliminar {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.btn-eliminar:hover { background: #dc2626; }

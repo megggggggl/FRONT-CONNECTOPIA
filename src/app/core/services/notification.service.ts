@@ -15,11 +15,11 @@ export class NotificationService {
     return this.api.get<any>(`/notifications/${id}`).pipe(timeout(8000));
   }
 
-  marcarComoLeida(id: string) {
+  marcarLeida(id: string) {
     return this.api.patch<any>(`/notifications/${id}/read`, {}).pipe(timeout(8000));
   }
 
-  marcarTodasComoLeidas() {
+  marcarTodasLeidas() {
     return this.api.patch<any>('/notifications/read-all', {}).pipe(timeout(8000));
   }
 

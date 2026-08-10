@@ -1,22 +1,30 @@
+// src/app/compartido/componentes/tarjeta-servicio/tarjeta-servicio.ts
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-tarjeta-servicio',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './tarjeta-servicio.html',
-  styleUrl: './tarjeta-servicio.css'
+  styleUrls: ['./tarjeta-servicio.css']
 })
 export class TarjetaServicio {
   @Input() servicio: any;
   @Input() mostrarAccionCita = false;
   @Input() solicitandoCita = false;
-  @Input() eliminando = false;
+  @Input() esFavorito = false;
+  @Input() mostrarCalificar = false;
+  @Output() toggleFavorito = new EventEmitter<{ id: string; favorito: boolean }>();
   @Output() solicitarCita = new EventEmitter<any>();
-  @Output() eliminarServicio = new EventEmitter<any>();
+  @Output() calificar = new EventEmitter<string>();
 
-  obtenerClaseEstado(): string {
-    return `estado-${this.servicio?.status || 'pending'}`;
+  toggleFavoritoEvent(): void {
+    if (!this.servicio) return;
+    this.toggleFavorito.emit({
+      id: this.servicio.id,
+      favorito: !this.esFavorito
+    });
   }
 
   emitirSolicitudCita(): void {
@@ -24,8 +32,7 @@ export class TarjetaServicio {
     this.solicitarCita.emit(this.servicio);
   }
 
-  emitirEliminarServicio(): void {
-    if (this.eliminando) return;
-    this.eliminarServicio.emit(this.servicio);
+  obtenerClaseEstado(): string {
+    return `estado-${this.servicio?.status || 'pending'}`;
   }
 }

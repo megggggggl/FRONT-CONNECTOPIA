@@ -1,41 +1,67 @@
-<aside class="admin-sidebar">
-  <!-- Logo -->
-  <div class="admin-brand">
-    <div class="logo-circle">
+<!-- src/app/compartido/componentes/sidebar/sidebar.html -->
+<nav class="sidebar">
+  <!-- Brand -->
+  <div class="sidebar-brand">
+    <div class="logo-container">
       <img src="assets/logo.png" alt="Connectopia" />
     </div>
-    <div>
+    <div class="brand-text">
       <h2>Connectopia</h2>
-      <span>Comunidad activa</span>
+      <span>Tu comunidad</span>
     </div>
   </div>
 
-  <!-- Menú -->
-  <nav class="admin-nav">
-    <div class="nav-section" *ngIf="menuItems.length > 0">Menú</div>
-    <a
-      *ngFor="let item of menuItems"
-      [routerLink]="item.route"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <i [class]="item.icon"></i>
-      {{ item.label }}
-    </a>
-  </nav>
+  <!-- Navegación -->
+  <div class="sidebar-nav">
+    <ng-container *ngFor="let item of menuItems">
+      <!-- Con submenú -->
+      <ng-container *ngIf="item.children && item.children.length > 0">
+        <div class="nav-item has-submenu" (click)="toggleSubmenu(item)">
+          <i [class]="item.icon"></i>
+          <span>{{ item.label }}</span>
+          <i class="chevron" [class.open]="item.expanded">▾</i>
+        </div>
+        <div class="submenu" [class.open]="item.expanded">
+          <a
+            *ngFor="let child of item.children"
+            class="nav-item"
+            [routerLink]="child.route"
+            routerLinkActive="active"
+          >
+            <i [class]="child.icon"></i>
+            <span>{{ child.label }}</span>
+          </a>
+        </div>
+      </ng-container>
 
-  <!-- Footer con usuario y logout -->
-  <div class="admin-footer">
-    <div class="admin-user" *ngIf="user">
-      <div class="admin-avatar">{{ getIniciales() }}</div>
-      <div>
-        <strong>{{ user.name || 'Usuario' }}</strong>
-        <span>{{ getRolLabel() }}</span>
+      <!-- Sin submenú -->
+      <a
+        *ngIf="!item.children"
+        class="nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+      >
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
+        <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+      </a>
+    </ng-container>
+  </div>
+
+  <!-- Footer con usuario -->
+  <div class="sidebar-footer">
+    <div class="user-profile" (click)="goToProfile()">
+      <div class="user-avatar">
+        <img *ngIf="user?.avatar_url" [src]="user.avatar_url" alt="Avatar" />
+        <span *ngIf="!user?.avatar_url">{{ getIniciales() }}</span>  <!-- ✅ Ahora funciona -->
+      </div>
+      <div class="user-info">
+        <strong>{{ user?.name || 'Usuario' }}</strong>
+        <span>{{ user?.role || 'Invitado' }}</span>
       </div>
     </div>
-    <button class="logout-button" (click)="logout()">
-      <i class="bi bi-box-arrow-right"></i>
-      Cerrar sesión
+    <button class="logout-btn" (click)="logout()">
+      <i class="bi-box-arrow-right"></i> Cerrar sesión
     </button>
   </div>
-</aside>
+</nav>

@@ -1,0 +1,10 @@
+.form-container { max-width: 700px; margin: 0 auto; padding: 20px; }
+.campo { margin-bottom: 16px; }
+.campo label { display: block; font-weight: 600; margin-bottom: 4px; }
+.campo input, .campo textarea { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; }
+.campo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.preview img { max-width: 150px; max-height: 100px; object-fit: cover; margin-top: 6px; }
+.acciones { display: flex; gap: 12px; margin-top: 20px; }
+.btn-cancelar { padding: 10px 20px; background: #f1f5f9; border: none; border-radius: 8px; }
+.btn-guardar { flex: 1; padding: 10px 20px; background: #0a7e6f; color: white; border: none; border-radius: 8px; cursor: pointer; }
+.btn-guardar:disabled { opacity: 0.6; }

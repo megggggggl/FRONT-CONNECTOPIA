@@ -1,0 +1,25 @@
+<app-main-layout>
+  <div class="page-container">
+    <h1>Mis favoritos</h1>
+    <div *ngIf="loading" class="loading">Cargando...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div *ngIf="!loading && !error">
+      <div *ngIf="favoritos.length === 0" class="empty">
+        <p>No tienes favoritos guardados.</p>
+        <a routerLink="/explorar">Explorar servicios y lugares</a>
+      </div>
+
+      <div class="favoritos-grid">
+        <div *ngFor="let fav of favoritos" class="favorito-card">
+          <div class="favorito-content">
+            <span class="tipo">{{ fav.entity_type }}</span>
+            <h3>{{ fav.entity?.name || 'Sin nombre' }}</h3>
+            <small>Agregado: {{ fav.created_at | date:'dd/MM/yyyy' }}</small>
+          </div>
+          <button (click)="eliminarFavorito(fav.id)" class="btn-eliminar">✕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-main-layout>

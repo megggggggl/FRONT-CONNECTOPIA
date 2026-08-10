@@ -1,0 +1,40 @@
+<div class="modal-backdrop" (click)="cerrar.emit()">
+  <div class="modal-contenido" (click)="$event.stopPropagation()">
+    <button class="btn-cerrar" (click)="cerrar.emit()">×</button>
+    <h2>💬 Comentarios</h2>
+
+    <!-- Lista de comentarios -->
+    <div class="comentarios-lista" *ngIf="!cargando">
+      <div *ngFor="let c of comentarios" class="comentario">
+        <div class="comentario-header">
+          <img
+            [src]="c.author?.avatar_url || 'assets/avatar.png'"
+            class="avatar-mini"
+          />
+          <strong>{{ c.author?.name || 'Usuario' }}</strong>
+          <small>{{ c.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
+          <button *ngIf="authService.getUser()?.id === c.author_id"
+                  class="btn-eliminar"
+                  (click)="eliminarComentario(c.id)">
+            ×
+          </button>
+        </div>
+        <p>{{ c.content }}</p>
+      </div>
+      <div *ngIf="comentarios.length === 0" class="sin-comentarios">
+        No hay comentarios aún. ¡Sé el primero!
+      </div>
+    </div>
+
+    <!-- Input de nuevo comentario -->
+    <div class="nuevo-comentario">
+      <input
+        type="text"
+        [(ngModel)]="nuevoComentario"
+        placeholder="Escribe un comentario..."
+        (keydown.enter)="enviarComentario()"
+      />
+      <button (click)="enviarComentario()">Enviar</button>
+    </div>
+  </div>
+</div>

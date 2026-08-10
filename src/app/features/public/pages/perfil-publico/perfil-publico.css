@@ -1,0 +1,177 @@
+.perfil-publico-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.perfil-header {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  background: white;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin-bottom: 24px;
+}
+
+.avatar-container {
+  position: relative;
+}
+.avatar-grande {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #eef2f6;
+}
+.badge-verificado {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: #0a7e6f;
+  color: white;
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.info-header {
+  flex: 1;
+}
+.info-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+.rol {
+  color: #64748b;
+  margin: 4px 0;
+}
+.contacto {
+  color: #475569;
+  font-size: 14px;
+  margin: 4px 0;
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+.badge {
+  background: #f1f5f9;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+.btn-editar-perfil {
+  margin-top: 12px;
+}
+.btn-editar {
+  padding: 8px 20px;
+  background: #0a7e6f;
+  color: white;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.estadisticas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.estadistica-card {
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid #f0f4f8;
+}
+.numero {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.etiqueta {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.seccion {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #f0f4f8;
+}
+.seccion h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.publicacion-card, .reseña-card {
+  padding: 12px 0;
+  border-bottom: 1px solid #eef2f6;
+}
+.publicacion-card:last-child, .reseña-card:last-child {
+  border-bottom: none;
+}
+.tipo {
+  background: #e6f7f4;
+  color: #0a7e6f;
+  padding: 2px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.publicacion-card h3 {
+  margin: 4px 0;
+  font-size: 16px;
+}
+.publicacion-card p {
+  color: #475569;
+  margin: 4px 0;
+}
+.publicacion-card small, .reseña-card small {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.reseña-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.avatar-mini {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.rating {
+  background: #fef9c3;
+  padding: 0 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.reseña-card p {
+  margin: 6px 0 4px 38px;
+  color: #1e293b;
+}
+
+.sin-datos {
+  color: #94a3b8;
+  text-align: center;
+  padding: 12px;
+}
+.loading, .error {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+}
+.error { color: #dc2626; }

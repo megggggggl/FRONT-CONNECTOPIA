@@ -5,7 +5,7 @@ import { PublicidadComponent } from '../../../../compartido/componentes/publicid
 @Component({
   selector: 'app-explorar',
   standalone: true,
-  imports: [CommonModule, PublicidadComponent], // ✅ Solo lo necesario
+  imports: [CommonModule, PublicidadComponent],
   templateUrl: './explorar.html',
   styleUrls: ['./explorar.css']
 })

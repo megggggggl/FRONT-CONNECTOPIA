@@ -1,60 +1,153 @@
+<!-- src/app/compartido/componentes/publicidad/publicidad.component.html -->
 <div class="publicidad-container">
 
-  <!-- ===== CREAR PUBLICACIÓN ===== -->
-  <div class="crear-post">
-    <img src="assets/avatar.png" class="avatar" alt="Avatar">
-    <input
-      type="text"
-      id="publicarInput"
-      name="publicarInput"
-      placeholder="¿Qué quieres publicar hoy?"
-      (click)="abrirModal()"
-      readonly
-    >
-    <button (click)="abrirModal()">Publicar</button>
+  <!-- Banner -->
+  <div class="community-banner">
+    <img src="assets/community-banner.png" alt="Community">
   </div>
 
-  <!-- ===== ESTADOS DE CARGA Y ERROR ===== -->
-  <div *ngIf="loading" class="loading">Cargando publicaciones...</div>
-  <div *ngIf="error && !loading" class="error">{{ error }}</div>
+  <!-- Crear publicación -->
+  <div class="crear-post">
+    <img
+      [src]="'assets/avatar.png'"
+      class="avatar"
+      alt="Avatar"
+    />
+    <div class="texto-publicar">
+      <h3>¿Qué quieres publicar hoy?</h3>
+      <span>Comparte algo con tu comunidad</span>
+    </div>
+    <button class="btn-publicar" (click)="abrirModal()">
+      Publicar
+    </button>
+  </div>
 
-  <!-- ===== LISTA DE PUBLICACIONES ===== -->
-  <div *ngIf="!loading && !error" class="publicaciones">
-    <!-- SI HAY POSTS, MOSTRARLOS -->
+  <!-- Encabezado -->
+  <div class="header-publicaciones">
+    <h2>Publicaciones Recientes</h2>
+    <div class="header-botones">
+      <button class="btn-icono" (click)="cargarPosts()">
+        <i class="bi-arrow-clockwise"></i> Actualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    Cargando publicaciones...
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error">
+    {{ error }}
+  </div>
+
+  <!-- Publicaciones -->
+  <div class="publicaciones" *ngIf="!loading && !error">
+
     <div *ngIf="posts.length > 0">
-      <div *ngFor="let post of posts" class="post-facebook">
+      <div class="post-facebook" *ngFor="let post of posts">
+
+        <!-- Top -->
         <div class="post-top">
-          <!-- Avatar del autor (si no existe, mostrar por defecto) -->
-          <img [src]="post.author?.avatar_url || 'assets/avatar.png'" class="avatar" alt="Avatar">
-          <div>
+          <img
+            [src]="post.author?.avatar_url || 'assets/avatar.png'"
+            class="avatar"
+          />
+          <div class="info">
             <h4>{{ post.author?.name || 'Usuario' }}</h4>
             <small>{{ post.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
           </div>
-          <!-- Tipo de publicación -->
-          <span>{{ post.type | titlecase }}</span>
+          <span class="tipo">{{ post.type | titlecase }}</span>
+          <span *ngIf="post.is_urgent" class="urgente">🔴 Urgente</span>
         </div>
 
         <!-- Contenido -->
         <p>{{ post.content }}</p>
 
-        <!-- Imagen (si existe) -->
-        <img *ngIf="post.images && post.images.length > 0" [src]="post.images[0]" class="post-img" alt="Imagen">
+        <!-- 👇 EMPLEOS: Detalles específicos -->
+        <div *ngIf="post.type === 'empleo' && post.metadata" class="empleo-detalles">
+          <p *ngIf="post.metadata.empresa"><strong>🏢 Empresa:</strong> {{ post.metadata.empresa }}</p>
+          <p *ngIf="post.metadata.salario"><strong>💰 Salario:</strong> {{ post.metadata.salario }}</p>
+          <p *ngIf="post.metadata.ubicacion"><strong>📍 Ubicación:</strong> {{ post.metadata.ubicacion }}</p>
+          <p *ngIf="post.metadata.jornada"><strong>🕒 Jornada:</strong> {{ post.metadata.jornada | titlecase }}</p>
+        <ng-container *ngIf="post.metadata.requisitos">
+<strong>📋 Requisitos:</strong> {{ obtenerRequisitos(post.metadata.requisitos) }}
 
-        <!-- Acciones (me gusta / comentar) -->
-        <div class="acciones">
-          <button>👍 Me gusta</button>
-          <button>💬 Comentar</button>
+  <span *ngIf="!post.metadata.requisitos.length && typeof post.metadata.requisitos === 'string'">
+    {{ post.metadata.requisitos }}
+  </span>
+</ng-container>
+          <p *ngIf="post.metadata.contacto"><strong>📞 Contacto:</strong> {{ post.metadata.contacto }}</p>
         </div>
+
+        <!-- Imagen -->
+        <img
+          *ngIf="post.images?.length"
+          [src]="post.images[0]"
+          class="post-img"
+          alt="Imagen de la publicación"
+        />
+
+        <!-- Acciones -->
+        <div class="acciones">
+          <button (click)="toggleLike(post)">
+            {{ likesMap[post.id]?.userLiked ? '❤️' : '🤍' }}
+            <span>{{ likesMap[post.id]?.count || 0 }} Me gusta</span>
+          </button>
+          <button (click)="abrirComentarios(post)">
+            💬 <span>Comentar</span>
+          </button>
+        </div>
+
+        <!-- Comentarios -->
+        <div *ngIf="showComments[post.id]" class="comentarios">
+          <div *ngFor="let comment of commentsMap[post.id]" class="comentario">
+            <div class="comentario-header">
+              <img
+                [src]="comment.author?.avatar_url || 'assets/avatar.png'"
+                class="avatar-mini"
+              />
+              <div>
+                <strong>{{ comment.author?.name || 'Usuario' }}</strong>
+                <small>{{ comment.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
+              </div>
+              <button
+                *ngIf="comment.author_id === authService.getUser()?.id"
+                class="btn-eliminar-comentario"
+                (click)="eliminarComentario(comment.id, post.id)"
+              >
+                ✕
+              </button>
+            </div>
+            <p>{{ comment.content }}</p>
+          </div>
+
+          <!-- Input para comentar -->
+          <div class="comentario-input">
+            <input
+              [(ngModel)]="commentText[post.id]"
+              placeholder="Escribe un comentario..."
+              (keydown.enter)="enviarComentario(post.id)"
+            />
+            <button (click)="enviarComentario(post.id)">
+              Enviar
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- SI NO HAY POSTS -->
     <div *ngIf="posts.length === 0" class="no-posts">
-      <p>No hay publicaciones aún. ¡Sé el primero en publicar!</p>
+      No hay publicaciones aún. ¡Sé el primero en publicar!
     </div>
+
   </div>
 
-  <!-- ===== MODAL PARA CREAR PUBLICACIÓN ===== -->
+  <!-- ========================================================== -->
+  <!-- MODAL DE CREACIÓN (CON EMPLEOS) -->
+  <!-- ========================================================== -->
   <div class="modal-backdrop" *ngIf="modalAbierto">
     <div class="modal-publicidad">
       <button class="cerrar" (click)="cerrarModal()">×</button>
@@ -62,40 +155,53 @@
 
       <input
         type="text"
-        id="tituloPost"
-        name="tituloPost"
         [(ngModel)]="nombre"
         placeholder="Título (opcional)"
-      >
+      />
 
       <textarea
-        id="contenidoPost"
-        name="contenidoPost"
         [(ngModel)]="contenido"
-        placeholder="Escribe tu publicación..."
+        placeholder="Escribe algo..."
       ></textarea>
 
       <div class="opciones">
         <label>
-          <input type="checkbox" [(ngModel)]="isUrgent"> Urgente
+          <input type="checkbox" [(ngModel)]="isUrgent" />
+          Urgente
         </label>
-        <select id="tipoPost" name="tipoPost" [(ngModel)]="tipoPost">
+        <select [(ngModel)]="tipoPost">
           <option value="general">General</option>
           <option value="anuncio">Anuncio</option>
           <option value="alerta">Alerta</option>
           <option value="evento">Evento</option>
+          <option value="empleo">💼 Empleo</option>
+        </select>
+      </div>
+
+      <!-- 👇 CAMPOS DE EMPLEO -->
+      <div *ngIf="tipoPost === 'empleo'" class="campos-empleo">
+        <input type="text" [(ngModel)]="empleoEmpresa" placeholder="🏢 Empresa *" />
+        <input type="text" [(ngModel)]="empleoSalario" placeholder="💰 Salario (ej. L 15,000)" />
+        <input type="text" [(ngModel)]="empleoContacto" placeholder="📞 Contacto (email/teléfono)" />
+        <input type="text" [(ngModel)]="empleoUbicacion" placeholder="📍 Ubicación" />
+        <textarea [(ngModel)]="empleoRequisitos" placeholder="📋 Requisitos (separados por coma)"></textarea>
+        <select [(ngModel)]="empleoJornada">
+          <option value="tiempo_completo">Tiempo completo</option>
+          <option value="medio_tiempo">Medio tiempo</option>
+          <option value="freelance">Freelance</option>
+          <option value="temporal">Temporal</option>
         </select>
       </div>
 
       <input
         type="file"
-        id="imagenPost"
-        name="imagenPost"
         (change)="seleccionarImagen($event)"
         accept="image/*"
-      >
+      />
 
-      <button (click)="crearPublicacion()">Publicar</button>
+      <button class="btn-modal" (click)="crearPublicacion()">
+        Publicar
+      </button>
     </div>
   </div>
 

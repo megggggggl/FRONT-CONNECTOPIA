@@ -5,7 +5,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { catchError, finalize, of } from 'rxjs';
 
-import { AdminLayout } from '../../../../core/layout/admin-layout/admin-layout';
+import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
 import { WebServices } from '../../../../core/services/webServices';
 
 interface RespuestaLista<T> {
@@ -48,7 +48,7 @@ interface OpcionTipo {
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminLayout],
+  imports: [CommonModule, FormsModule, MainLayout],
   templateUrl: './categories.html',
   styleUrls: ['./categories.css']
 })

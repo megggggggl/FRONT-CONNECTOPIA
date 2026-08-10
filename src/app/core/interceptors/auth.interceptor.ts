@@ -1,3 +1,4 @@
+// src/app/core/interceptors/auth.interceptor.ts
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import {
   HttpInterceptor,
@@ -15,17 +16,16 @@ import { Router } from '@angular/router';
 export class AuthInterceptor implements HttpInterceptor {
   private isBrowser: boolean;
 
-  // Rutas públicas (no necesitan token)
-  private readonly publicRoutes = [
-    '/auth/login',
-    '/auth/register',
-    '/auth/refresh',
-    '/health',
-    '/categories',
-    '/services',
-    '/places',
-    '/verification'
-    // '/posts'  // <-- NO incluir /posts aquí (necesita token)
+  // Definir rutas públicas con método específico
+  private readonly publicRoutes: { url: string; methods?: string[] }[] = [
+    { url: '/auth/login', methods: ['POST'] },
+    { url: '/auth/register', methods: ['POST'] },
+    { url: '/auth/refresh', methods: ['POST'] },
+    { url: '/health' }, // todos los métodos
+    { url: '/categories' }, // todos los métodos
+    // 👇 IMPORTANTE: GET a places es público, POST/PATCH/DELETE NO
+    { url: '/places', methods: ['GET'] },
+    { url: '/verification' }
   ];
 
   constructor(
@@ -40,13 +40,17 @@ export class AuthInterceptor implements HttpInterceptor {
       return next.handle(request);
     }
 
-    // Verificar si la ruta es pública
-    const isPublicRoute = this.publicRoutes.some(route =>
-      request.url.includes(route)
-    );
+    // Verificar si la ruta es pública (considerando método)
+    const isPublic = this.publicRoutes.some(route => {
+      const urlMatch = request.url.includes(route.url);
+      if (!urlMatch) return false;
+      // Si no tiene métodos definidos, todos son públicos
+      if (!route.methods) return true;
+      // Si tiene métodos, verificar que el método coincida
+      return route.methods.includes(request.method);
+    });
 
-    // ✅ Clonar la petición con la cabecera ngrok-skip-browser-warning
-    // ✅ NO usar spread en headers
+    // Clonar con headers base
     let authRequest = request.clone({
       setHeaders: {
         'ngrok-skip-browser-warning': 'true'
@@ -54,10 +58,9 @@ export class AuthInterceptor implements HttpInterceptor {
     });
 
     // Si NO es pública, agregar el token
-    if (!isPublicRoute) {
+    if (!isPublic) {
       const token = localStorage.getItem('access_token');
       if (token) {
-        // ✅ Clonar nuevamente, pero ahora con el token
         authRequest = authRequest.clone({
           setHeaders: {
             'ngrok-skip-browser-warning': 'true',
@@ -69,7 +72,6 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(authRequest).pipe(
       catchError((error: HttpErrorResponse) => {
-        // Si el token expiró (401), redirigir al login
         if (error.status === 401) {
           localStorage.removeItem('access_token');
           localStorage.removeItem('usuario');

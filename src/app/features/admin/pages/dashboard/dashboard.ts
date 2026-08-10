@@ -5,7 +5,6 @@ import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/
 import { RouterLink } from '@angular/router';
 import { finalize, catchError, of } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
-import { AdminLayout } from '../../../../core/layout/admin-layout/admin-layout';
 import { WebServices } from '../../../../core/services/webServices';
 
 const DASHBOARD_CACHE_KEY = 'connectopia.dashboard.stats';
@@ -19,10 +18,11 @@ interface DashboardStats {
   updatedAt?: string;
 }
 
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, AdminLayout, RouterLink],
+  imports: [CommonModule, RouterLink], // ← quitar AdminLayout
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -57,6 +57,7 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Getters para las estadísticas
   get usuarios(): number | null {
     return this.stats?.users?.total ?? null;
   }

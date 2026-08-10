@@ -1,21 +1,28 @@
-// core/services/reaction.service.ts
+// src/app/core/services/reaction.service.ts
 import { Injectable } from '@angular/core';
-import { timeout } from 'rxjs';
-import { ApiServicio } from './api.servicio';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { WebServices } from './webServices';
 
 @Injectable({ providedIn: 'root' })
 export class ReactionService {
-  constructor(private api: ApiServicio) {}
+  constructor(private http: HttpClient) {}
 
-  listarReacciones() {
-    return this.api.get<any[]>('/reactions').pipe(timeout(8000));
+  // Obtener reacciones de un post
+  getReactions(postId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${WebServices.ReactionsList}?post_id=${postId}`);
   }
 
-  crearReaccion(data: { post_id: string; reaction_type: string }) {
-    return this.api.post<any>('/reactions', data).pipe(timeout(8000));
+  // Agregar o cambiar reacción
+  toggleReaction(postId: string, type: string): Observable<any> {
+    return this.http.post(WebServices.ReactionsCreate, {
+      post_id: postId,
+      reaction_type: type
+    });
   }
 
-  eliminarReaccion(id: string) {
-    return this.api.delete<any>(`/reactions/${id}`).pipe(timeout(8000));
+  // Eliminar reacción
+  removeReaction(reactionId: string): Observable<void> {
+    return this.http.delete<void>(WebServices.ReactionDelete(reactionId));
   }
 }

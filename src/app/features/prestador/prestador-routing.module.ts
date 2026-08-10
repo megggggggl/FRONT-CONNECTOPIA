@@ -1,10 +1,21 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { GestionesPageComponent } from './pages/gestiones/gestiones';
+import { MainLayout } from '../../core/layout/main-layout/main-layout';
+import { Gestiones } from './pages/gestiones/gestiones';
+import { prestadorGuard } from '../../core/guards/rol.guard';
 
 const routes: Routes = [
-  { path: '', component: GestionesPageComponent },
-  { path: 'gestiones', component: GestionesPageComponent }
+  {
+    path: '',
+    component: MainLayout,
+    canActivate: [prestadorGuard],
+    children: [
+      {
+        path: '',
+        component: Gestiones
+      }
+    ]
+  }
 ];
 
 @NgModule({

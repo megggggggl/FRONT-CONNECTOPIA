@@ -1,0 +1,162 @@
+.bus-routes-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.btn-nuevo {
+  padding: 10px 20px;
+  background: #0a7e6f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.busqueda {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.busqueda input {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.busqueda button {
+  padding: 10px 18px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ruta-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  border: 1px solid #f0f4f8;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.ruta-card h3 {
+  margin: 0 0 4px;
+  color: #0f172a;
+}
+.paradas, .horarios {
+  margin: 8px 0;
+}
+.parada, .horario {
+  padding: 4px 8px;
+  background: #f8fafc;
+  border-radius: 4px;
+  margin: 2px 0;
+  font-size: 14px;
+}
+.btn-eliminar {
+  padding: 6px 14px;
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-contenido {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 550px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.campo {
+  margin-bottom: 12px;
+}
+.campo label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.campo input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+.campo-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.paradas-form {
+  margin: 12px 0;
+}
+.parada-input {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0;
+}
+.parada-input input {
+  flex: 1;
+}
+.btn-agregar {
+  padding: 4px 12px;
+  background: #e6f7f4;
+  border: 1px solid #0a7e6f;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #0a7e6f;
+  font-weight: 600;
+}
+.btn-eliminar-parada {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  font-size: 18px;
+}
+.acciones-modal {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+.btn-cancelar {
+  padding: 10px 20px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.btn-guardar {
+  flex: 1;
+  padding: 10px 20px;
+  background: #0a7e6f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.sin-resultados {
+  text-align: center;
+  color: #64748b;
+  padding: 20px;
+}

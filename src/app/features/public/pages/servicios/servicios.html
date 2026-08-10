@@ -1,66 +1,109 @@
-<app-main-layout>
-  <div class="servicios-container">
-    <section class="filtros-section">
-      <div class="filtros-grid">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (input)="onSearch()"
-          placeholder="Buscar servicios..."
-          class="search-input"
-        />
-        <select
-          [(ngModel)]="filtroCategoria"
-          (change)="onCategoryChange()"
-          class="filtro-select"
-        >
-          <option value="">Todas las categorías</option>
-          <option *ngFor="let cat of categorias" [value]="cat.id">
-            {{ cat.name }}
-          </option>
-        </select>
-        <select
-          [(ngModel)]="ordenPor"
-          (change)="onOrderChange()"
-          class="filtro-select"
-        >
-          <option value="reciente">Más reciente</option>
-          <option value="nombre">Nombre</option>
-          <option value="popular">Más popular</option>
-        </select>
-        <button (click)="limpiarFiltros()" class="btn-limpiar">Limpiar filtros</button>
-      </div>
-    </section>
+<!-- src/app/features/public/pages/servicios/servicios.html -->
+<div class="servicios-page">
+  <div class="page-header">
+    <h1>Servicios disponibles</h1>
+    <p>Encuentra profesionales y servicios cerca de ti</p>
+  </div>
 
-    <div *ngIf="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Cargando servicios...</p>
+  <!-- Filtros -->
+  <div class="filtros">
+    <div class="filtro-busqueda">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Buscar servicios..."
+        class="input-busqueda"
+      />
     </div>
 
-    <div *ngIf="error && !loading" class="error-state">
-      <p>{{ error }}</p>
+    <div class="filtro-categoria">
+      <select
+        [(ngModel)]="filtroCategoria"
+        (change)="onCategoryChange()"
+        class="select-categoria"
+      >
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let cat of categorias" [value]="cat.id">
+          {{ cat.name }}
+        </option>
+      </select>
     </div>
 
-    <div *ngIf="!loading && !error" class="contenido-principal">
-      <div class="contadores">
-        <span class="contador-item">Servicios: {{ serviciosFiltrados.length }}</span>
-      </div>
+    <div class="filtro-orden">
+      <select
+        [(ngModel)]="ordenPor"
+        (change)="onOrderChange()"
+        class="select-orden"
+      >
+        <option value="reciente">Más recientes</option>
+        <option value="nombre">Por nombre</option>
+        <option value="popular">Más populares</option>
+      </select>
+    </div>
 
-      <section class="servicios-section">
-        <h2>Servicios ({{ serviciosFiltrados.length }})</h2>
-        <div *ngIf="serviciosFiltrados.length > 0" class="servicios-grid">
-          <app-tarjeta-servicio
-            *ngFor="let servicio of serviciosFiltrados"
-            [servicio]="servicio"
-            [mostrarAccionCita]="true"
-            (solicitarCita)="onSolicitarCita($event)"
-          >
-          </app-tarjeta-servicio>
-        </div>
-        <div *ngIf="serviciosFiltrados.length === 0" class="vacio">
-          <p>No hay servicios que coincidan con los filtros.</p>
-        </div>
-      </section>
+    <div class="filtro-especial">
+      <select
+        [(ngModel)]="filtroEspecial"
+        (change)="onFiltroEspecialChange()"
+        class="select-especial"
+      >
+        <option value="todos">Todos</option>
+        <option value="cercanos">Cercanos</option>
+        <option value="frecuentes">Mis frecuentes</option>
+      </select>
+    </div>
+
+    <button class="btn-limpiar" (click)="limpiarFiltros()">
+      Limpiar filtros
+    </button>
+  </div>
+
+  <!-- Mensajes ubicación -->
+  <div *ngIf="filtroEspecial === 'cercanos' && !ubicacion && !cargandoUbicacion" class="sin-ubicacion">
+    <p>⚠️ Activa tu ubicación para ver servicios cercanos.</p>
+    <button class="btn-limpiar" (click)="obtenerUbicacion()">Intentar de nuevo</button>
+  </div>
+  <div *ngIf="cargandoUbicacion" class="cargando-ubicacion">
+    <span>📍 Obteniendo ubicación...</span>
+  </div>
+
+  <!-- Estado -->
+  <div *ngIf="loading" class="loading">Cargando servicios...</div>
+  <div *ngIf="error && !loading" class="error">{{ error }}</div>
+
+  <!-- Lista -->
+  <div *ngIf="!loading && !error">
+    <div *ngIf="serviciosFiltrados.length === 0" class="sin-resultados">
+      <p>No hay servicios que coincidan con los filtros.</p>
+      <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
+    </div>
+
+    <div class="grid-servicios" *ngIf="serviciosFiltrados.length > 0">
+      <app-tarjeta-servicio
+        *ngFor="let servicio of serviciosFiltrados"
+        [servicio]="servicio"
+        [mostrarAccionCita]="true"
+        [solicitandoCita]="solicitandoMap[servicio.id] || false"
+        [esFavorito]="favoritosIds.has(servicio.id)"
+        [mostrarCalificar]="puedeCalificar(servicio.id)"
+        (toggleFavorito)="onToggleFavorito($event)"
+        (solicitarCita)="onSolicitarCita(servicio)"
+        (calificar)="abrirModalCalificacion(servicio.id)"
+      >
+      </app-tarjeta-servicio>
     </div>
   </div>
-</app-main-layout>
+
+  <!-- ========================================================== -->
+  <!-- MODALES -->
+  <!-- ========================================================== -->
+
+
+  <app-calificar-servicio-modal
+    *ngIf="modalCalificacionAbierto && servicioParaCalificarId"
+    [servicioId]="servicioParaCalificarId"
+    (cerrar)="cerrarModalCalificacion()"
+    (calificado)="cerrarModalCalificacion()"
+  ></app-calificar-servicio-modal>
+</div>

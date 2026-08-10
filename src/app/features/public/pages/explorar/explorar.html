@@ -1,7 +1,16 @@
-<!-- PRUEBA: TEXTO FIJO PARA VERIFICAR QUE EL COMPONENTE SE RENDERIZA -->
-<div style="background: #2e8b6c; color: white; padding: 20px; margin: 20px;">
-  🔥 EXPLORAR CARGADO 🔥
-</div>
+<div class="explorar-container">
+  <div class="dashboard-header">
+    <div>
+      <h1>Explorar</h1>
+      <p>Descubre lo que tu comunidad tiene para ofrecer</p>
+    </div>
+    <div class="date-button">
+      <i class="bi-calendar3"></i> {{ hoy | date:'fullDate' }}
+    </div>
+  </div>
 
-<!-- Componente de publicidad -->
-<app-publicidad></app-publicidad>
+  <div class="feed">
+    <!-- Muestra todas las publicaciones sin filtros -->
+    <app-publicidad></app-publicidad>
+  </div>
+</div>

@@ -1,0 +1,79 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-contenido {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  width: 500px;
+  max-width: 90%;
+  position: relative;
+}
+
+.btn-cerrar {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.rating {
+  display: flex;
+  gap: 8px;
+  font-size: 40px;
+  cursor: pointer;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.rating span {
+  transition: transform 0.2s;
+}
+
+.rating span:hover {
+  transform: scale(1.2);
+}
+
+.rating span.seleccionada {
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+}
+
+.campo {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.btn-enviar {
+  width: 100%;
+  padding: 12px;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.btn-enviar:hover:not(:disabled) {
+  background: #d97706;
+}
+
+.btn-enviar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

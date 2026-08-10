@@ -1,8 +1,9 @@
-<app-admin-layout>
-
+<!-- src/app/features/admin/pages/users/users.html -->
+<div class="admin-page">
+  <!-- Header -->
   <section class="users-header">
     <div>
-       <div class="title-icon">
+      <div class="title-icon">
         <img src="../../igualdad.gif" alt="" />
       </div>
       <div>
@@ -10,39 +11,36 @@
         <p>Administra los usuarios registrados en la plataforma Connectopia.</p>
       </div>
     </div>
-
-    
-
-    
-      <button type="button" class="new-user-button" (click)="openUserModal()">
-  <span>+</span>
-  Nuevo usuario
-</button>
+    <button type="button" class="new-user-button" (click)="openUserModal()">
+      <span>+</span> Nuevo usuario
+    </button>
   </section>
 
+  <!-- Alertas -->
+  <div *ngIf="error" class="alert error">{{ error }}</div>
+  <div *ngIf="success" class="alert success">{{ success }}</div>
+
+  <!-- Tarjeta -->
   <section class="users-card">
- 
+    <!-- Toolbar -->
     <div class="users-toolbar">
       <div class="search-user">
-         <input
-            type="text"
-            placeholder="Buscar usuario..."
-            [(ngModel)]="searchText"
-          />
+        <input
+          type="text"
+          placeholder="Buscar usuario..."
+          [(ngModel)]="searchText"
+          (input)="onSearch()"
+        />
         <img src="lupa.png" alt="Buscar" />
       </div>
-
-         <select [(ngModel)]="selectedRole">
-            <option>Todos los roles</option>
-            <option>Administrador</option>
-            <option>Moderador</option>
-            <option>Usuario</option>
-            <option>Prestador</option>
-            <option>Turista</option>
-          </select>
-
+      <select [(ngModel)]="selectedRole" (change)="onRoleChange()">
+        <option *ngFor="let rol of roles" [value]="rol">
+          {{ rol === 'Todos los roles' ? rol : (rol | titlecase) }}
+        </option>
+      </select>
     </div>
 
+    <!-- Tabla -->
     <div class="table-wrapper">
       <table>
         <thead>
@@ -51,129 +49,129 @@
             <th>Nombre</th>
             <th>Correo electrónico</th>
             <th>Rol</th>
-    
+            <th>Estado</th>
             <th>Fecha de registro</th>
             <th>Acciones</th>
           </tr>
         </thead>
-                   <tbody>
-                          @for (user of paginatedUsers; track user.email) {
-                                <tr>
-                                  <td class="photo-cell">
-                                    <img [src]="user.photo" alt="" />
-                                  </td>
-                                  <td>{{ user.name }}</td>
-                                  <td>{{ user.email }}</td>
-                                  <td><span class="role admin">{{ user.role }}</span></td>
-                                  <td>{{ user.date }}</td>
-                                  <td class="actions">
-                                    <button type="button" (click)="openEditUserModal(user)">
-                                      <img src="lapiz.png" alt="Editar" />
-                                    </button>
-                                    <button type="button">
-                                      <img src="bloquear.png" alt="Bloquear" />
-                                    </button>
-                                    <button type="button" class="delete">
-                                      <img src="borrador.png" alt="Eliminar" />
-                                    </button>
-                                  </td>
-                                </tr>
-                              }
-                        </tbody>
-              
+        <tbody>
+          <tr *ngFor="let user of paginatedUsers; trackBy: trackById">
+            <td class="photo-cell">
+              <img [src]="user.avatar_url || 'assets/avatar-default.png'" alt="Avatar" />
+            </td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <select class="role-select" [(ngModel)]="user.role" (change)="cambiarRol(user, user.role)">
+                <option value="vecino">Vecino</option>
+                <option value="prestador">Prestador</option>
+                <option value="admin">Admin</option>
+                <option value="turista">Turista</option>
+              </select>
+            </td>
+            <td>
+              <span class="status" [class.active]="user.is_active" [class.inactive]="!user.is_active">
+                {{ user.is_active ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>{{ user.created_at | date:'dd/MM/yyyy' }}</td>
+            <td class="actions">
+              <button type="button" (click)="openEditUserModal(user)" title="Editar">
+                <img src="lapiz.png" alt="Editar" />
+              </button>
+              <button type="button" (click)="toggleStatus(user)" [title]="user.is_active ? 'Desactivar' : 'Activar'">
+                <img [src]="user.is_active ? 'bloquear.png' : 'desbloquear.png'" alt="Estado" />
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="paginatedUsers.length === 0 && !loading">
+            <td colspan="7" class="empty-message">No hay usuarios para mostrar.</td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
-       <div class="users-footer">
-            <p>
-              Mostrando página {{ currentPage }} de {{ totalPages }}
-            </p>
-
-            <div class="pagination centered">
-              <button type="button" (click)="changePage(currentPage - 1)">‹</button>
-
-              @for (page of [].constructor(totalPages); track $index) {
-                <button
-                  type="button"
-                  [class.active]="currentPage === $index + 1"
-                  (click)="changePage($index + 1)"
-                >
-                  {{ $index + 1 }}
-                </button>
-              }
-
-              <button type="button" (click)="changePage(currentPage + 1)">›</button>
-            </div>
-          </div>
+    <!-- Footer -->
+    <div class="users-footer">
+      <p>Mostrando página {{ currentPage }} de {{ totalPages }}</p>
+      <div class="pagination">
+        <button type="button" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">‹</button>
+        <button
+          *ngFor="let page of [].constructor(totalPages); let i = index"
+          type="button"
+          [class.active]="currentPage === i + 1"
+          (click)="changePage(i + 1)"
+        >
+          {{ i + 1 }}
+        </button>
+        <button type="button" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">›</button>
+      </div>
+    </div>
   </section>
 
-  @if (isUserModalOpen) {
-  <div class="user-modal-backdrop">
-    <section class="user-modal">
-      <button type="button" class="user-modal-close" (click)="closeUserModal()">×</button>
-
-     
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="modalAbierto" (click)="closeUserModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeUserModal()">×</button>
       <h2>{{ modalMode === 'create' ? 'Crear nuevo usuario' : 'Editar usuario' }}</h2>
-      <p>Completa la información para registrar un nuevo usuario.</p>
+      <p>Completa la información para {{ modalMode === 'create' ? 'registrar' : 'actualizar' }} el usuario.</p>
 
-      <div class="user-form-grid">
-        <label>Nombre completo
-          <input
-            type="text"
-            [value]="selectedUser?.fullName || ''"
-            placeholder="Ej: Nathalia Pérez"
-          />
-        </label>
+      <form (ngSubmit)="guardarUsuario()">
+        <div class="form-group">
+          <label>Nombre completo *</label>
+          <input type="text" [(ngModel)]="formUsuario.name" name="name" required />
+        </div>
 
+        <div class="form-group">
+          <label>Correo electrónico *</label>
+          <input type="email" [(ngModel)]="formUsuario.email" name="email" required />
+        </div>
 
-              <label>Correo electrónico
-                <input
-                  type="email"
-                  [value]="selectedUser?.email || ''"
-                  placeholder="Ej: nathalia@example.com"
-                />
-              </label>
-         
-
-        <label>Rol
-          <select [value]="selectedUser?.role || 'Administrador'">
-            <option>Administrador</option>
-            <option>Moderador</option>
-            <option>Usuario</option>
-            <option>Prestador</option>
-            <option>Turista</option>
+        <div class="form-group">
+          <label>Rol</label>
+          <select [(ngModel)]="formUsuario.role" name="role">
+            <option value="vecino">Vecino</option>
+            <option value="prestador">Prestador</option>
+            <option value="admin">Admin</option>
+            <option value="turista">Turista</option>
           </select>
-        </label>
-        
+        </div>
 
-      
-                 <label class="avatar-field">
-                      Foto de perfil
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" [(ngModel)]="formUsuario.phone" name="phone" />
+        </div>
 
-                      <div class="avatar-upload">
+        <div class="form-group">
+          <label>Dirección</label>
+          <input type="text" [(ngModel)]="formUsuario.address" name="address" />
+        </div>
 
-                     
-                        <img [src]="avatarPreview" >
+        <div class="form-group checkbox">
+          <label>
+            <input type="checkbox" [(ngModel)]="formUsuario.is_active" name="is_active" />
+            Cuenta activa
+          </label>
+        </div>
 
-                        <label class="upload-button">
-                          Seleccionar imagen
-                          
-                          <input type="file" accept="image/*" hidden (change)="onAvatarSelected($event)">
-                        </label>
+        <div class="form-group avatar-field">
+          <label>Foto de perfil</label>
+          <div class="avatar-upload">
+            <img [src]="avatarPreview" alt="Avatar" />
+            <label class="upload-button">
+              Seleccionar imagen
+              <input type="file" accept="image/*" hidden (change)="onAvatarSelected($event)" />
+            </label>
+          </div>
+        </div>
 
-                      </div>
-                    </label>
-        
-
-       
-      </div>
-
-      <div class="modal-actions">
-        <button type="button" class="cancel-btn" (click)="closeUserModal()">Cancelar</button>
-        <button type="button" class="save-btn">{{ modalMode === 'create' ? 'Crear usuario' : 'Guardar cambios' }}</button>
-      </div>
-    </section>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeUserModal()">Cancelar</button>
+          <button type="submit" class="btn-save" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : (modalMode === 'create' ? 'Crear usuario' : 'Guardar cambios') }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-}
-
-</app-admin-layout>
+</div>

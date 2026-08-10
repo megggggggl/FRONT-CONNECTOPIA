@@ -1,4 +1,4 @@
-// core/services/auth.service.ts
+// src/app/core/services/auth.service.ts
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -12,6 +12,7 @@ import { WebServices } from './webServices';
 export class AuthService {
   private platformId = inject(PLATFORM_ID);
 
+  // Subject para notificar cambios de autenticación (login/logout)
   private authChangeSubject = new BehaviorSubject<boolean>(false);
   authChange$ = this.authChangeSubject.asObservable();
 
@@ -51,7 +52,9 @@ export class AuthService {
     this.notifyAuthChange();
   }
 
-  // ✅ Método de cierre de sesión (principal)
+  /**
+   * Cierre de sesión principal
+   */
   cerrarSesion(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('access_token');
@@ -62,11 +65,16 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-  // ✅ Alias para compatibilidad
+  /**
+   * Alias para compatibilidad
+   */
   logout(): void {
     this.cerrarSesion();
   }
 
+  /**
+   * Redirige según el rol del usuario
+   */
   redirigirPorRol(usuario: any): void {
     const rol = String(
       usuario?.role ??
@@ -94,7 +102,7 @@ export class AuthService {
   }
 
   // ============================================================
-  // MÉTODOS AUXILIARES (para Guards)
+  // MÉTODOS AUXILIARES (para Guards y Sidebar)
   // ============================================================
   isAuthenticated(): boolean {
     if (!isPlatformBrowser(this.platformId)) return false;
@@ -117,10 +125,16 @@ export class AuthService {
     }
   }
 
+  /**
+   * 🔥 CORREGIDO: Retorna 'turista' si no hay usuario autenticado
+   * Esto permite que el menú muestre opciones públicas para invitados
+   */
   getUserRole(): string {
     const user = this.getUser();
+    if (!user) return 'turista'; // 👈 Valor por defecto para invitados
+
     const role = user?.role || user?.rol || user?.user_role || '';
-    return String(role).trim().toLowerCase();
+    return String(role).trim().toLowerCase() || 'turista';
   }
 
   getMe() {

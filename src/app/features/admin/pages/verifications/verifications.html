@@ -1,0 +1,42 @@
+<!-- src/app/features/admin/pages/verifications/verifications.html -->
+
+  <div class="admin-page">
+    <div class="page-header">
+      <h1>🪪 Verificaciones de Identidad</h1>
+      <button class="btn-secondary" (click)="cargarSolicitudes()">🔄 Actualizar</button>
+    </div>
+
+    <div *ngIf="error" class="alert error">{{ error }}</div>
+    <div *ngIf="success" class="alert success">{{ success }}</div>
+
+    <div *ngIf="loading">Cargando solicitudes...</div>
+
+    <div class="verificaciones-grid">
+      <div *ngFor="let sol of solicitudes" class="verificacion-card">
+        <div class="card-header">
+          <h3>{{ sol.name }}</h3>
+          <span class="badge">{{ sol.id_document_type || 'Documento' }}</span>
+        </div>
+        <p><strong>Email:</strong> {{ sol.email }}</p>
+        <p><strong>Teléfono:</strong> {{ sol.phone || 'N/A' }}</p>
+        <p><strong>N° Documento:</strong> {{ sol.id_document_number || 'N/A' }}</p>
+        <p><strong>Intentos:</strong> {{ sol.id_verification_attempts || 0 }}</p>
+        <p><strong>Solicitado:</strong> {{ sol.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+
+        <div class="fotos">
+          <button *ngIf="sol.id_document_photo_url" (click)="abrirFotos({ doc: sol.id_document_photo_url, selfie: sol.id_selfie_photo_url })">
+            📷 Ver fotos
+          </button>
+        </div>
+
+        <div class="acciones">
+          <button class="btn-approve" (click)="aprobar(sol.id)">✅ Aprobar</button>
+          <button class="btn-reject" (click)="rechazar(sol.id)">❌ Rechazar</button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && solicitudes.length === 0" class="empty">
+      No hay solicitudes de verificación pendientes.
+    </div>
+  </div>

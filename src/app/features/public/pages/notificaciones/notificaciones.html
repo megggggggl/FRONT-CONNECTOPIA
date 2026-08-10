@@ -1,0 +1,37 @@
+<app-main-layout>
+  <div class="page-container">
+    <div class="notificaciones-header">
+      <h1>Mis notificaciones</h1>
+      <button *ngIf="sinLeer > 0" (click)="marcarTodasLeidas()" class="btn-marcar-leidas">
+        Marcar todas como leídas
+      </button>
+    </div>
+
+    <div *ngIf="loading" class="loading">Cargando...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div *ngIf="!loading && !error">
+      <div *ngIf="notificaciones.length === 0" class="empty">
+        <p>No tienes notificaciones.</p>
+      </div>
+
+      <div class="notificaciones-list">
+        <div *ngFor="let notif of notificaciones" 
+             class="notificacion-item" 
+             [class.no-leida]="!notif.is_read"
+             (click)="marcarLeida(notif)">
+          <div class="notif-icon">
+            <span *ngIf="!notif.is_read" class="badge-no-leida"></span>
+          </div>
+          <div class="notif-content">
+            <p>{{ notif.message }}</p>
+            <small>{{ notif.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
+          </div>
+          <div *ngIf="notif.link" class="notif-link">
+            <a [routerLink]="notif.link">Ver</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-main-layout>

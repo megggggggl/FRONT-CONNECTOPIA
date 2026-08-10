@@ -1,31 +1,45 @@
-// core/services/comment.service.ts
+// src/core/services/comment.service.ts
 import { Injectable } from '@angular/core';
-import { timeout } from 'rxjs';
-import { ApiServicio } from './api.servicio';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { WebServices } from './webServices';
+
+export interface Comment {
+  id: number;
+  post_id: string;
+  author_id: string;
+  content: string;
+  parent_id: number | null;
+  created_at: string;
+  deleted_at: string | null;
+  profiles?: {
+    id: string;
+    name: string;
+    avatar_url: string | null;
+  };
+}
 
 @Injectable({ providedIn: 'root' })
 export class CommentService {
-  constructor(private api: ApiServicio) {}
+  constructor(private http: HttpClient) {}
 
-  listarComentarios(postId?: string) {
-    let url = '/comments';
-    if (postId) url += `?post_id=${postId}`;
-    return this.api.get<any[]>(url).pipe(timeout(8000));
+  getComments(postId: string): Observable<Comment[]> {
+    return this.http.get<{ data: Comment[] }>(`${WebServices.CommentsList}?post_id=${postId}`).pipe(
+      map(res => res.data || [])
+    );
   }
 
-  obtenerComentario(id: string) {
-    return this.api.get<any>(`/comments/${id}`).pipe(timeout(8000));
+  createComment(postId: string, content: string, parentId?: number): Observable<Comment> {
+    return this.http.post<{ data: Comment }>(WebServices.CommentsCreate, {
+      post_id: postId,
+      content,
+      parent_id: parentId || null
+    }).pipe(
+      map(res => res.data)
+    );
   }
 
-  crearComentario(data: any) {
-    return this.api.post<any>('/comments', data).pipe(timeout(8000));
-  }
-
-  actualizarComentario(id: string, data: any) {
-    return this.api.patch<any>(`/comments/${id}`, data).pipe(timeout(8000));
-  }
-
-  eliminarComentario(id: string) {
-    return this.api.delete<any>(`/comments/${id}`).pipe(timeout(8000));
+  deleteComment(commentId: number): Observable<void> {
+    return this.http.delete<void>(WebServices.CommentDelete(commentId));
   }
 }

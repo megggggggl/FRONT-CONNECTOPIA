@@ -1,9 +1,15 @@
+/* src/app/compartido/componentes/tarjeta-servicio/tarjeta-servicio.css */
 .tarjeta-servicio {
   overflow: hidden;
   border: 1px solid #e5eaf3;
   border-radius: 18px;
   background: #ffffff;
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.tarjeta-servicio:hover {
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.1);
 }
 
 .imagen-servicio-contenedor {
@@ -27,23 +33,24 @@
   position: absolute;
   top: 14px;
   right: 14px;
-  padding: 6px 11px;
+  padding: 6px 14px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
+  text-transform: uppercase;
 }
 
-.estado-activo {
+.estado-active {
   background: #d8f7e6;
   color: #0f8f4f;
 }
 
-.estado-pendiente {
+.estado-pending {
   background: #fff3d6;
   color: #b36b00;
 }
 
-.estado-inactivo {
+.estado-inactive {
   background: #fee2e2;
   color: #c62828;
 }
@@ -53,22 +60,25 @@
 }
 
 .categoria-servicio {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: #155bd5;
   font-size: 13px;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .titulo-servicio {
   margin: 0;
   color: #0f172a;
-  font-size: 19px;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .descripcion-servicio {
   display: -webkit-box;
   overflow: hidden;
-  margin: 10px 0;
+  margin: 10px 0 14px;
   color: #64748b;
   font-size: 14px;
   line-height: 1.5;
@@ -77,9 +87,10 @@
 }
 
 .precio-servicio {
-  margin: 12px 0;
+  margin: 8px 0 12px;
   color: #0f172a;
   font-weight: 800;
+  font-size: 18px;
 }
 
 .metricas-servicio {
@@ -87,6 +98,7 @@
   gap: 16px;
   padding-top: 13px;
   border-top: 1px solid #edf0f5;
+  margin-bottom: 12px;
 }
 
 .metrica {
@@ -98,59 +110,49 @@
   font-weight: 600;
 }
 
-.icono-metrica {
-  width: 16px;
-  height: 16px;
-  object-fit: contain;
-}
-
 .acciones-servicio {
   display: flex;
   gap: 10px;
-  margin-top: 18px;
+  flex-wrap: wrap;
 }
 
-.boton-principal,
-.boton-secundario,
-.boton-telegram,
-.boton-peligro {
-  flex: 1;
-  padding: 10px 14px;
+.btn-favorito,
+.btn-calificar {
+  background: none;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
-  font-weight: 700;
+  padding: 8px 14px;
+  font-size: 18px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-.boton-principal {
-  border: 1px solid #155bd5;
-  background: #155bd5;
-  color: #ffffff;
+.btn-favorito:hover,
+.btn-calificar:hover {
+  background: #f1f5f9;
 }
 
-.boton-secundario {
-  border: 1px solid #d9e1ef;
-  background: #ffffff;
-  color: #334155;
+.btn-favorito {
+  font-size: 22px;
 }
 
-.boton-peligro {
-  border: 1px solid #fecaca;
-  background: #fff1f2;
-  color: #991b1b;
-}
-
-.boton-peligro:hover:not(:disabled) {
-  background: #fee2e2;
+.btn-calificar {
+  color: #f59e0b;
 }
 
 .boton-telegram {
+  flex: 1;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #229ed9, #1578b4);
+  color: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 0;
-  background: linear-gradient(135deg, #229ed9, #1578b4);
-  color: #ffffff;
 }
 
 .boton-telegram span {
@@ -165,11 +167,12 @@
 }
 
 .boton-telegram:disabled {
-  cursor: not-allowed;
   opacity: 0.7;
+  cursor: not-allowed;
 }
 
-.boton-peligro:disabled {
-  cursor: wait;
-  opacity: 0.7;
+@media (max-width: 480px) {
+  .acciones-servicio {
+    flex-direction: column;
+  }
 }

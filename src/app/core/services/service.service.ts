@@ -15,6 +15,8 @@ export interface Service {
   category_id: number | null;
   price: string | null;
   location: any;
+  latitude?: number ;
+  longitude?: number ;
   address: string | null;
   phone: string | null;
   email: string | null;

@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+// src/app/compartido/componentes/sidebar/sidebar.component.ts
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { RouterModule, Router } from '@angular/router';
 import { MenuService } from '../../../core/services/menu.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { MenuItem } from '../../../core/models/menu-item.model';
@@ -13,55 +13,74 @@ import { MenuItem } from '../../../core/models/menu-item.model';
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.css']
 })
-export class SidebarComponent implements OnInit, OnDestroy {
+export class SidebarComponent implements OnInit {
   menuItems: MenuItem[] = [];
   user: any = null;
-  private authSubscription: Subscription | null = null;
 
   constructor(
     private menuService: MenuService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.cargarMenu();
-    this.cargarUsuario();
-    this.authSubscription = this.authService.authChange$.subscribe(() => {
+
+    // 🔄 Suscribirse a cambios de autenticación (login/logout)
+    this.authService.authChange$.subscribe(() => {
       this.cargarMenu();
-      this.cargarUsuario();
     });
   }
 
-  ngOnDestroy(): void {
-    this.authSubscription?.unsubscribe();
-  }
-
-  cargarMenu(): void {
-    this.menuItems = this.menuService.getSidebarItems();
-  }
-
-  cargarUsuario(): void {
+  /**
+   * Carga el menú y el usuario actual
+   */
+  private cargarMenu(): void {
     this.user = this.authService.getUser();
+    this.menuItems = this.menuService.getSidebarItems();
+
+    // Inicializar submenús (cerrados por defecto)
+    this.menuItems.forEach(item => {
+      if (item.children) {
+        item.expanded = false;
+      }
+    });
   }
 
+  /**
+   * Obtiene las iniciales del nombre del usuario para el avatar
+   */
   getIniciales(): string {
-    if (!this.user || !this.user.name) return 'U';
-    return this.user.name.charAt(0).toUpperCase();
+    if (!this.user?.name) return 'U';
+    const nombres = this.user.name.split(' ');
+    const iniciales = nombres
+      .map((n: string) => n.charAt(0))
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+    return iniciales || 'U';
   }
 
-  getRolLabel(): string {
-    if (!this.user) return 'Invitado';
-    const role = this.user.role || 'turista';
-    const map: Record<string, string> = {
-      vecino: 'Vecino',
-      prestador: 'Prestador',
-      admin: 'Administrador',
-      turista: 'Turista'
-    };
-    return map[role] || role;
+  /**
+   * Abre/cierra un submenú
+   */
+  toggleSubmenu(item: MenuItem): void {
+    item.expanded = !item.expanded;
   }
 
+  /**
+   * Navega al perfil del usuario
+   */
+  goToProfile(): void {
+    this.router.navigate(['/perfil']);
+  }
+
+  /**
+   * Cierra sesión y redirige al login
+   */
   logout(): void {
     this.authService.logout();
+    // El authChange$ notificará al sidebar y recargará el menú automáticamente
+    this.router.navigate(['/auth/login']);
   }
 }

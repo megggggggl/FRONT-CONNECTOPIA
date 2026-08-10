@@ -57,12 +57,15 @@ static readonly PostsCreate = `${WebServices.BASE_URL}/posts`;
   static readonly ReportDelete = (id: number | string) => `${WebServices.BASE_URL}/reports/${id}`;
 
   // ==================== EVENTS ====================
-  static readonly EventsList = `${WebServices.BASE_URL}/events`;
-  static readonly EventsCreate = `${WebServices.BASE_URL}/events`;
-  static readonly EventGet = (id: number | string) => `${WebServices.BASE_URL}/events/${id}`;
-  static readonly EventUpdate = (id: number | string) => `${WebServices.BASE_URL}/events/${id}`;
-  static readonly EventDelete = (id: number | string) => `${WebServices.BASE_URL}/events/${id}`;
 
+static readonly EventsList = `${WebServices.BASE_URL}/events`;
+static readonly EventsCreate = `${WebServices.BASE_URL}/events`;
+static readonly EventGet = (id: string) => `${WebServices.BASE_URL}/events/${id}`;
+static readonly EventUpdate = (id: string) => `${WebServices.BASE_URL}/events/${id}`;
+static readonly EventDelete = (id: string) => `${WebServices.BASE_URL}/events/${id}`;
+static readonly EventParticipate = (id: string) => `${WebServices.BASE_URL}/events/${id}/participate`;
+static readonly EventCancelParticipation = (id: string) => `${WebServices.BASE_URL}/events/${id}/participate`; // DELETE
+static readonly EventsMine = `${WebServices.BASE_URL}/events/inscritos`; // 👈 NUEVO
   // ==================== ADMIN ====================
   static readonly AdminDashboard = `${WebServices.BASE_URL}/admin/dashboard`;
   static readonly AdminUsers = `${WebServices.BASE_URL}/admin/users`;
@@ -104,35 +107,32 @@ static readonly PostsCreate = `${WebServices.BASE_URL}/posts`;
   static readonly UploadPublicUrl = `${WebServices.BASE_URL}/upload/public-url`;
   static readonly UploadDelete = `${WebServices.BASE_URL}/upload/file`;
   static readonly UploadList = `${WebServices.BASE_URL}/upload/list`;
+// Bus Routes
+static readonly BusRoutesList = `${WebServices.BASE_URL}/bus-routes`;
+static readonly BusRoutesCreate = `${WebServices.BASE_URL}/bus-routes`;
+static readonly BusRouteGet = (id: string) => `${WebServices.BASE_URL}/bus-routes/${id}`;
+static readonly BusRouteUpdate = (id: string) => `${WebServices.BASE_URL}/bus-routes/${id}`;
+static readonly BusRouteDelete = (id: string) => `${WebServices.BASE_URL}/bus-routes/${id}`;
+// WebServices
 
-  // ==================== BUS STOPS ====================
-  static readonly BusStopsList = `${WebServices.BASE_URL}/bus-stops`;
-  static readonly BusStopsCreate = `${WebServices.BASE_URL}/bus-stops`;
-  static readonly BusStopGet = (id: number | string) => `${WebServices.BASE_URL}/bus-stops/${id}`;
-  static readonly BusStopUpdate = (id: number | string) => `${WebServices.BASE_URL}/bus-stops/${id}`;
-  static readonly BusStopDelete = (id: number | string) => `${WebServices.BASE_URL}/bus-stops/${id}`;
+static readonly ContentReportsList = `${WebServices.BASE_URL}/content-reports`;
+static readonly ContentReportUpdate = (id: number) => `${WebServices.BASE_URL}/content-reports/${id}`;
 
-  // ==================== BUS ROUTES ====================
-  static readonly BusRoutesList = `${WebServices.BASE_URL}/bus-routes`;
-  static readonly BusRoutesCreate = `${WebServices.BASE_URL}/bus-routes`;
-  static readonly BusRouteGet = (id: number | string) => `${WebServices.BASE_URL}/bus-routes/${id}`;
-  static readonly BusRouteUpdate = (id: number | string) => `${WebServices.BASE_URL}/bus-routes/${id}`;
-  static readonly BusRouteDelete = (id: number | string) => `${WebServices.BASE_URL}/bus-routes/${id}`;
+static readonly VerificationPending = `${WebServices.BASE_URL}/verification/pending`;
+static readonly VerificationApprove = (id: string) => `${WebServices.BASE_URL}/verification/approve/${id}`;
+static readonly VerificationReject = (id: string) => `${WebServices.BASE_URL}/verification/reject/${id}`;
+// Bus Stops
+static readonly BusStopsList = `${WebServices.BASE_URL}/bus-stops`;
+static readonly BusStopsCreate = `${WebServices.BASE_URL}/bus-stops`;
 
-  // ==================== BUS STOP ROUTES ====================
-  static readonly BusStopRoutesList = `${WebServices.BASE_URL}/bus-stop-routes`;
-  static readonly BusStopRoutesCreate = `${WebServices.BASE_URL}/bus-stop-routes`;
-  static readonly BusStopRouteGet = (id: number | string) => `${WebServices.BASE_URL}/bus-stop-routes/${id}`;
-  static readonly BusStopRouteUpdate = (id: number | string) => `${WebServices.BASE_URL}/bus-stop-routes/${id}`;
-  static readonly BusStopRouteDelete = (id: number | string) => `${WebServices.BASE_URL}/bus-stop-routes/${id}`;
-
-  // ==================== PLACE BUS STOPS ====================
-  static readonly PlaceBusStopsList = (placeId: number | string) => `${WebServices.BASE_URL}/places/${placeId}/bus-stops`;
-  static readonly PlaceBusStopsCreate = (placeId: number | string) => `${WebServices.BASE_URL}/places/${placeId}/bus-stops`;
-  static readonly PlaceBusStopGet = (placeId: number | string, id: number | string) => `${WebServices.BASE_URL}/places/${placeId}/bus-stops/${id}`;
-  static readonly PlaceBusStopUpdate = (placeId: number | string, id: number | string) => `${WebServices.BASE_URL}/places/${placeId}/bus-stops/${id}`;
-  static readonly PlaceBusStopDelete = (placeId: number | string, id: number | string) => `${WebServices.BASE_URL}/places/${placeId}/bus-stops/${id}`;
-
+// Bus Stop Routes
+static readonly BusStopRoutesList = `${WebServices.BASE_URL}/bus-stop-routes`;
+static readonly BusStopRoutesCreate = `${WebServices.BASE_URL}/bus-stop-routes`;
+static readonly PlacesList = `${WebServices.BASE_URL}/places`;
+static readonly PlacesCreate = `${WebServices.BASE_URL}/places`;
+static readonly PlaceGet = (id: string) => `${WebServices.BASE_URL}/places/${id}`;
+static readonly PlaceUpdate = (id: string) => `${WebServices.BASE_URL}/places/${id}`;
+static readonly PlaceDelete = (id: string) => `${WebServices.BASE_URL}/places/${id}`;
   // ==================== COMMENTS ====================
   static readonly CommentsList = `${WebServices.BASE_URL}/comments`;
   static readonly CommentsCreate = `${WebServices.BASE_URL}/comments`;
@@ -151,10 +151,9 @@ static readonly PostsCreate = `${WebServices.BASE_URL}/posts`;
   static readonly FavoritesRemove = (id: number | string) => `${WebServices.BASE_URL}/favorites/${id}`;
 
   // ==================== CONTENT REPORTS ====================
-  static readonly ContentReportsList = `${WebServices.BASE_URL}/content-reports`;
+  static readonly ContentReprtsList = `${WebServices.BASE_URL}/content-reports`;
   static readonly ContentReportsCreate = `${WebServices.BASE_URL}/content-reports`;
   static readonly ContentReportGet = (id: number | string) => `${WebServices.BASE_URL}/content-reports/${id}`;
-  static readonly ContentReportUpdate = (id: number | string) => `${WebServices.BASE_URL}/content-reports/${id}`;
   static readonly ContentReportDelete = (id: number | string) => `${WebServices.BASE_URL}/content-reports/${id}`;
 
   // ==================== BOT ====================

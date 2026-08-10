@@ -1,0 +1,27 @@
+<div class="modal-backdrop" (click)="cerrar.emit()">
+  <div class="modal-contenido" (click)="$event.stopPropagation()">
+    <button class="btn-cerrar" (click)="cerrar.emit()">×</button>
+    <h2>⭐ Calificar servicio</h2>
+
+    <div class="rating">
+      <span
+        *ngFor="let star of [1,2,3,4,5]"
+        (click)="rating = star"
+        [class.seleccionada]="star <= rating"
+      >
+        {{ star <= rating ? '⭐' : '☆' }}
+      </span>
+    </div>
+
+    <textarea
+      [(ngModel)]="comentario"
+      placeholder="Comentario (opcional)"
+      rows="4"
+      class="campo"
+    ></textarea>
+
+    <button class="btn-enviar" [disabled]="enviando" (click)="enviarResena()">
+      {{ enviando ? 'Enviando...' : 'Enviar reseña' }}
+    </button>
+  </div>
+</div>

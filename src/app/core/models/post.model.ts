@@ -3,18 +3,20 @@ export interface Post {
   author_id: string;
   title: string;
   content: string;
-  type: 'anuncio' | 'alerta' | 'evento' | 'general';
-  category_id?: number;
-  location?: any;
-  address?: string | null;
+  type: 'anuncio' | 'alerta' | 'evento' | 'general' | 'empleo';
+  is_urgent: boolean;
   images: string[];
   status: 'active' | 'inactive' | 'archived';
-  is_urgent: boolean;
   created_at: string;
   updated_at: string;
-  author?: {
-    id: string;
-    name: string;
-    avatar_url: string | null;
+  // 👇 Campos para empleos
+  metadata?: {
+    empresa?: string;
+    salario?: string;
+    contacto?: string;
+    ubicacion?: string;
+    requisitos?: string[] | string; // Puede ser array o string
+    jornada?: 'tiempo_completo' | 'medio_tiempo' | 'freelance' | 'temporal';
   };
+  author?: { id: string; name: string; avatar_url: string };
 }

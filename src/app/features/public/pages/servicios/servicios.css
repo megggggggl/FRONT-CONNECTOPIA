@@ -1,33 +1,87 @@
-.servicios-page { padding: 24px; }
-.page-header h1 { font-size: 32px; color: #060709; margin: 0; }
-.page-header p { color: #5e646a; margin: 6px 0 0; }
+/* src/app/features/public/pages/servicios/servicios.css */
+.servicios-page {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+}
+
+.page-header p {
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
 .filtros {
   display: flex;
-  gap: 12px;
-  margin: 20px 0;
   flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
 }
-.filtros select, .filtros input {
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid #c9cdd2;
+
+.filtro-busqueda {
+  flex: 1 1 200px;
+}
+
+.input-busqueda {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.select-categoria,
+.select-orden {
+  padding: 0.6rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   background: white;
-  flex: 1;
-  min-width: 150px;
+  font-size: 1rem;
 }
-.filtros .btn-filtro {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #2e8b6c, #1f6b53);
-  color: white;
-  font-weight: 700;
+
+.btn-limpiar {
+  padding: 0.6rem 1.2rem;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
 }
-.servicios-grid {
+
+.btn-limpiar:hover {
+  background: #e2e8f0;
+}
+
+.loading,
+.error,
+.sin-resultados {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.grid-servicios {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
-.loading, .error { text-align: center; padding: 20px; }
-.error { color: #991b1b; background: #fee2e2; border-radius: 12px; }
+
+@media (max-width: 640px) {
+  .filtros {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .grid-servicios {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,17 +1,210 @@
-.lugares-page { padding: 24px; }
-.page-header h1 { font-size: 32px; color: #060709; margin: 0; }
-.filtros { margin: 20px 0; }
-.filtros select {
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid #c9cdd2;
-  background: white;
-  min-width: 200px;
+.lugares-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
-.lugares-grid {
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  font-size: 28px;
+  color: #0f172a;
+  margin: 0;
+}
+
+.btn-nuevo {
+  padding: 10px 20px;
+  background: #0a7e6f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.btn-nuevo:hover {
+  background: #0d9488;
+}
+
+.filtros {
+  margin-bottom: 20px;
+}
+.input-busqueda {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.loading, .error, .sin-resultados {
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+}
+.error {
+  color: #dc2626;
+}
+
+.grid-lugares {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
 }
-.loading, .error { text-align: center; padding: 20px; }
-.error { color: #991b1b; background: #fee2e2; border-radius: 12px; }
+
+.lugar-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #f0f4f8;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.2s;
+}
+.lugar-card:hover {
+  transform: translateY(-4px);
+}
+.lugar-imagen {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+.lugar-imagen-vacia {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  font-size: 60px;
+}
+.lugar-content {
+  padding: 16px;
+}
+.lugar-content h3 {
+  margin: 4px 0;
+  font-size: 18px;
+}
+.lugar-content p {
+  margin: 6px 0;
+  color: #475569;
+  font-size: 14px;
+}
+.btn-detalle {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 16px;
+  background: #0a7e6f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-detalle:hover {
+  background: #0d9488;
+}
+
+/* ===== MODAL ===== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-contenido {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  width: 560px;
+  max-width: 94%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.btn-cerrar {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+.campo {
+  margin-bottom: 14px;
+}
+.campo label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.campo input, .campo textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+.campo-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.btn-secundario {
+  padding: 6px 14px;
+  background: #f1f5f9;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.ubicacion-info {
+  margin-left: 8px;
+  color: #64748b;
+  font-size: 13px;
+}
+.acciones-modal {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+.btn-cancelar {
+  padding: 10px 20px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.btn-guardar {
+  flex: 1;
+  padding: 10px 20px;
+  background: #0a7e6f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-guardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .campo-row {
+    grid-template-columns: 1fr;
+  }
+}

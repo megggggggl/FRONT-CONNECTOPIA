@@ -1,167 +1,166 @@
-<app-admin-layout>
-  <section class="dashboard-header">
+<!-- src/app/features/admin/pages/dashboard/dashboard.html -->
+<section class="dashboard-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Resumen administrativo conectado a las estadísticas reales del backend.</p>
+  </div>
+
+  <div class="header-actions">
+    <button type="button" class="date-button">{{ fechaActual | date:'d MMMM y' }}</button>
+    <button type="button" class="refresh-button" [disabled]="actualizando" (click)="cargarDashboard()">
+      Actualizar
+    </button>
+  </div>
+</section>
+
+<p *ngIf="error" class="notice error">{{ error }}</p>
+
+<section class="stats-grid" [class.loading]="cargando">
+  <article class="stat-card">
+    <div class="stat-icon green">
+      <img src="agregar-usuario.png" alt="" />
+    </div>
     <div>
-      <h1>Dashboard</h1>
-      <p>Resumen administrativo conectado a las estadisticas reales del backend.</p>
+      <p>Usuarios</p>
+      <h2 [class.stat-value-loading]="usuarios === null">{{ usuarios === null ? '' : usuarios }}</h2>
+      <span>Total registrado</span>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-icon blue">
+      <img src="anunciosbb.png" alt="" />
+    </div>
+    <div>
+      <p>Publicaciones</p>
+      <h2 [class.stat-value-loading]="publicaciones === null">{{ publicaciones === null ? '' : publicaciones }}</h2>
+      <span>Contenido publicado</span>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-icon purple">
+      <img src="prese.png" alt="" />
+    </div>
+    <div>
+      <p>Eventos</p>
+      <h2 [class.stat-value-loading]="eventos === null">{{ eventos === null ? '' : eventos }}</h2>
+      <span>Eventos registrados</span>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-icon teal">
+      <img src="cliente.png" alt="" />
+    </div>
+    <div>
+      <p>Servicios</p>
+      <h2 [class.stat-value-loading]="servicios === null">{{ servicios === null ? '' : servicios }}</h2>
+      <span>Servicios publicados</span>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-icon orange">
+      <img src="lugar.png" alt="" />
+    </div>
+    <div>
+      <p>Lugares</p>
+      <h2 [class.stat-value-loading]="lugares === null">{{ lugares === null ? '' : lugares }}</h2>
+      <span>Lugares disponibles</span>
+    </div>
+  </article>
+</section>
+
+<section class="dashboard-grid">
+  <article class="panel-card chart-card">
+    <div class="panel-title">
+      <h2>Resumen de contenido</h2>
     </div>
 
-    <div class="header-actions">
-      <button type="button" class="date-button">{{ fechaActual | date:'d MMMM y' }}</button>
-      <button type="button" class="refresh-button" [disabled]="actualizando" (click)="cargarDashboard()">
-        Actualizar
-      </button>
+    <div class="content-bars">
+      <div>
+        <span>Publicaciones</span>
+        <strong [class.inline-skeleton]="publicaciones === null">{{ publicaciones === null ? '' : publicaciones }}</strong>
+        <i [style.width.%]="anchoBarra(publicaciones)"></i>
+      </div>
+
+      <div>
+        <span>Servicios</span>
+        <strong [class.inline-skeleton]="servicios === null">{{ servicios === null ? '' : servicios }}</strong>
+        <i [style.width.%]="anchoBarra(servicios)"></i>
+      </div>
+
+      <div>
+        <span>Eventos</span>
+        <strong [class.inline-skeleton]="eventos === null">{{ eventos === null ? '' : eventos }}</strong>
+        <i [style.width.%]="anchoBarra(eventos)"></i>
+      </div>
+
+      <div>
+        <span>Lugares</span>
+        <strong [class.inline-skeleton]="lugares === null">{{ lugares === null ? '' : lugares }}</strong>
+        <i [style.width.%]="anchoBarra(lugares)"></i>
+      </div>
     </div>
-  </section>
+  </article>
 
-  <p *ngIf="error" class="notice error">{{ error }}</p>
+  <article class="panel-card activity-card">
+    <h2>Actividad reciente</h2>
 
-  <section class="stats-grid" [class.loading]="cargando">
-    <article class="stat-card">
-      <div class="stat-icon green">
-        <img src="agregar-usuario.png" alt="" />
-      </div>
+    <div *ngIf="cargando && !stats" class="empty-panel">Cargando actividad...</div>
+
+    <div *ngIf="!cargando && error && actividadReciente.length === 0" class="empty-panel">
+      No se pudo cargar la actividad reciente.
+    </div>
+
+    <div *ngIf="!cargando && !error && actividadReciente.length === 0" class="empty-panel">
+      El backend no devolvió actividad reciente.
+    </div>
+
+    <div *ngFor="let actividad of actividadReciente" class="activity-item">
+      <div class="activity-icon"></div>
       <div>
-        <p>Usuarios</p>
-        <h2 [class.stat-value-loading]="usuarios === null">{{ usuarios === null ? '' : usuarios }}</h2>
-        <span>Total registrado</span>
+        <strong>{{ actividad.title || actividad.type || 'Actividad' }}</strong>
+        <p>{{ actividad.description || 'Sin descripción' }}</p>
       </div>
-    </article>
+      <span>{{ actividad.created_at | date:'short' }}</span>
+    </div>
+  </article>
 
-    <article class="stat-card">
-      <div class="stat-icon blue">
-        <img src="anunciosbb.png" alt="" />
-      </div>
+  <article class="panel-card actions-card">
+    <h2>Acciones rápidas</h2>
+
+    <a class="green-btn" routerLink="/admin/users">Gestionar usuarios</a>
+    <a class="blue-btn" routerLink="/admin/events">Gestionar eventos</a>
+    <a class="purple-btn" routerLink="/admin/categories">Gestionar categorías</a>
+  </article>
+
+  <article class="panel-card reports-card">
+    <h2>Moderación pendiente</h2>
+
+    <div class="moderation-grid">
       <div>
-        <p>Publicaciones</p>
-        <h2 [class.stat-value-loading]="publicaciones === null">{{ publicaciones === null ? '' : publicaciones }}</h2>
-        <span>Contenido publicado</span>
+        <span>Denuncias</span>
+        <strong [class.inline-skeleton]="denunciasPendientes === null">
+          {{ denunciasPendientes === null ? '' : denunciasPendientes }}
+        </strong>
       </div>
-    </article>
 
-    <article class="stat-card">
-      <div class="stat-icon purple">
-        <img src="prese.png" alt="" />
-      </div>
       <div>
-        <p>Eventos</p>
-        <h2 [class.stat-value-loading]="eventos === null">{{ eventos === null ? '' : eventos }}</h2>
-        <span>Eventos registrados</span>
+        <span>Verificaciones</span>
+        <strong [class.inline-skeleton]="verificacionesPendientes === null">
+          {{ verificacionesPendientes === null ? '' : verificacionesPendientes }}
+        </strong>
       </div>
-    </article>
+    </div>
+  </article>
 
-    <article class="stat-card">
-      <div class="stat-icon teal">
-        <img src="cliente.png" alt="" />
-      </div>
-      <div>
-        <p>Servicios</p>
-        <h2 [class.stat-value-loading]="servicios === null">{{ servicios === null ? '' : servicios }}</h2>
-        <span>Servicios publicados</span>
-      </div>
-    </article>
+  <article class="panel-card system-card">
+    <h2>Estado del sistema</h2>
 
-    <article class="stat-card">
-      <div class="stat-icon orange">
-        <img src="lugar.png" alt="" />
-      </div>
-      <div>
-        <p>Lugares</p>
-        <h2 [class.stat-value-loading]="lugares === null">{{ lugares === null ? '' : lugares }}</h2>
-        <span>Lugares disponibles</span>
-      </div>
-    </article>
-  </section>
-
-  <section class="dashboard-grid">
-    <article class="panel-card chart-card">
-      <div class="panel-title">
-        <h2>Resumen de contenido</h2>
-      </div>
-
-      <div class="content-bars">
-        <div>
-          <span>Publicaciones</span>
-          <strong [class.inline-skeleton]="publicaciones === null">{{ publicaciones === null ? '' : publicaciones }}</strong>
-          <i [style.width.%]="anchoBarra(publicaciones)"></i>
-        </div>
-
-        <div>
-          <span>Servicios</span>
-          <strong [class.inline-skeleton]="servicios === null">{{ servicios === null ? '' : servicios }}</strong>
-          <i [style.width.%]="anchoBarra(servicios)"></i>
-        </div>
-
-        <div>
-          <span>Eventos</span>
-          <strong [class.inline-skeleton]="eventos === null">{{ eventos === null ? '' : eventos }}</strong>
-          <i [style.width.%]="anchoBarra(eventos)"></i>
-        </div>
-
-        <div>
-          <span>Lugares</span>
-          <strong [class.inline-skeleton]="lugares === null">{{ lugares === null ? '' : lugares }}</strong>
-          <i [style.width.%]="anchoBarra(lugares)"></i>
-        </div>
-      </div>
-    </article>
-
-    <article class="panel-card activity-card">
-      <h2>Actividad reciente</h2>
-
-      <div *ngIf="cargando && !stats" class="empty-panel">Cargando actividad...</div>
-
-      <div *ngIf="!cargando && error && actividadReciente.length === 0" class="empty-panel">
-        No se pudo cargar la actividad reciente.
-      </div>
-
-      <div *ngIf="!cargando && !error && actividadReciente.length === 0" class="empty-panel">
-        El backend no devolvio actividad reciente.
-      </div>
-
-      <div *ngFor="let actividad of actividadReciente" class="activity-item">
-        <div class="activity-icon"></div>
-        <div>
-          <strong>{{ actividad.title || actividad.type || 'Actividad' }}</strong>
-          <p>{{ actividad.description || 'Sin descripcion' }}</p>
-        </div>
-        <span>{{ actividad.created_at | date:'short' }}</span>
-      </div>
-    </article>
-
-    <article class="panel-card actions-card">
-      <h2>Acciones rapidas</h2>
-
-      <a class="green-btn" routerLink="/admin/users">Gestionar usuarios</a>
-      <a class="blue-btn" routerLink="/admin/events">Gestionar eventos</a>
-      <a class="purple-btn" routerLink="/admin/categories">Gestionar categorias</a>
-    </article>
-
-    <article class="panel-card reports-card">
-      <h2>Moderacion pendiente</h2>
-
-      <div class="moderation-grid">
-        <div>
-          <span>Denuncias</span>
-          <strong [class.inline-skeleton]="denunciasPendientes === null">
-            {{ denunciasPendientes === null ? '' : denunciasPendientes }}
-          </strong>
-        </div>
-
-        <div>
-          <span>Verificaciones</span>
-          <strong [class.inline-skeleton]="verificacionesPendientes === null">
-            {{ verificacionesPendientes === null ? '' : verificacionesPendientes }}
-          </strong>
-        </div>
-      </div>
-    </article>
-
-    <article class="panel-card system-card">
-      <h2>Estado del sistema</h2>
-
-      <p><span></span> API de estadisticas <strong>{{ error ? 'Con error' : 'Disponible' }}</strong></p>
-      <p><span></span> Fuente <strong>/api/stats/dashboard</strong></p>
-      <p><span></span> Seguridad <strong>Solo admin</strong></p>
-    </article>
-  </section>
-</app-admin-layout>
+    <p><span></span> API de estadísticas <strong>{{ error ? 'Con error' : 'Disponible' }}</strong></p>
+    <p><span></span> Fuente <strong>/api/stats/dashboard</strong></p>
+    <p><span></span> Seguridad <strong>Solo admin</strong></p>
+  </article>
+</section>

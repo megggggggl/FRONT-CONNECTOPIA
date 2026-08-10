@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AdminLayout } from '../../../../core/layout/admin-layout/admin-layout';
-
+import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
 @Component({
   selector: 'app-turismo',
   standalone: true,
-  imports: [CommonModule, AdminLayout],
+  imports: [CommonModule, MainLayout],
   templateUrl: './turismo.html',
   styleUrls: ['./turismo.css']
 })

@@ -10,7 +10,6 @@ import { MainLayout } from '../../core/layout/main-layout/main-layout';
 const routes: Routes = [
   {
     path: '',
-    component: MainLayout,
     canActivate: [authGuard],
     children: [
       {

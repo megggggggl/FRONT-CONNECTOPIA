@@ -1,28 +1,119 @@
-<app-main-layout>
-  <section class="lugares-page">
-    <header class="page-header">
-      <div>
-        <h1>Lugares turísticos</h1>
-        <p>Descubre los mejores destinos</p>
+<div class="lugares-container">
+  <!-- HEADER -->
+  <div class="header">
+    <h1>🏛️ Lugares Turísticos</h1>
+    <!-- Botón "Añadir lugar" solo visible si está autenticado -->
+    <button *ngIf="authService.isAuthenticated()" class="btn-nuevo" (click)="abrirModal()">
+      + Añadir lugar
+    </button>
+  </div>
+
+  <!-- BUSCADOR -->
+  <div class="filtros">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="onSearch()"
+      placeholder="Buscar lugares..."
+      class="input-busqueda"
+    />
+  </div>
+
+  <!-- ESTADOS -->
+  <div *ngIf="loading" class="loading">Cargando lugares...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <!-- LISTA DE LUGARES -->
+  <div *ngIf="!loading && !error">
+    <div *ngIf="lugares.length === 0" class="sin-resultados">
+      No hay lugares turísticos disponibles.
+    </div>
+
+    <div class="grid-lugares" *ngIf="lugares.length > 0">
+      <div class="lugar-card" *ngFor="let lugar of lugares">
+        <img
+          *ngIf="lugar.images?.length"
+          [src]="lugar.images[0]"
+          [alt]="lugar.name"
+          class="lugar-imagen"
+        />
+        <div *ngIf="!lugar.images?.length" class="lugar-imagen-vacia">
+          🏛️
+        </div>
+        <div class="lugar-content">
+          <h3>{{ lugar.name }}</h3>
+          <p>{{ lugar.description || 'Sin descripción' }}</p>
+          <p *ngIf="lugar.address">📍 {{ lugar.address }}</p>
+          <p *ngIf="lugar.avg_rating > 0">⭐ {{ lugar.avg_rating }} ({{ lugar.reviews_count }} reseñas)</p>
+          <a [routerLink]="['/lugar-turistico', lugar.id]" class="btn-detalle">Ver detalle</a>
+        </div>
       </div>
-    </header>
-
-    <div class="filtros">
-      <select [(ngModel)]="filtroCategoria" (change)="cargarLugares()">
-        <option value="">Todas las categorías</option>
-        <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.name }}</option>
-      </select>
     </div>
+  </div>
 
-    <div *ngIf="loading" class="loading">Cargando...</div>
-    <div *ngIf="error" class="error">{{ error }}</div>
+  <!-- ========================================================== -->
+  <!-- MODAL PARA CREAR LUGAR (solo autenticados) -->
+  <!-- ========================================================== -->
+  <div class="modal-backdrop" *ngIf="modalAbierto" (click)="cerrarModal()">
+    <div class="modal-contenido" (click)="$event.stopPropagation()">
+      <button class="btn-cerrar" (click)="cerrarModal()">×</button>
+      <h2>➕ Nuevo lugar turístico</h2>
 
-    <div class="lugares-grid">
-      <app-lugar-card
-        *ngFor="let lugar of lugares"
-        [lugar]="lugar"
-      ></app-lugar-card>
-      <p *ngIf="lugares.length === 0 && !loading">No hay lugares disponibles</p>
+      <form (ngSubmit)="guardarLugar()">
+        <!-- ✅ Cada input debe tener name o standalone -->
+        <div class="campo">
+          <label>Nombre *</label>
+          <input type="text" [(ngModel)]="nuevoLugar.name" name="nombre" required />
+        </div>
+
+        <div class="campo">
+          <label>Descripción</label>
+          <textarea [(ngModel)]="nuevoLugar.description" name="descripcion" rows="3"></textarea>
+        </div>
+
+        <div class="campo">
+          <label>Dirección</label>
+          <input type="text" [(ngModel)]="nuevoLugar.address" name="direccion" />
+        </div>
+
+        <div class="campo-row">
+          <div class="campo">
+            <label>Teléfono</label>
+            <input type="text" [(ngModel)]="nuevoLugar.phone" name="telefono" />
+          </div>
+          <div class="campo">
+            <label>Website</label>
+            <input type="text" [(ngModel)]="nuevoLugar.website" name="website" />
+          </div>
+        </div>
+
+        <div class="campo">
+          <label>Costo de entrada</label>
+          <input type="text" [(ngModel)]="nuevoLugar.entrance_fee" name="costo" placeholder="Ej: Gratis, L 50" />
+        </div>
+
+        <div class="campo">
+          <label>Imagen (opcional)</label>
+          <input type="file" (change)="onImageSelected($event)" accept="image/*" name="imagen" />
+        </div>
+
+        <div class="campo">
+          <label>Ubicación (opcional)</label>
+          <button type="button" class="btn-secundario" (click)="obtenerUbicacion()">
+            📍 Obtener ubicación actual
+          </button>
+          <span *ngIf="ubicacion" class="ubicacion-info">
+            Lat: {{ ubicacion.lat | number:'1.4' }}, Lng: {{ ubicacion.lng | number:'1.4' }}
+          </span>
+        </div>
+
+        <div class="acciones-modal">
+          <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-guardar" [disabled]="enviando">
+            {{ enviando ? 'Guardando...' : 'Guardar lugar' }}
+          </button>
+        </div>
+      </form>
     </div>
-  </section>
-</app-main-layout>
+  </div>
+</div>

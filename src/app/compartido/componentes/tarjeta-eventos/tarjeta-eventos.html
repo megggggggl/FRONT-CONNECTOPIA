@@ -1,0 +1,96 @@
+<article class="tarjeta-evento">
+  <!-- Imagen del evento -->
+  <div class="imagen-evento-contenedor">
+    <img
+      *ngIf="evento.images?.length"
+      [src]="evento.images[0]"
+      [alt]="evento.title"
+      class="imagen-evento"
+    />
+    <div *ngIf="!evento.images?.length" class="imagen-evento-vacia">
+      <span>📅</span>
+    </div>
+    <span class="estado-evento" [ngClass]="obtenerClaseEstado()">
+      {{ evento.status }}
+    </span>
+  </div>
+
+  <!-- Contenido -->
+  <div class="contenido-evento">
+    <p class="categoria-evento">Evento</p>
+    <h3 class="titulo-evento">{{ evento.title }}</h3>
+    <p class="descripcion-evento">
+      {{ evento.description || 'Sin descripción.' }}
+    </p>
+
+    <!-- Fechas y ubicación -->
+    <div class="detalles-evento">
+      <div class="detalle">
+        <span class="detalle-icono">📅</span>
+        <span>{{ evento.start_date | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div *ngIf="evento.end_date" class="detalle">
+        <span class="detalle-icono">⏳</span>
+        <span>{{ evento.end_date | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="detalle">
+        <span class="detalle-icono">📍</span>
+        <span>{{ evento.address || 'No especificada' }}</span>
+      </div>
+    </div>
+
+    <!-- Cupo -->
+    <p class="cupo-evento">
+      👥 {{ obtenerCupo() }}
+    </p>
+
+    <!-- Acciones -->
+    <div class="acciones-evento">
+      <!-- Botón Eliminar (solo admin) -->
+      <button
+        *ngIf="esAdmin"
+        type="button"
+        class="boton-eliminar"
+        [disabled]="eliminando"
+        (click)="emitirEliminar()"
+      >
+        {{ eliminando ? 'Eliminando...' : 'Eliminar' }}
+      </button>
+
+      <!-- Botón de Registrarse / Cancelar (solo si NO es admin) -->
+      <ng-container *ngIf="!esAdmin">
+        <button
+          *ngIf="!estaInscrito"
+          type="button"
+          class="boton-registrarse"
+          [disabled]="registrandose"
+          (click)="emitirRegistrarse()"
+        >
+          {{ registrandose ? 'Registrando...' : 'Registrarme' }}
+        </button>
+
+        <button
+          *ngIf="estaInscrito"
+          type="button"
+          class="boton-cancelar"
+          [disabled]="cancelandoRegistro"
+          (click)="emitirCancelarRegistro()"
+        >
+          {{ cancelandoRegistro ? 'Cancelando...' : 'Cancelar inscripción' }}
+        </button>
+      </ng-container>
+   <div class="rsvp-section">
+  <button class="btn-rsvp" [class.active]="rsvpStatus === 'interested'" (click)="rsvp('interested')">
+    💡 Me interesa
+  </button>
+  <button class="btn-rsvp" [class.active]="rsvpStatus === 'attending'" (click)="rsvp('attending')">
+    ✅ Asistiré
+  </button>
+  <button *ngIf="rsvpStatus !== 'none'" class="btn-rsvp" (click)="rsvp('not_attending')">
+    ❌ Cancelar
+  </button>
+  <span class="rsvp-count">👥 {{ rsvpCounts.confirmados }} asistentes</span>
+</div>
+    </div>
+  </div>
+</article>

@@ -46,7 +46,7 @@ export interface ServicioResumen {
   email: string | null;
   website: string | null;
   images: string[];
-  avg_rating: number | string | null;
+  avg_rating: number | string;
   reviews_count: number | null;
   is_premium: boolean;
   is_verified: boolean;
@@ -72,3 +72,24 @@ export interface Resena {
   };
   servicio_nombre?: string;
 }
+// ... (las interfaces que ya tienes)
+
+export interface Publicacion {
+  id: string;
+  author_id: string;
+  title: string;
+  content: string;
+  status?: string;
+  created_at?: string;
+}
+
+export interface Denuncia {
+  id: string;
+  author_id: string;
+  title: string;
+  description: string;
+  status?: string;
+  created_at?: string;
+}
+
+// ... resto

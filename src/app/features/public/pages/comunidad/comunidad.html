@@ -1,0 +1,25 @@
+<div class="comunidad-container">
+  <div class="page-header">
+    <h1>🌐 Comunidad</h1>
+    <p>Mantente informado con anuncios, alertas, eventos y empleos de tu vecindario</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-comunidad">
+    <div class="filtro-tipo">
+      <label for="tipo">Filtrar por tipo:</label>
+      <select id="tipo" [(ngModel)]="tipoFiltro" (change)="onTipoChange()">
+        <option *ngFor="let t of tipos" [value]="t.value">{{ t.label }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-urgentes">
+      <label>
+        <input type="checkbox" [(ngModel)]="soloUrgentes" (change)="onUrgentesChange()" />
+        🔴 Solo urgentes
+      </label>
+    </div>
+  </div>
+
+  <app-publicidad [tipoFiltro]="tipoFiltro" [soloUrgentes]="soloUrgentes"></app-publicidad>
+</div>

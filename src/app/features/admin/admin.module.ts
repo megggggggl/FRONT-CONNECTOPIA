@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminRoutingModule } from './admin-routing.module';
-import { AdminLayout } from '../../core/layout/admin-layout/admin-layout';
 
 // Componentes standalone (todos deben existir y exportar *PageComponent)
 import { DashboardPageComponent } from './pages/dashboard/dashboard';
@@ -12,13 +11,13 @@ import { EventsPageComponent } from './pages/events/events';
 import { ReportsPageComponent } from './pages/reports/reports';
 import { RolesPageComponent } from './pages/roles/roles';
 import { TurismoPageComponent } from './pages/turismo/turismo';
-
+import { MainLayout } from '../../core/layout/main-layout/main-layout';
 @NgModule({
   imports: [
     CommonModule,
     RouterModule,
     AdminRoutingModule,
-    AdminLayout,
+    MainLayout,
     DashboardPageComponent,
     CategoriesPageComponent,
     UsersPageComponent,

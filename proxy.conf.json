@@ -1,10 +1,10 @@
+
+
 {
   "/api": {
-    "target": "https://rethink-relight-prong.ngrok-free.dev",
+    "target": "https://rethink-relight-prong.ngrok-free.dev/api",
     "secure": false,
     "changeOrigin": true,
-    "headers": {
-      "ngrok-skip-browser-warning": "true"
-    }
+    "logLevel": "debug"
   }
 }

@@ -1,0 +1,108 @@
+<div class="denuncias-container">
+  <div class="header">
+    <h1>🚧 Denuncias Comunitarias</h1>
+    <button class="btn-nueva" (click)="abrirModal()">+ Nueva denuncia</button>
+  </div>
+
+  <div class="filtros">
+    <select [(ngModel)]="filtroEstado" (change)="cargarDenuncias()">
+      <option value="todas">Todas</option>
+      <option value="pendiente">Pendiente</option>
+      <option value="en_proceso">En proceso</option>
+      <option value="resuelto">Resuelto</option>
+      <option value="rechazado">Rechazado</option>
+    </select>
+  </div>
+
+  <div *ngIf="loading" class="loading">Cargando denuncias...</div>
+  <div *ngIf="error && !loading" class="error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && denunciasFiltradas.length === 0">
+    No hay denuncias con este estado.
+  </div>
+
+  <div class="denuncia-card" *ngFor="let d of denunciasFiltradas">
+    <div class="card-header">
+      <span class="tipo">{{ d.type }}</span>
+      <span class="prioridad" [ngClass]="obtenerClasePrioridad(d.priority)">
+        {{ d.priority }}
+      </span>
+      <span class="estado" [ngClass]="obtenerClaseEstado(d.status)">
+        {{ d.status }}
+      </span>
+    </div>
+    <h3>{{ d.title }}</h3>
+    <p>{{ d.description }}</p>
+    <p *ngIf="d.address" class="direccion">📍 {{ d.address }}</p>
+    <img *ngIf="d.photo_url" [src]="d.photo_url" class="foto" />
+    <div class="footer">
+      <small>Reportado: {{ d.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
+      <small *ngIf="d.resolved_at">✅ Resuelto: {{ d.resolved_at | date:'dd/MM/yyyy HH:mm' }}</small>
+    </div>
+    <div *ngIf="esAdmin" class="acciones-admin">
+      <button (click)="cambiarEstado(d, 'en_proceso')">En proceso</button>
+      <button (click)="cambiarEstado(d, 'resuelto')">Resolver</button>
+      <button (click)="cambiarEstado(d, 'rechazado')">Rechazar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" *ngIf="modalAbierto" (click)="cerrarModal()">
+  <div class="modal-contenido" (click)="$event.stopPropagation()">
+    <button class="btn-cerrar" (click)="cerrarModal()">×</button>
+    <h2>Nueva denuncia comunitaria</h2>
+
+    <form (ngSubmit)="enviarDenuncia()">
+      <div class="campo">
+        <label>Título *</label>
+        <input type="text" [(ngModel)]="nuevaDenuncia.titulo" name="tituloModal" required />
+      </div>
+      <div class="campo">
+        <label>Descripción *</label>
+        <textarea [(ngModel)]="nuevaDenuncia.descripcion" name="descripcionModal" rows="3" required></textarea>
+      </div>
+
+      <div class="campo-row">
+        <div class="campo">
+          <label>Tipo</label>
+          <select [(ngModel)]="nuevaDenuncia.tipo" name="tipoModal">
+            <option *ngFor="let t of tipos" [value]="t.value">{{ t.label }}</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Prioridad</label>
+          <select [(ngModel)]="nuevaDenuncia.prioridad" name="prioridadModal">
+            <option *ngFor="let p of prioridades" [value]="p.value">{{ p.label }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>Dirección (opcional)</label>
+        <input type="text" [(ngModel)]="nuevaDenuncia.direccion" name="direccionModal" />
+      </div>
+
+      <div class="ubicacion-modal">
+        <button type="button" class="btn-secundario" (click)="obtenerUbicacion()">📍 Obtener ubicación</button>
+        <span *ngIf="nuevaDenuncia.ubicacion">Ubicación obtenida</span>
+        <span *ngIf="!nuevaDenuncia.ubicacion">(sin ubicación)</span>
+      </div>
+
+      <div class="campo">
+        <label>Foto (opcional)</label>
+        <input type="file" (change)="seleccionarImagen($event)" accept="image/*" />
+        <div *ngIf="nuevaDenuncia.imagen" class="preview">
+          <img [src]="nuevaDenuncia.imagen" alt="Vista previa" />
+        </div>
+      </div>
+
+      <div class="acciones-modal">
+        <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn-enviar" [disabled]="enviando">
+          {{ enviando ? 'Enviando...' : 'Enviar denuncia' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

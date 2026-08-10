@@ -1,233 +1,218 @@
-// core/services/place.service.ts
+// src/app/core/services/place.service.ts
 import { Injectable } from '@angular/core';
-import { timeout, catchError, of, map } from 'rxjs';
-import { ApiServicio } from './api.servicio';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map, timeout } from 'rxjs/operators';
+import { Place } from '../models/place.model';
+import { WebServices } from './webServices';
 
-// ============================================================
-// INTERFACES
-// ============================================================
-
-export interface Place {
-  id: string;
-  name: string;
-  description: string | null;
-  category_id: number | null;
-  location: any;
-  address: string | null;
-  phone: string | null;
-  website: string | null;
-  images: string[];
-  avg_rating: number;
-  reviews_count: number;
-  schedule: any;
-  entrance_fee: string | null;
-  is_featured: boolean;
-  created_by?: string | null;
-  created_at: string;
-  updated_at: string;
+export interface PlaceFilters {
+  category_id?: number;
+  search?: string;
+  featured?: boolean;
+  cerca?: {
+    lat: number;
+    lng: number;
+    radio?: number; // en metros, por defecto 5000
+  };
+  page?: number;
+  limit?: number;
+  orderBy?: 'name' | 'created_at' | 'avg_rating' | 'distance';
+  orderDir?: 'asc' | 'desc';
 }
 
 export interface PlaceResponse {
-  message?: string;
   data: Place[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
-
-export interface PlaceSingleResponse {
-  message?: string;
-  data: Place;
-}
-
-export interface PlaceCreateData {
-  name: string;
-  description?: string | null;
-  category_id?: number | null;
-  location?: any;
-  address?: string | null;
-  phone?: string | null;
-  website?: string | null;
-  images?: string[];
-  schedule?: any;
-  entrance_fee?: string | null;
-  is_featured?: boolean;
-}
-
-export interface PlaceUpdateData extends Partial<PlaceCreateData> {}
-
-export interface PlaceFilters {
-  category?: number | string;
-  search?: string;
-  is_featured?: boolean;
-  limit?: number;
-  offset?: number;
-}
-
-// ============================================================
-// FUNCIÓN HELPER PARA EXTRAER EL ARRAY
-// ============================================================
-function extraerArray(respuesta: any): any[] {
-  console.log('📦 Extraer array de:', respuesta);
-  
-  if (!respuesta) {
-    console.warn('⚠️ Respuesta vacía o nula');
-    return [];
-  }
-
-  if (Array.isArray(respuesta)) {
-    console.log('✅ Es un array directo, longitud:', respuesta.length);
-    return respuesta;
-  }
-
-  if (respuesta.data !== undefined) {
-    if (Array.isArray(respuesta.data)) {
-      console.log('✅ Tiene data como array, longitud:', respuesta.data.length);
-      return respuesta.data;
-    }
-    if (respuesta.data && typeof respuesta.data === 'object') {
-      if (Array.isArray(respuesta.data.data)) {
-        console.log('✅ data.data es array, longitud:', respuesta.data.data.length);
-        return respuesta.data.data;
-      }
-      for (const key of Object.keys(respuesta.data)) {
-        if (Array.isArray(respuesta.data[key])) {
-          console.log(`✅ data.${key} es array, longitud:`, respuesta.data[key].length);
-          return respuesta.data[key];
-        }
-      }
-    }
-  }
-
-  for (const key of Object.keys(respuesta)) {
-    if (Array.isArray(respuesta[key]) && key !== 'data') {
-      console.log(`✅ Propiedad '${key}' es array, longitud:`, respuesta[key].length);
-      return respuesta[key];
-    }
-  }
-
-  console.warn('⚠️ No se encontró ningún array en la respuesta');
-  return [];
-}
-
-// ============================================================
-// SERVICIO
-// ============================================================
 
 @Injectable({ providedIn: 'root' })
 export class PlaceService {
-  constructor(private api: ApiServicio) {}
+  private readonly defaultTimeout = 15000; // 15 segundos
 
-  // ============================================================
-  // LISTAR LUGARES CON FILTROS
-  // ============================================================
-  listarLugares(filtros?: PlaceFilters) {
-  let url = '/places';
-  const params = new URLSearchParams();
-  // ... parámetros
+  constructor(private http: HttpClient) {}
 
-  return this.api.get<PlaceResponse>(url).pipe(
-    map((respuesta) => {
-      // El backend devuelve { message, data: [] }
-      return respuesta?.data || [];
-    }),
-    timeout(10000),
-    catchError((error) => {
-      console.error('Error al listar lugares:', error);
-      return of([]);
-    })
-  );
+  /**
+   * LISTAR LUGARES TURÍSTICOS
+   * @param filters - Filtros opcionales
+   * @returns Observable con array de Places
+   */
+  listarLugares(filters?: PlaceFilters): Observable<Place[]> {
+    let params = new HttpParams();
 
+    if (filters) {
+      if (filters.category_id) {
+        params = params.set('category_id', filters.category_id.toString());
+      }
+      if (filters.search) {
+        params = params.set('search', filters.search);
+      }
+      if (filters.featured !== undefined) {
+        params = params.set('featured', filters.featured.toString());
+      }
+      if (filters.cerca) {
+        params = params.set('lat', filters.cerca.lat.toString());
+        params = params.set('lng', filters.cerca.lng.toString());
+        if (filters.cerca.radio) {
+          params = params.set('radio', filters.cerca.radio.toString());
+        }
+      }
+      if (filters.page) {
+        params = params.set('page', filters.page.toString());
+      }
+      if (filters.limit) {
+        params = params.set('limit', filters.limit.toString());
+      }
+      if (filters.orderBy) {
+        params = params.set('orderBy', filters.orderBy);
+      }
+      if (filters.orderDir) {
+        params = params.set('orderDir', filters.orderDir);
+      }
+    }
 
-    const query = params.toString();
-    if (query) url += `?${query}`;
-
-    return this.api.get<any>(url).pipe(
-      map((respuesta) => extraerArray(respuesta) as Place[]),
-      timeout(10000),
-      catchError((error) => {
-        console.error('Error al listar lugares:', error);
-        return of([] as Place[]);
-      })
-    );
+    return this.http.get<PlaceResponse>(WebServices.PlacesList, { params })
+      .pipe(
+        timeout(this.defaultTimeout),
+        map((response) => {
+          // Manejar diferentes estructuras de respuesta
+          if (response && Array.isArray(response)) {
+            return response;
+          }
+          if (response && response.data && Array.isArray(response.data)) {
+            return response.data;
+          }
+          return [];
+        }),
+        catchError((error) => {
+          console.error('❌ Error al listar lugares:', error);
+          return throwError(() => new Error('No se pudieron cargar los lugares turísticos'));
+        })
+      );
   }
 
-  // ============================================================
-  // OBTENER LUGAR POR ID
-  // ============================================================
-  obtenerLugar(id: string) {
-    return this.api.get<any>(`/places/${id}`).pipe(
-      map((respuesta) => respuesta?.data || respuesta),
-      timeout(8000),
-      catchError((error) => {
-        console.error(`Error al obtener lugar ${id}:`, error);
-        return of(null);
-      })
-    );
+  /**
+   * OBTENER LUGAR POR ID
+   * @param id - UUID del lugar
+   * @returns Observable con el Place completo
+   */
+  obtenerLugar(id: string): Observable<Place> {
+    return this.http.get<Place>(WebServices.PlaceGet(id))
+      .pipe(
+        timeout(this.defaultTimeout),
+        catchError((error) => {
+          console.error(`❌ Error al obtener lugar ${id}:`, error);
+          return throwError(() => new Error('No se pudo cargar el lugar turístico'));
+        })
+      );
   }
 
-  // ============================================================
-  // CREAR NUEVO LUGAR (solo admin)
-  // ============================================================
-  crearLugar(data: PlaceCreateData) {
-    return this.api.post<any>('/places', data).pipe(
-      map((respuesta) => respuesta?.data || respuesta),
-      timeout(10000),
-      catchError((error) => {
-        console.error('Error al crear lugar:', error);
-        throw error;
-      })
-    );
+  /**
+   * CREAR LUGAR TURÍSTICO
+   * @param lugar - Datos del lugar (Partial<Place>)
+   * @returns Observable con el Place creado
+   */
+  crearLugar(lugar: Partial<Place>): Observable<Place> {
+    return this.http.post<Place>(WebServices.PlacesCreate, lugar)
+      .pipe(
+        timeout(this.defaultTimeout),
+        catchError((error) => {
+          console.error('❌ Error al crear lugar:', error);
+          return throwError(() => new Error('No se pudo crear el lugar turístico'));
+        })
+      );
   }
 
-  // ============================================================
-  // ACTUALIZAR LUGAR (solo admin)
-  // ============================================================
-  actualizarLugar(id: string, data: PlaceUpdateData) {
-    return this.api.put<any>(`/places/${id}`, data).pipe(
-      map((respuesta) => respuesta?.data || respuesta),
-      timeout(10000),
-      catchError((error) => {
-        console.error(`Error al actualizar lugar ${id}:`, error);
-        throw error;
-      })
-    );
+  /**
+   * ACTUALIZAR LUGAR TURÍSTICO
+   * @param id - UUID del lugar
+   * @param lugar - Datos a actualizar (Partial<Place>)
+   * @returns Observable con el Place actualizado
+   */
+  actualizarLugar(id: string, lugar: Partial<Place>): Observable<Place> {
+    return this.http.patch<Place>(WebServices.PlaceUpdate(id), lugar)
+      .pipe(
+        timeout(this.defaultTimeout),
+        catchError((error) => {
+          console.error(`❌ Error al actualizar lugar ${id}:`, error);
+          return throwError(() => new Error('No se pudo actualizar el lugar turístico'));
+        })
+      );
   }
 
-  // ============================================================
-  // ELIMINAR LUGAR (soft delete, solo admin)
-  // ============================================================
-  eliminarLugar(id: string) {
-    return this.api.delete<any>(`/places/${id}`).pipe(
-      map((respuesta) => respuesta?.message || respuesta),
-      timeout(8000),
-      catchError((error) => {
-        console.error(`Error al eliminar lugar ${id}:`, error);
-        throw error;
-      })
-    );
+  /**
+   * ELIMINAR LUGAR TURÍSTICO (soft delete)
+   * @param id - UUID del lugar
+   * @returns Observable<void>
+   */
+  eliminarLugar(id: string): Observable<void> {
+    return this.http.delete<void>(WebServices.PlaceDelete(id))
+      .pipe(
+        timeout(this.defaultTimeout),
+        catchError((error) => {
+          console.error(`❌ Error al eliminar lugar ${id}:`, error);
+          return throwError(() => new Error('No se pudo eliminar el lugar turístico'));
+        })
+      );
   }
 
-  // ============================================================
-  // MÉTODOS AUXILIARES
-  // ============================================================
-  listarLugaresPorCategoria(categoryId: number) {
-    return this.listarLugares({ category: categoryId });
+  /**
+   * OBTENER LUGARES CERCANOS (versión simplificada)
+   * @param lat - Latitud
+   * @param lng - Longitud
+   * @param radio - Radio en metros (por defecto 5000)
+   * @returns Observable con array de Places cercanos
+   */
+  lugaresCercanos(lat: number, lng: number, radio: number = 5000): Observable<Place[]> {
+    return this.listarLugares({
+      cerca: { lat, lng, radio },
+      orderBy: 'distance',
+      orderDir: 'asc'
+    });
   }
 
-  listarLugaresDestacados() {
-    return this.listarLugares({ is_featured: true });
+  /**
+   * OBTENER LUGARES DESTACADOS
+   * @param limit - Cantidad máxima (por defecto 6)
+   * @returns Observable con array de Places destacados
+   */
+  lugaresDestacados(limit: number = 6): Observable<Place[]> {
+    return this.listarLugares({
+      featured: true,
+      limit,
+      orderBy: 'avg_rating',
+      orderDir: 'desc'
+    });
   }
 
-  buscarLugares(query: string) {
-    return this.listarLugares({ search: query });
+  /**
+   * BUSCAR LUGARES POR TEXTO
+   * @param query - Término de búsqueda
+   * @param limit - Cantidad máxima (por defecto 20)
+   * @returns Observable con array de Places que coinciden
+   */
+  buscarLugares(query: string, limit: number = 20): Observable<Place[]> {
+    return this.listarLugares({
+      search: query,
+      limit
+    });
   }
 
-  lugaresCercanos(lat: number, lng: number, radius: number = 5000) {
-    return this.api.get<any>(`/places/nearby?lat=${lat}&lng=${lng}&radius=${radius}`).pipe(
-      map((respuesta) => extraerArray(respuesta) as Place[]),
-      timeout(10000),
-      catchError((error) => {
-        console.error('Error al obtener lugares cercanos:', error);
-        return of([] as Place[]);
-      })
-    );
+  /**
+   * OBTENER LUGARES POR CATEGORÍA
+   * @param categoryId - ID de la categoría
+   * @param limit - Cantidad máxima (por defecto 20)
+   * @returns Observable con array de Places de esa categoría
+   */
+  lugaresPorCategoria(categoryId: number, limit: number = 20): Observable<Place[]> {
+    return this.listarLugares({
+      category_id: categoryId,
+      limit
+    });
   }
 }

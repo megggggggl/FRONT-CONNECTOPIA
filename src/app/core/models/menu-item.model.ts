@@ -1,8 +1,13 @@
+// menu-item.model.ts
 export interface MenuItem {
   id: string;
   label: string;
-  icon: string; // clase CSS (ej: 'bi-house', 'bi-person')
-  route: string | string[];
-  roles?: string[]; // roles que pueden verlo (si no se especifica, visible para todos)
+  icon: string;
+  route?: string;
+  roles?: string[];
+  group?: string;         // para agrupar visualmente
+  children?: MenuItem[];  // subitems
+  expanded?: boolean;     // estado del acordeón
   order?: number;
+  badge?: string;        // para mostrar un badge (ej: notificaciones)
 }

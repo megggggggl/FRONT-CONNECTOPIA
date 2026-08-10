@@ -1,3 +1,4 @@
+// telegram-citas.service.ts
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
@@ -16,7 +17,6 @@ import {
 @Injectable({
   providedIn: 'root'
 })
-
 export class TelegramCitasService {
   private readonly telegramBotUsername = 'ConnectopiaHNBot';
   private readonly isBrowser: boolean;
@@ -27,18 +27,20 @@ export class TelegramCitasService {
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
-// En TelegramCitasService, agregar:
-obtenerServiciosDisponibles(): Observable<ServicioDisponibleCita[]> {
-  return this.http.get<ServicioDisponibleCita[]>(WebServices.ServicesAppointmentOptions).pipe(
-    timeout(8000),
-    map((respuesta: any) => {
-      if (Array.isArray(respuesta)) return respuesta;
-      if (respuesta && respuesta.data && Array.isArray(respuesta.data)) return respuesta.data;
-      return [];
-    }),
-    catchError(() => of([]))
-  );
-}
+
+  // Obtener servicios disponibles para citas
+  obtenerServiciosDisponibles(): Observable<ServicioDisponibleCita[]> {
+    return this.http.get<ServicioDisponibleCita[]>(WebServices.ServicesAppointmentOptions).pipe(
+      timeout(8000),
+      map((respuesta: any) => {
+        if (Array.isArray(respuesta)) return respuesta;
+        if (respuesta && respuesta.data && Array.isArray(respuesta.data)) return respuesta.data;
+        return [];
+      }),
+      catchError(() => of([]))
+    );
+  }
+
   crearEnlaceVinculacion(): Observable<RespuestaEnlaceTelegram> {
     return this.http.post<RespuestaEnlaceTelegram>(
       WebServices.BotLinkToken,
@@ -82,7 +84,6 @@ obtenerServiciosDisponibles(): Observable<ServicioDisponibleCita[]> {
             persisted: false
           });
         }
-
         return throwError(() => error);
       })
     );
@@ -114,12 +115,22 @@ obtenerServiciosDisponibles(): Observable<ServicioDisponibleCita[]> {
     );
   }
 
+  // ============================================================
+  // MÉTODOS PARA EXTRAER Y CONSTRUIR ENLACES (SIEMPRE WEB)
+  // ============================================================
+
   extraerUrlTelegram(respuesta: RespuestaEnlaceTelegram | null | undefined): string {
-    return respuesta?.url
+    const url = respuesta?.url
       ?? respuesta?.link
       ?? respuesta?.data?.url
       ?? respuesta?.data?.link
       ?? '';
+
+    // Si es tg://, convertimos a https://t.me/
+    if (url.startsWith('tg://')) {
+      return this.convertirTgToWeb(url);
+    }
+    return url;
   }
 
   extraerComandoInicio(respuesta: RespuestaEnlaceTelegram | null | undefined): string {
@@ -148,54 +159,53 @@ obtenerServiciosDisponibles(): Observable<ServicioDisponibleCita[]> {
     return payload ? `/start ${payload}` : '';
   }
 
-  crearDeepLinkTelegramDesktop(payload: string): string {
+  // Ya no usamos deep link, solo web
+  crearLinkTelegramWeb(payload: string): string {
     if (!payload) return '';
-
-    const params = new URLSearchParams({
-      domain: this.telegramBotUsername,
-      start: payload
-    });
-
-    return `tg://resolve?${params.toString()}`;
+    return `https://t.me/${this.telegramBotUsername}?start=${payload}`;
   }
 
-  crearLinkTelegramWeb(payload: string, urlBackend = ''): string {
-    if (urlBackend) return urlBackend;
-    if (!payload) return '';
-
-    const params = new URLSearchParams({ start: payload });
-    return `https://t.me/${this.telegramBotUsername}?${params.toString()}`;
-  }
-
-  abrirTelegramDesktop(deepLink: string): boolean {
-    if (!this.isBrowser || !deepLink) return false;
-
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = deepLink;
-    document.body.appendChild(iframe);
-    window.setTimeout(() => iframe.remove(), 1200);
-
-    return true;
-  }
+  // ============================================================
+  // MÉTODOS PARA ABRIR TELEGRAM (SIEMPRE WEB)
+  // ============================================================
 
   abrirTelegramWeb(url: string): boolean {
     if (!this.isBrowser || !url) return false;
 
-    const ventana = window.open(url, '_blank', 'noopener,noreferrer');
+    // Si es tg://, convertir a web
+    let webUrl = url;
+    if (url.startsWith('tg://')) {
+      webUrl = this.convertirTgToWeb(url);
+    }
+
+    const ventana = window.open(webUrl, '_blank', 'noopener,noreferrer');
     return Boolean(ventana);
   }
 
+  // Método unificado (solo web)
   abrirTelegram(url: string): boolean {
-    if (!this.isBrowser || !url) return false;
-
-    const ventana = window.open(url, '_blank', 'noopener,noreferrer');
-    return Boolean(ventana);
-  }
-
-  abrirTelegramMismaPestana(url: string): boolean {
     return this.abrirTelegramWeb(url);
   }
+
+  // Método auxiliar para convertir tg:// a https://t.me/
+  private convertirTgToWeb(tgUrl: string): string {
+    // Ejemplo: tg://resolve?domain=ConnectopiaHNBot&start=abc123
+    const match = tgUrl.match(/[?&]start=([^&]+)/);
+    if (match) {
+      return `https://t.me/${this.telegramBotUsername}?start=${match[1]}`;
+    }
+    // Si no tiene start, intentamos extraer el dominio
+    const domainMatch = tgUrl.match(/domain=([^&]+)/);
+    if (domainMatch) {
+      return `https://t.me/${domainMatch[1]}`;
+    }
+    // Fallback: reemplazar protocolo
+    return tgUrl.replace('tg://', 'https://t.me/');
+  }
+
+  // ============================================================
+  // MÉTODOS PARA ETIQUETAS Y FORMATEOS (sin cambios)
+  // ============================================================
 
   obtenerEtiquetaEstado(estado: string | null | undefined): string {
     const normalizado = String(estado ?? 'pending').trim().toLowerCase();
@@ -270,6 +280,10 @@ obtenerServiciosDisponibles(): Observable<ServicioDisponibleCita[]> {
   obtenerDescripcionSolicitud(cita: SolicitudCita): string {
     return cita.description?.trim() || 'Sin descripcion indicada';
   }
+
+  // ============================================================
+  // MÉTODOS PRIVADOS (sin cambios)
+  // ============================================================
 
   private extraerListaSolicitudes(
     respuesta: SolicitudCita[] | RespuestaListaSolicitudes | null | undefined
@@ -457,5 +471,4 @@ obtenerServiciosDisponibles(): Observable<ServicioDisponibleCita[]> {
     const separador = url.includes('?') ? '&' : '?';
     return `${url}${separador}_t=${Date.now()}`;
   }
-  
 }
