@@ -1,7 +1,6 @@
-// src/app/core/services/report.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Report } from '../models/report.model';
 import { WebServices } from './webServices';
 
@@ -10,11 +9,17 @@ export class ReportService {
   constructor(private http: HttpClient) {}
 
   listarDenuncias(): Observable<Report[]> {
-    return this.http.get<Report[]>(WebServices.ReportsList);
+    return this.http.get<any>(WebServices.ReportsList).pipe(
+      map(response => {
+        // Si la respuesta tiene una propiedad 'data', usarla; si no, asumir que la respuesta es el array
+        if (response && Array.isArray(response)) return response;
+        if (response && response.data && Array.isArray(response.data)) return response.data;
+        return [];
+      })
+    );
   }
 
   crearDenuncia(report: Partial<Report>): Observable<Report> {
-    // Asegurar que el status sea uno de los literales permitidos
     const payload = {
       ...report,
       status: (report.status as 'pendiente' | 'en_proceso' | 'resuelto' | 'rechazado') || 'pendiente'

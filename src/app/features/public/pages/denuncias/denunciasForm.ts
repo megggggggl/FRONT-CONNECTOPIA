@@ -66,29 +66,33 @@ export class DenunciasComunitariasComponent implements OnInit {
     this.esAdmin = this.authService.getUserRole() === 'admin';
     this.cargarDenuncias();
   }
+// Asegurar que cargarDenuncias maneje correctamente la respuesta
+cargarDenuncias(): void {
+  this.loading = true;
+  this.error = '';
+  this.reportService.listarDenuncias().subscribe({
+    next: (data) => {
+      // data ya debería ser un array gracias al map del servicio
+      this.denuncias = Array.isArray(data) ? data : [];
+      this.loading = false;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error('Error al cargar denuncias:', err);
+      this.error = 'Error al cargar denuncias.';
+      this.denuncias = []; // Asegurar array vacío en caso de error
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
 
-  cargarDenuncias(): void {
-    this.loading = true;
-    this.error = '';
-    this.reportService.listarDenuncias().subscribe({
-      next: (data) => {
-        this.denuncias = data || [];
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error al cargar denuncias:', err);
-        this.error = 'Error al cargar denuncias.';
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
-    });
+get denunciasFiltradas(): Report[] {
+  if (this.filtroEstado === 'todas') {
+    return this.denuncias || [];
   }
-
-  get denunciasFiltradas(): Report[] {
-    if (this.filtroEstado === 'todas') return this.denuncias;
-    return this.denuncias.filter(d => d.status === this.filtroEstado);
-  }
+  return (this.denuncias || []).filter(d => d.status === this.filtroEstado);
+}
 
   // ===== MODAL =====
   abrirModal(): void {
