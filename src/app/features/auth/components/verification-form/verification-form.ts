@@ -43,7 +43,10 @@ export class VerificationForm implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ Verificar que el usuario esté autenticado
+    // ✅ Verificar autenticación
+    const token = this.authService.getToken();
+    console.log('🔍 VerificationForm.ngOnInit - Token en localStorage:', token ? '✅ Sí (primeros 20 chars: ' + token.substring(0, 20) + '...)' : '❌ No');
+
     if (!this.authService.isAuthenticated()) {
       console.warn('⚠️ Usuario no autenticado, redirigiendo a login...');
       this.router.navigate(['/auth']);
@@ -53,7 +56,6 @@ export class VerificationForm implements OnInit {
     const user = this.authService.getUser();
     console.log('👤 Usuario autenticado:', user?.email);
 
-    // Si ya está verificado, redirigir
     if (user?.id_verified) {
       this.authService.redirigirPorRol(user);
     }
@@ -192,9 +194,9 @@ export class VerificationForm implements OnInit {
   }
 
   // ============================================================
-  // ENVÍO DE VERIFICACIÓN
+  // ENVÍO DE VERIFICACIÓN CON HEADERS EXPLÍCITOS
   // ============================================================
-  enviarVerificacion(): void {
+  async enviarVerificacion(): Promise<void> {
     if (!this.selfieFile) {
       this.error = 'Debes tomarte una selfie.';
       return;
@@ -212,19 +214,24 @@ export class VerificationForm implements OnInit {
     formData.append('documento', this.documentFrontFile);
     formData.append('selfie', this.selfieFile);
 
-    // Obtener headers con token
+    // 🔥 OBTENER TOKEN Y AGREGARLO EXPLÍCITAMENTE
     const token = this.authService.getToken();
+    console.log('🔑 Enviando verificación con token:', token ? '✅ Sí (primeros 20 chars: ' + token.substring(0, 20) + '...)' : '❌ No');
+
     const headers = new HttpHeaders({
       'Authorization': token ? `Bearer ${token}` : '',
       'ngrok-skip-browser-warning': 'true'
     });
 
+    console.log('📤 Enviando a:', WebServices.VerificationStart);
+    console.log('📦 Headers:', headers);
+
     this.http.post(WebServices.VerificationStart, formData, { headers }).subscribe({
       next: (respuesta: any) => {
+        console.log('✅ Verificación exitosa:', respuesta);
         this.exito = '✅ Verificación exitosa. Usuario verificado.';
         this.cargando = false;
         setTimeout(() => {
-          // Recargar usuario para actualizar id_verified
           this.authService.getMe().subscribe((user: any) => {
             if (user) {
               localStorage.setItem('usuario', JSON.stringify(user));
@@ -235,8 +242,13 @@ export class VerificationForm implements OnInit {
       },
       error: (error: any) => {
         this.cargando = false;
-        this.error = error.error?.error || 'Error al verificar.';
         console.error('❌ Error en verificación:', error);
+        if (error.status === 401) {
+          this.error = 'Token inválido o expirado. Por favor, inicia sesión nuevamente.';
+          setTimeout(() => this.router.navigate(['/auth']), 2000);
+        } else {
+          this.error = error.error?.error || 'Error al verificar.';
+        }
       }
     });
   }

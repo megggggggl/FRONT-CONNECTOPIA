@@ -20,9 +20,6 @@ export class AuthService {
     private router: Router
   ) {}
 
-  // ============================================================
-  // MÉTODOS DE API
-  // ============================================================
   login(email: string, password: string) {
     return this.http.post<any>(WebServices.AuthLogin, { email, password });
   }
@@ -31,36 +28,33 @@ export class AuthService {
     return this.http.post<any>(WebServices.AuthRegister, { name, email, password, role });
   }
 
-  // ============================================================
-  // GESTIÓN DE SESIÓN
-  // ============================================================
   guardarSesion(respuesta: any): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    console.log('📦 Respuesta completa del login:', respuesta);
+    console.log('📦 AuthService.guardarSesion - Respuesta completa:', respuesta);
 
-    // Buscar token en diferentes ubicaciones
-    const accessToken = 
+    const accessToken =
       respuesta?.session?.access_token ||
       respuesta?.access_token ||
       respuesta?.token ||
       null;
 
-    const refreshToken = 
+    const refreshToken =
       respuesta?.session?.refresh_token ||
       respuesta?.refresh_token ||
       null;
 
-    const usuario = 
+    const usuario =
       respuesta?.user ||
       respuesta?.session?.user ||
       null;
 
     if (accessToken) {
       localStorage.setItem('access_token', accessToken);
-      console.log('✅ Token guardado correctamente');
+      console.log('✅ AuthService: Token guardado en localStorage:', accessToken.substring(0, 20) + '...');
     } else {
-      console.warn('⚠️ No se encontró token en la respuesta');
+      console.warn('⚠️ AuthService: No se encontró token en la respuesta');
+      console.warn('🔍 Estructura de la respuesta:', Object.keys(respuesta));
       return;
     }
 
@@ -70,7 +64,9 @@ export class AuthService {
 
     if (usuario) {
       localStorage.setItem('usuario', JSON.stringify(usuario));
-      console.log('✅ USUARIO LOGIN:', usuario);
+      console.log('✅ AuthService: Usuario guardado:', usuario);
+    } else {
+      console.warn('⚠️ AuthService: No se encontró usuario en la respuesta');
     }
 
     this.notifyAuthChange();

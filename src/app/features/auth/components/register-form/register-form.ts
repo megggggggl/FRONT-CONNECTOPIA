@@ -55,7 +55,6 @@ export class RegisterForm {
     this.error = '';
     this.exito = '';
 
-    // Payload de registro
     const payload: any = {
       email: this.email.trim().toLowerCase(),
       password: this.password,
@@ -79,16 +78,16 @@ export class RegisterForm {
         this.authService.login(this.email, this.password).subscribe({
           next: (loginResp: any) => {
             console.log('🔐 Login automático exitoso');
-            
+
             // Guardar sesión (token + usuario)
             this.authService.guardarSesion(loginResp);
-            
+
             // Verificar que el token se guardó
             const token = this.authService.getToken();
-            console.log('🔑 Token guardado:', token ? '✅ Sí' : '❌ No');
-            
+            console.log('🔑 Token guardado en localStorage:', token ? '✅ Sí (primeros 20 chars: ' + token.substring(0, 20) + '...)' : '❌ No');
+
             this.exito = '✅ Sesión iniciada. Redirigiendo a verificación...';
-            
+
             setTimeout(() => {
               // 3️⃣ REDIRIGIR A VERIFICACIÓN (YA CON TOKEN)
               this.router.navigate(['/auth/verificacion']);

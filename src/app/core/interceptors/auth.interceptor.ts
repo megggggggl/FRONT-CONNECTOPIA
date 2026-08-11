@@ -16,8 +16,7 @@ import { Router } from '@angular/router';
 export class AuthInterceptor implements HttpInterceptor {
   private isBrowser: boolean;
 
-  // 🔥 RUTAS PÚBLICAS (NO requieren token)
-  // ¡IMPORTANTE! /verification NO está aquí
+  // Rutas PÚBLICAS (no requieren token)
   private readonly publicRoutes: { url: string; methods?: string[] }[] = [
     { url: '/auth/login', methods: ['POST'] },
     { url: '/auth/register', methods: ['POST'] },
@@ -25,7 +24,7 @@ export class AuthInterceptor implements HttpInterceptor {
     { url: '/health' },
     { url: '/categories' },
     { url: '/places', methods: ['GET'] }
-    // ❌ /verification NO está en la lista → requiere token
+    // ❌ /verification NO está aquí → requiere token
   ];
 
   constructor(
@@ -65,12 +64,18 @@ export class AuthInterceptor implements HttpInterceptor {
             Authorization: `Bearer ${token}`
           }
         });
+        console.log('🔑 Interceptor: Token agregado a la petición:', request.url);
+      } else {
+        console.warn('⚠️ Interceptor: No hay token en localStorage para:', request.url);
       }
+    } else {
+      console.log('🌐 Interceptor: Ruta pública, sin token:', request.url);
     }
 
     return next.handle(authRequest).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
+          console.warn('⚠️ Interceptor: 401 detectado, redirigiendo a login');
           localStorage.removeItem('access_token');
           localStorage.removeItem('usuario');
           this.router.navigate(['/']);
