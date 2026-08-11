@@ -21,8 +21,8 @@
   <div *ngIf="error && !loading" class="error">{{ error }}</div>
 
   <!-- Sin resultados -->
-  <div *ngIf="!loading && !error && denunciasFiltradas.length === 0">
-    No hay denuncias con este estado.
+  <div *ngIf="!loading && !error && denunciasFiltradas.length === 0" class="empty">
+    <p>No hay denuncias con este estado.</p>
   </div>
 
   <!-- Tarjetas -->

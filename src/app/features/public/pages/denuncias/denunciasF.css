@@ -1,3 +1,4 @@
+/* src/app/features/public/pages/denuncias/denunciasForm.css */
 .denuncias-container {
   max-width: 900px;
   margin: 0 auto;
@@ -37,19 +38,21 @@
   margin-bottom: 20px;
 }
 .filtros select {
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
   font-size: 14px;
   background: white;
 }
 
-.loading, .error {
+.loading, .error, .empty {
   text-align: center;
   padding: 20px;
   color: #64748b;
 }
-.error { color: #dc2626; }
+.error {
+  color: #dc2626;
+}
 
 .denuncia-card {
   background: white;
@@ -58,6 +61,10 @@
   margin-bottom: 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   border: 1px solid #f0f4f8;
+  transition: box-shadow 0.2s;
+}
+.denuncia-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
 .card-header {
@@ -82,10 +89,22 @@
   font-size: 13px;
   font-weight: 600;
 }
-.prioridad-baja { background: #e2e8f0; color: #475569; }
-.prioridad-media { background: #fef9e7; color: #7d6608; }
-.prioridad-alta { background: #fee2e2; color: #991b1b; }
-.prioridad-urgente { background: #dc2626; color: white; }
+.prioridad-baja {
+  background: #e2e8f0;
+  color: #475569;
+}
+.prioridad-media {
+  background: #fef9e7;
+  color: #7d6608;
+}
+.prioridad-alta {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.prioridad-urgente {
+  background: #dc2626;
+  color: white;
+}
 
 .estado {
   padding: 4px 14px;
@@ -93,27 +112,47 @@
   font-size: 13px;
   font-weight: 600;
 }
-.estado-pendiente { background: #fef9e7; color: #7d6608; }
-.estado-proceso { background: #dbeafe; color: #1e40af; }
-.estado-resuelto { background: #d1fae5; color: #065f46; }
-.estado-rechazado { background: #fee2e2; color: #991b1b; }
-
-.direccion {
-  color: #64748b;
-  font-size: 14px;
-  margin: 4px 0 8px;
+.estado-pendiente {
+  background: #fef9e7;
+  color: #7d6608;
+}
+.estado-proceso {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.estado-resuelto {
+  background: #d1fae5;
+  color: #065f46;
+}
+.estado-rechazado {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
+.denuncia-card h3 {
+  margin: 4px 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+.denuncia-card p {
+  color: #475569;
+  font-size: 14px;
+  margin: 6px 0;
+}
+.direccion {
+  color: #64748b;
+  font-size: 13px;
+}
 .foto {
   max-width: 100%;
-  max-height: 300px;
+  max-height: 250px;
   border-radius: 12px;
   margin: 8px 0;
   object-fit: cover;
 }
-
 .footer {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   font-size: 13px;
   color: #94a3b8;
@@ -139,7 +178,7 @@
   background: #e2e8f0;
 }
 
-/* MODAL */
+/* ===== MODAL ===== */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -168,6 +207,10 @@
   border: none;
   font-size: 28px;
   cursor: pointer;
+  color: #94a3b8;
+}
+.btn-cerrar:hover {
+  color: #0f172a;
 }
 .modal-contenido h2 {
   margin-top: 0;
@@ -185,6 +228,7 @@
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
+  font-size: 14px;
 }
 .campo-row {
   display: grid;
@@ -195,6 +239,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
   margin-bottom: 14px;
 }
 .btn-secundario {
@@ -222,6 +267,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 500;
 }
 .btn-enviar {
   flex: 1;
@@ -235,13 +281,15 @@
 }
 .btn-enviar:disabled {
   opacity: 0.6;
+  cursor: not-allowed;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
   .campo-row {
     grid-template-columns: 1fr;
-  }
-  .acciones-modal {
-    flex-direction: column;
   }
 }
