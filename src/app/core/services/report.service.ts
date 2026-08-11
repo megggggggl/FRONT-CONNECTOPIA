@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Report } from '../models/report.model';
 import { WebServices } from './webServices';
 
@@ -9,14 +9,7 @@ export class ReportService {
   constructor(private http: HttpClient) {}
 
   listarDenuncias(): Observable<Report[]> {
-    return this.http.get<any>(WebServices.ReportsList).pipe(
-      map(response => {
-        // Si la respuesta tiene una propiedad 'data', usarla; si no, asumir que la respuesta es el array
-        if (response && Array.isArray(response)) return response;
-        if (response && response.data && Array.isArray(response.data)) return response.data;
-        return [];
-      })
-    );
+    return this.http.get<Report[]>(WebServices.ReportsList);
   }
 
   crearDenuncia(report: Partial<Report>): Observable<Report> {
