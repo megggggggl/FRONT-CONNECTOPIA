@@ -173,18 +173,18 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     };
   }
 
-  private crearHeaders(): HttpHeaders {
-    const headers: Record<string, string> = {
-      'ngrok-skip-browser-warning': 'true'
-    };
-    if (typeof localStorage !== 'undefined') {
-      const token = localStorage.getItem('access_token');
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+ private crearHeaders(): HttpHeaders {
+  const headers: Record<string, string> = {
+    'ngrok-skip-browser-warning': 'true'
+  };
+  if (typeof localStorage !== 'undefined') {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
-    return new HttpHeaders(headers);
   }
+  return new HttpHeaders(headers);
+}
 
   private obtenerMensajeError(error: unknown, respaldo: string): string {
     if (error instanceof HttpErrorResponse) {

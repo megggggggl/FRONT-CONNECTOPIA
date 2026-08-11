@@ -12,7 +12,6 @@ import { WebServices } from './webServices';
 export class AuthService {
   private platformId = inject(PLATFORM_ID);
 
-  // Subject para notificar cambios de autenticación (login/logout)
   private authChangeSubject = new BehaviorSubject<boolean>(false);
   authChange$ = this.authChangeSubject.asObservable();
 
@@ -33,28 +32,55 @@ export class AuthService {
   }
 
   // ============================================================
-  // GESTIÓN DE SESIÓN
+  // GESTIÓN DE SESIÓN (CORREGIDO PARA SUPABASE)
   // ============================================================
   guardarSesion(respuesta: any): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    const accessToken = respuesta?.session?.access_token;
-    const refreshToken = respuesta?.session?.refresh_token;
-    const usuario = respuesta?.user;
+    console.log('📦 Respuesta completa del login:', respuesta);
 
-    if (accessToken) localStorage.setItem('access_token', accessToken);
-    if (refreshToken) localStorage.setItem('refresh_token', refreshToken);
+    // 🔥 Buscar token en diferentes ubicaciones (adaptado para Supabase)
+    const accessToken = 
+      respuesta?.session?.access_token ||
+      respuesta?.access_token ||
+      respuesta?.token ||
+      null;
+
+    const refreshToken = 
+      respuesta?.session?.refresh_token ||
+      respuesta?.refresh_token ||
+      null;
+
+    // El usuario puede estar en respuesta.user o en respuesta.session.user
+    const usuario = 
+      respuesta?.user ||
+      respuesta?.session?.user ||
+      null;
+
+    if (accessToken) {
+      localStorage.setItem('access_token', accessToken);
+      console.log('✅ Token guardado correctamente:', accessToken.substring(0, 20) + '...');
+    } else {
+      console.warn('⚠️ No se encontró token en la respuesta');
+      console.warn('🔍 Estructura de la respuesta:', Object.keys(respuesta));
+      return;
+    }
+
+    if (refreshToken) {
+      localStorage.setItem('refresh_token', refreshToken);
+    }
+
     if (usuario) {
       localStorage.setItem('usuario', JSON.stringify(usuario));
       console.log('✅ USUARIO LOGIN:', usuario);
+    } else {
+      console.warn('⚠️ No se encontró usuario en la respuesta');
     }
 
     this.notifyAuthChange();
   }
 
-  /**
-   * Cierre de sesión principal
-   */
+  // ✅ Método de cierre de sesión
   cerrarSesion(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('access_token');
@@ -65,16 +91,11 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-  /**
-   * Alias para compatibilidad
-   */
+  // ✅ Alias para compatibilidad
   logout(): void {
     this.cerrarSesion();
   }
 
-  /**
-   * Redirige según el rol del usuario
-   */
   redirigirPorRol(usuario: any): void {
     const rol = String(
       usuario?.role ??
@@ -102,7 +123,7 @@ export class AuthService {
   }
 
   // ============================================================
-  // MÉTODOS AUXILIARES (para Guards y Sidebar)
+  // MÉTODOS AUXILIARES
   // ============================================================
   isAuthenticated(): boolean {
     if (!isPlatformBrowser(this.platformId)) return false;
@@ -125,14 +146,9 @@ export class AuthService {
     }
   }
 
-  /**
-   * 🔥 CORREGIDO: Retorna 'turista' si no hay usuario autenticado
-   * Esto permite que el menú muestre opciones públicas para invitados
-   */
   getUserRole(): string {
     const user = this.getUser();
-    if (!user) return 'turista'; // 👈 Valor por defecto para invitados
-
+    if (!user) return 'turista';
     const role = user?.role || user?.rol || user?.user_role || '';
     return String(role).trim().toLowerCase() || 'turista';
   }
