@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
-  apiUrl: '/api'
+  production: true,
+  apiUrl: ' https://rethink-relight-prong.ngrok-free.dev' // 👈 URL real de tu backend en producción
 };
