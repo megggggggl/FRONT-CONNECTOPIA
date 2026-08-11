@@ -99,7 +99,7 @@ export class MenuService {
         route: '/mis-servicios',
         roles: ['prestador', 'admin']
       },
-
+       { id: 'denuncias', label: 'Denuncias', icon: 'bi-flag', route: '/denuncias/comunitarias', roles: ['prestador', 'admin', 'vecino'] },
       // ==========================================================
       // ⚙️ ADMIN (solo admin)
       // ==========================================================
