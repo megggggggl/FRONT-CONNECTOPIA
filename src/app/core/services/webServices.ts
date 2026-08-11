@@ -71,7 +71,9 @@ static readonly EventsMine = `${WebServices.BASE_URL}/events/inscritos`; // 👈
   static readonly AdminUsers = `${WebServices.BASE_URL}/admin/users`;
   static readonly AdminStats = `${WebServices.BASE_URL}/admin/stats`;
   static readonly AdminPosts = `${WebServices.BASE_URL}/admin/posts`;
-
+static readonly VerificationPending = `${WebServices.BASE_URL}/verification/pending`;
+static readonly VerificationApprove = (id: string) => `${WebServices.BASE_URL}/verification/approve/${id}`;
+static readonly VerificationReject = (id: string) => `${WebServices.BASE_URL}/verification/reject/${id}`;
   // ==================== SETTINGS ====================
   static readonly SettingsList = `${WebServices.BASE_URL}/settings`;
   static readonly SettingsPublic = `${WebServices.BASE_URL}/settings/public`;
