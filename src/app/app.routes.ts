@@ -191,7 +191,7 @@ export const routes: Routes = [
           {
             path: 'moderation',
             loadComponent: () => import('./features/admin/pages/moderation/moderation')
-              .then(m => m.ModerationPageComponent)
+              .then(m => m.ModerationComponent)
           },
           {
             path: 'verifications',
