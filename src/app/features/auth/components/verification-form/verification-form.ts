@@ -211,22 +211,18 @@ export class VerificationForm implements OnInit {
     this.exito = '';
 
     const formData = new FormData();
-    formData.append('documento', this.documentFrontFile);
-    formData.append('selfie', this.selfieFile);
+  formData.append('documento', this.documentFrontFile);
+  formData.append('selfie', this.selfieFile);
 
-    // 🔥 OBTENER TOKEN Y AGREGARLO EXPLÍCITAMENTE
-    const token = this.authService.getToken();
-    console.log('🔑 Enviando verificación con token:', token ? '✅ Sí (primeros 20 chars: ' + token.substring(0, 20) + '...)' : '❌ No');
+  // 🔥 OBTENER TOKEN Y AGREGARLO MANUALMENTE
+  const token = this.authService.getToken();
+  console.log('🔑 Token en verification-form:', token ? '✅ Sí' : '❌ No');
 
-    const headers = new HttpHeaders({
-      'Authorization': token ? `Bearer ${token}` : '',
-      'ngrok-skip-browser-warning': 'true'
-    });
+  const headers = new HttpHeaders()
+    .set('Authorization', token ? `Bearer ${token}` : '')
+    .set('ngrok-skip-browser-warning', 'true');
 
-    console.log('📤 Enviando a:', WebServices.VerificationStart);
-    console.log('📦 Headers:', headers);
-
-    this.http.post(WebServices.VerificationStart, formData, { headers }).subscribe({
+  this.http.post(WebServices.VerificationStart, formData, { headers }).subscribe({
       next: (respuesta: any) => {
         console.log('✅ Verificación exitosa:', respuesta);
         this.exito = '✅ Verificación exitosa. Usuario verificado.';
