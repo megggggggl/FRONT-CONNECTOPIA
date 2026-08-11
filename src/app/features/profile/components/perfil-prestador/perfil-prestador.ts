@@ -3,10 +3,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { catchError, finalize, forkJoin, map, of, timeout } from 'rxjs';
-import { WebServices } from '../../../../core';
+import { WebServices } from '../../../../core/services/webServices';
 import { EncabezadoPerfil } from '../../../../compartido/componentes/encabezado-perfil/encabezado-perfil';
-import { TarjetaEstadistica } from '../../../../compartido/componentes/tarjeta-estadistica/tarjeta-estadistica';
-import { TarjetaServicio } from '../../../../compartido/componentes/tarjeta-servicio/tarjeta-servicio';
+
 import { Perfil, Resena, RespuestaLista, RespuestaPerfil, ServicioResumen } from '../../../../compartido/modelos/perfil.model';
 import { AccionHistorialCita, SolicitudCita } from '../../../../compartido/modelos/appointment.model';
 import { TelegramCitasService } from '../../../../compartido/servicios/appointment.service';
@@ -26,9 +25,7 @@ interface ServicioForm {
   imports: [
     CommonModule,
     FormsModule,
-    EncabezadoPerfil,
-    TarjetaEstadistica,
-    TarjetaServicio,
+    EncabezadoPerfil
     
     
   ],

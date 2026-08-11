@@ -2,12 +2,11 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Component } from '@angular/core';
-import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
 
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [CommonModule, FormsModule, MainLayout],
+  imports: [CommonModule, FormsModule],
   templateUrl: './roles.html',
   styleUrls: ['./roles.css', './rolemodal.css', './permisos.css']
 })

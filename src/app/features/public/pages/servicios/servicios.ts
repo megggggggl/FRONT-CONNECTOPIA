@@ -3,22 +3,20 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
 import { TarjetaServicio } from '../../../../compartido/componentes/tarjeta-servicio/tarjeta-servicio';
 import { ServiceService, Service } from '../../../../core/services/service.service';
 import { CategoryService, Category } from '../../../../core/services/category.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TelegramCitasService } from '../../../../compartido/servicios/appointment.service';
-import { WebServices } from '../../../../core/services/webServices';
 import { CalificarServicioModal } from '../../../../compartido/componentes/calificarServicio/calificarServicio';
-
+import { WebServices } from '../../../../core/services/webServices';
 @Component({
   selector: 'app-servicios',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    MainLayout,
+    
     TarjetaServicio,
  
     CalificarServicioModal

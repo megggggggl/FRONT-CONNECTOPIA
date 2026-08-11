@@ -2,14 +2,13 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
 import { EventService, Event } from '../../../../core/services/event.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TarjetaEvento } from '../../../../compartido/componentes/tarjeta-eventos/tarjeta-eventos';
 @Component({
   selector: 'app-eventos-publicos',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MainLayout, TarjetaEvento],
+  imports: [CommonModule, RouterModule, FormsModule, TarjetaEvento],
   templateUrl: './eventos-publicos.html',
   styleUrls: ['./eventos-publicos.css']
 })

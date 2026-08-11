@@ -30,7 +30,7 @@ export const routes: Routes = [
     component: MainLayout,
     children: [
       // ==========================================================
-      // PÚBLICAS
+      // PÚBLICAS – dentro del layout
       // ==========================================================
       {
         path: 'explorar',

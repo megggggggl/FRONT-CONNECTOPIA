@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, finalize, of } from 'rxjs';
-import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
 import { WebServices } from '../../../../core/services/webServices';
 
 interface SolicitudVerificacion {
@@ -24,7 +23,7 @@ interface SolicitudVerificacion {
 @Component({
   selector: 'app-verifications',
   standalone: true,
-  imports: [CommonModule, FormsModule, MainLayout],
+  imports: [CommonModule, FormsModule],
   templateUrl: './verifications.html',
   styleUrls: ['./verifications.css']
 })

@@ -5,8 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { catchError, finalize, forkJoin, map, of, timeout } from 'rxjs';
 
 import { WebServices } from '../../../../core/services/webServices';
-import { TarjetaEstadistica } from '../../../../compartido/componentes/tarjeta-estadistica/tarjeta-estadistica';
-import { TarjetaServicio } from '../../../../compartido/componentes/tarjeta-servicio/tarjeta-servicio';
 import { Perfil, Resena, RespuestaLista, RespuestaPerfil, ServicioResumen } from '../../../../compartido/modelos/perfil.model';
 import { AccionHistorialCita, SolicitudCita } from '../../../../compartido/modelos/appointment.model';
 import { TelegramCitasService } from '../../../../compartido/servicios/appointment.service';
@@ -29,10 +27,9 @@ interface ServicioForm {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    FormsModule
     
-    TarjetaEstadistica,
-    TarjetaServicio
+  
   ],
   templateUrl: './gestiones.html',
   styleUrls: ['./gestiones.css']

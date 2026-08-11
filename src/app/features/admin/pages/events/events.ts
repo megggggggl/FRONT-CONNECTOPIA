@@ -4,7 +4,6 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
 
 import { WebServices } from '../../../../core/services/webServices';
 
@@ -65,7 +64,7 @@ interface EventoForm {
 @Component({
   selector: 'app-events',
   standalone: true,
-  imports: [CommonModule, FormsModule, MainLayout],
+  imports: [CommonModule, FormsModule],
   templateUrl: './events.html',
   styleUrls: ['./events.css']
 })
