@@ -32,14 +32,14 @@ export class AuthService {
   }
 
   // ============================================================
-  // GESTIÓN DE SESIÓN (CORREGIDO PARA SUPABASE)
+  // GESTIÓN DE SESIÓN
   // ============================================================
   guardarSesion(respuesta: any): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
     console.log('📦 Respuesta completa del login:', respuesta);
 
-    // 🔥 Buscar token en diferentes ubicaciones (adaptado para Supabase)
+    // Buscar token en diferentes ubicaciones
     const accessToken = 
       respuesta?.session?.access_token ||
       respuesta?.access_token ||
@@ -51,7 +51,6 @@ export class AuthService {
       respuesta?.refresh_token ||
       null;
 
-    // El usuario puede estar en respuesta.user o en respuesta.session.user
     const usuario = 
       respuesta?.user ||
       respuesta?.session?.user ||
@@ -59,10 +58,9 @@ export class AuthService {
 
     if (accessToken) {
       localStorage.setItem('access_token', accessToken);
-      console.log('✅ Token guardado correctamente:', accessToken.substring(0, 20) + '...');
+      console.log('✅ Token guardado correctamente');
     } else {
       console.warn('⚠️ No se encontró token en la respuesta');
-      console.warn('🔍 Estructura de la respuesta:', Object.keys(respuesta));
       return;
     }
 
@@ -73,14 +71,11 @@ export class AuthService {
     if (usuario) {
       localStorage.setItem('usuario', JSON.stringify(usuario));
       console.log('✅ USUARIO LOGIN:', usuario);
-    } else {
-      console.warn('⚠️ No se encontró usuario en la respuesta');
     }
 
     this.notifyAuthChange();
   }
 
-  // ✅ Método de cierre de sesión
   cerrarSesion(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('access_token');
@@ -91,7 +86,6 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-  // ✅ Alias para compatibilidad
   logout(): void {
     this.cerrarSesion();
   }
@@ -122,9 +116,6 @@ export class AuthService {
     this.router.navigate(['/explorar']);
   }
 
-  // ============================================================
-  // MÉTODOS AUXILIARES
-  // ============================================================
   isAuthenticated(): boolean {
     if (!isPlatformBrowser(this.platformId)) return false;
     return !!localStorage.getItem('access_token');
@@ -157,9 +148,6 @@ export class AuthService {
     return this.http.get<any>(WebServices.AuthMe);
   }
 
-  // ============================================================
-  // NOTIFICACIÓN DE CAMBIO DE AUTENTICACIÓN
-  // ============================================================
   notifyAuthChange(): void {
     this.authChangeSubject.next(true);
   }

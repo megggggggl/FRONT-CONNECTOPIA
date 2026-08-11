@@ -79,16 +79,16 @@ export class RegisterForm {
         this.authService.login(this.email, this.password).subscribe({
           next: (loginResp: any) => {
             console.log('🔐 Login automático exitoso');
-
+            
             // Guardar sesión (token + usuario)
             this.authService.guardarSesion(loginResp);
-
+            
             // Verificar que el token se guardó
             const token = this.authService.getToken();
             console.log('🔑 Token guardado:', token ? '✅ Sí' : '❌ No');
-
+            
             this.exito = '✅ Sesión iniciada. Redirigiendo a verificación...';
-
+            
             setTimeout(() => {
               // 3️⃣ REDIRIGIR A VERIFICACIÓN (YA CON TOKEN)
               this.router.navigate(['/auth/verificacion']);

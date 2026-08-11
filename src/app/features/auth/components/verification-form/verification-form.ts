@@ -194,7 +194,7 @@ export class VerificationForm implements OnInit {
   // ============================================================
   // ENVÍO DE VERIFICACIÓN
   // ============================================================
-  async enviarVerificacion(): Promise<void> {
+  enviarVerificacion(): void {
     if (!this.selfieFile) {
       this.error = 'Debes tomarte una selfie.';
       return;
