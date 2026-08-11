@@ -25,7 +25,8 @@ export class AuthInterceptor implements HttpInterceptor {
     { url: '/categories' }, // todos los métodos
     // 👇 IMPORTANTE: GET a places es público, POST/PATCH/DELETE NO
     { url: '/places', methods: ['GET'] },
-    { url: '/verification' }
+{ url: '/verification/status', methods: ['GET'] },
+{ url: '/verification/pending', methods: ['GET'] }, // si es público (no debería)
   ];
 
   constructor(
