@@ -42,3 +42,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Contexto privado de trabajo con Codex: nunca versionar ni subir a GitHub
+/NO_SUBIR_A_GITHUB/

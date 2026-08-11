@@ -1,13 +1,20 @@
 .encabezado-perfil {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 34px;
   padding: 34px 48px;
   border-radius: 26px;
-  background: linear-gradient(135deg, #ffffff, #f4f2ee);
-  border: 1px solid #c9cdd2;
-  box-shadow: 0 18px 45px rgba(47, 95, 158, 0.10);
+  background: linear-gradient(120deg, #0b2d3a 0%, #123e4a 48%, #176b62 100%);
+  border: 1px solid rgba(255, 255, 255, .12);
+  box-shadow: 0 22px 50px rgba(12, 45, 58, .18);
 }
+
+.decoracion { position: absolute; z-index: -1; border-radius: 50%; pointer-events: none; }
+.decoracion-uno { width: 240px; height: 240px; top: -150px; right: 8%; background: rgba(61, 216, 184, .16); }
+.decoracion-dos { width: 180px; height: 180px; right: -70px; bottom: -120px; border: 34px solid rgba(255, 255, 255, .08); }
 
 .foto-contenedor {
   width: 132px;
@@ -18,7 +25,8 @@
   display: grid;
   place-items: center;
   background: #2e8b6c;
-  box-shadow: 0 0 34px rgba(46, 139, 108, 0.28);
+  border: 5px solid rgba(255,255,255,.92);
+  box-shadow: 0 14px 32px rgba(2, 20, 28, .28);
 }
 
 .foto-perfil {
@@ -47,20 +55,23 @@
 
 .tipo-perfil {
   margin: 0 0 8px;
-  color: #2f5f9e;
+  color: #81e4cf;
   font-weight: 800;
   text-transform: uppercase;
+  letter-spacing: .09em;
+  font-size: 12px;
 }
 
 .informacion-perfil h1 {
   margin: 0;
   font-size: 40px;
-  color: #1f6b53;
+  color: #ffffff;
+  letter-spacing: -.035em;
 }
 
 .correo {
   margin: 6px 0 14px;
-  color: #5e646a;
+  color: #c8dbdf;
 }
 
 .chips {
@@ -74,28 +85,39 @@
   border-radius: 999px;
   font-weight: 800;
   text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,.13);
 }
 
 .chip.rol {
-  background: #e8f0fa;
-  color: #2f5f9e;
+  background: rgba(255,255,255,.1);
+  color: #e8f5f4;
 }
 
 .chip.activo {
-  background: rgba(46, 139, 108, 0.14);
-  color: #1f6b53;
+  background: rgba(95, 229, 176, .13);
+  color: #8af0c5;
 }
+
+.chip.verificado { background: rgba(92, 172, 255, .14); color: #b8dcff; }
 
 .boton-principal {
   border: none;
   padding: 15px 28px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #2e8b6c, #2f5f9e, #4a84c4);
+  background: #ffffff;
+  color: #164b49;
   color: white;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 0 24px rgba(47, 95, 158, 0.35);
+  box-shadow: 0 10px 24px rgba(3, 24, 31, .2);
+  transition: transform .2s ease, box-shadow .2s ease;
 }
+
+.boton-principal:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(3, 24, 31, .28); }
 
 @media (max-width: 800px) {
   .encabezado-perfil {

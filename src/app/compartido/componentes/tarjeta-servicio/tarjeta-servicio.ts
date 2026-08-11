@@ -15,9 +15,12 @@ export class TarjetaServicio {
   @Input() solicitandoCita = false;
   @Input() esFavorito = false;
   @Input() mostrarCalificar = false;
+  @Input() mostrarEliminar = false;
+  @Input() eliminando = false;
   @Output() toggleFavorito = new EventEmitter<{ id: string; favorito: boolean }>();
   @Output() solicitarCita = new EventEmitter<any>();
   @Output() calificar = new EventEmitter<string>();
+  @Output() eliminar = new EventEmitter<any>();
 
   toggleFavoritoEvent(): void {
     if (!this.servicio) return;

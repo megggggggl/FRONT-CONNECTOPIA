@@ -1,1 +1,62 @@
-<article class="tarjeta-servicio"><div class="imagen-servicio-contenedor"><img *ngIf="servicio.images?.length" [src]="servicio.images[0]" [alt]="servicio.name" class="imagen-servicio" (error)="$any($event.target).style.display='none'"><div class="imagen-servicio-vacia"><i class="fa-solid fa-screwdriver-wrench"></i></div><span class="estado-servicio" [ngClass]="obtenerClaseEstado()">{{ servicio.status === 'active' ? 'Activo' : servicio.status === 'pending' ? 'Pendiente' : 'Inactivo' }}</span></div><div class="contenido-servicio"><span class="categoria-servicio">Servicio local</span><h3>{{ servicio.name }}</h3><p class="descripcion-servicio">{{ servicio.description || 'Sin descripción disponible.' }}</p><p class="precio-servicio">{{ servicio.price ? ('L ' + servicio.price) : 'Precio a consultar' }}</p><div class="metricas-servicio"><span><i class="fa-solid fa-star"></i>{{ servicio.avg_rating || 0 }}</span><span><i class="fa-regular fa-message"></i>{{ servicio.reviews_count || 0 }} reseñas</span></div><div class="acciones-servicio"><button type="button" class="btn-favorito" [class.saved]="esFavorito" (click)="toggleFavoritoEvent()" [attr.aria-label]="esFavorito ? 'Quitar de favoritos' : 'Guardar en favoritos'"><i [class]="esFavorito ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i></button><button *ngIf="mostrarAccionCita" class="boton-telegram" [disabled]="solicitandoCita" (click)="emitirSolicitudCita()"><i class="fa-brands fa-telegram"></i>{{ solicitandoCita ? 'Abriendo…' : 'Solicitar cita' }}</button><button *ngIf="mostrarCalificar" class="btn-calificar" (click)="calificar.emit(servicio.id)"><i class="fa-regular fa-star"></i>Calificar</button></div></div></article>
+<article class="tarjeta-servicio">
+  <div class="imagen-servicio-contenedor">
+    <img
+      *ngIf="servicio.images?.length"
+      [src]="servicio.images[0]"
+      [alt]="servicio.name"
+      class="imagen-servicio"
+      (error)="$any($event.target).style.display = 'none'"
+    />
+    <div class="imagen-servicio-vacia"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+    <span class="estado-servicio" [ngClass]="obtenerClaseEstado()">{{
+      servicio.status === 'active'
+        ? 'Activo'
+        : servicio.status === 'pending'
+          ? 'Pendiente'
+          : 'Inactivo'
+    }}</span>
+  </div>
+  <div class="contenido-servicio">
+    <span class="categoria-servicio">Servicio local</span>
+    <h3>{{ servicio.name }}</h3>
+    <p class="descripcion-servicio">{{ servicio.description || 'Sin descripción disponible.' }}</p>
+    <p class="precio-servicio">
+      {{ servicio.price ? 'L ' + servicio.price : 'Precio a consultar' }}
+    </p>
+    <div class="metricas-servicio">
+      <span><i class="fa-solid fa-star"></i>{{ servicio.avg_rating || 0 }}</span
+      ><span><i class="fa-regular fa-message"></i>{{ servicio.reviews_count || 0 }} reseñas</span>
+    </div>
+    <div class="acciones-servicio">
+      <button
+        type="button"
+        class="btn-favorito"
+        [class.saved]="esFavorito"
+        (click)="toggleFavoritoEvent()"
+        [attr.aria-label]="esFavorito ? 'Quitar de favoritos' : 'Guardar en favoritos'"
+      >
+        <i [class]="esFavorito ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i></button
+      ><button
+        *ngIf="mostrarAccionCita"
+        class="boton-telegram"
+        [disabled]="solicitandoCita"
+        (click)="emitirSolicitudCita()"
+      >
+        <i class="fa-brands fa-telegram"></i
+        >{{ solicitandoCita ? 'Abriendo…' : 'Solicitar cita' }}</button
+      ><button *ngIf="mostrarCalificar" class="btn-calificar" (click)="calificar.emit(servicio.id)">
+        <i class="fa-regular fa-star"></i>Calificar
+      </button>
+      <button
+        *ngIf="mostrarEliminar"
+        type="button"
+        class="btn-eliminar"
+        [disabled]="eliminando"
+        (click)="eliminar.emit(servicio)"
+      >
+        <i [class]="eliminando ? 'fa-solid fa-spinner fa-spin' : 'fa-regular fa-trash-can'"></i>
+        {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
+      </button>
+    </div>
+  </div>
+</article>

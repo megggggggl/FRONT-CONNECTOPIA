@@ -72,10 +72,18 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(authRequest).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
+        // No cerrar toda la sesión por un 401 aislado de una sección.
+        // Algunos endpoints (por ejemplo, estadísticas administrativas) pueden
+        // rechazar la petición aunque el login y el token sean correctos. Borrar
+        // aquí el token provocaba el bucle Dashboard -> Login.
+        // Solo /auth/me es una comprobación explícita de la sesión actual.
+        const isSessionValidation = request.url.includes('/auth/me');
+        if (error.status === 401 && isSessionValidation) {
           localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
           localStorage.removeItem('usuario');
-          this.router.navigate(['/']);
+          localStorage.removeItem('user');
+          this.router.navigateByUrl('/', { replaceUrl: true });
         }
         return throwError(() => error);
       })
