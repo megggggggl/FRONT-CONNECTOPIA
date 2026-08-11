@@ -3,12 +3,13 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "analytics": "713b3567-e8a4-45ee-b7cc-0a89c9bc761f"
+    "analytics": "943a4419-baab-4659-b664-c9d684c34c4d"
   },
   "newProjectRoot": "projects",
   "projects": {
     "frontend": {
       "projectType": "application",
+      "schematics": {},
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -31,16 +32,10 @@
             ],
             "scripts": [
               "node_modules/leaflet/dist/leaflet.js"
-            ],
-            "outputMode": "static",
-            "prerender": false,
-            "security": {
-              "allowedHosts": []
-            }
+            ]
           },
           "configurations": {
             "production": {
-              "prerender": false,
               "budgets": [
                 {
                   "type": "initial",
