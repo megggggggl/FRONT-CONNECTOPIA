@@ -121,10 +121,7 @@ static readonly BusRouteDelete = (id: string) => `${WebServices.BASE_URL}/bus-ro
 static readonly ContentReportsList = `${WebServices.BASE_URL}/content-reports`;
 static readonly ContentReportUpdate = (id: number) => `${WebServices.BASE_URL}/content-reports/${id}`;
 
-static readonly VerificationPending = `${WebServices.BASE_URL}/verification/pending`;
-static readonly VerificationApprove = (id: string) => `${WebServices.BASE_URL}/verification/approve/${id}`;
-static readonly VerificationReject = (id: string) => `${WebServices.BASE_URL}/verification/reject/${id}`;
-// Bus Stops
+
 static readonly BusStopsList = `${WebServices.BASE_URL}/bus-stops`;
 static readonly BusStopsCreate = `${WebServices.BASE_URL}/bus-stops`;
 
