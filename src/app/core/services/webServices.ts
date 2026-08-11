@@ -70,6 +70,7 @@ static readonly EventsMine = `${WebServices.BASE_URL}/events/inscritos`; // 👈
   static readonly AdminDashboard = `${WebServices.BASE_URL}/admin/dashboard`;
   static readonly AdminUsers = `${WebServices.BASE_URL}/admin/users`;
   static readonly AdminStats = `${WebServices.BASE_URL}/admin/stats`;
+  static readonly AdminPosts = `${WebServices.BASE_URL}/admin/posts`;
 
   // ==================== SETTINGS ====================
   static readonly SettingsList = `${WebServices.BASE_URL}/settings`;

@@ -1,24 +1,26 @@
-// src/app/features/admin/pages/moderation/moderation.ts
+// src/app/features/admin/pages/moderation/moderation.component.ts
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, finalize, of } from 'rxjs';
 import { WebServices } from '../../../../core/services/webServices';
 
-interface Post {
+export interface Post {
   id: string;
   title: string;
   content: string;
-  type: string;
+  author: { id: string; name: string };
   author_id: string;
-  status: 'active' | 'inactive' | 'archived';
+  type: string;
   is_urgent: boolean;
+  images: string[];
+  status: 'active' | 'inactive' | 'archived' | 'pendiente';
   created_at: string;
-  author?: { name: string; email: string };
+  updated_at: string;
 }
 
-interface ReporteContenido {
+export interface ContentReport {
   id: number;
   reporter_id: string;
   entity_type: string;
@@ -28,22 +30,8 @@ interface ReporteContenido {
   status: 'pendiente' | 'revisado' | 'resuelto' | 'rechazado';
   created_at: string;
   resolved_at?: string;
-  reporter?: { name: string; email: string };
-  entity?: any;
-}
-
-interface DenunciaComunitaria {
-  id: string;
-  title: string;
-  description: string;
-  type: string;
-  priority: string;
-  status: string;
-  address: string | null;
-  photo_url: string | null;
-  created_at: string;
-  resolved_at: string | null;
-  author?: { name: string; email: string };
+  reporter?: { id: string; name: string; email: string };
+  entity?: Post;
 }
 
 @Component({
@@ -53,78 +41,60 @@ interface DenunciaComunitaria {
   templateUrl: './moderation.html',
   styleUrls: ['./moderation.css']
 })
-export class ModerationPageComponent implements OnInit {
+export class ModerationComponent implements OnInit {
   // ============================================================
-  // TABS
+  // ESTADO
   // ============================================================
-  tabActivo: 'posts' | 'denuncias' | 'comunitarias' = 'posts';
+  activeTab: 'posts' | 'reports' = 'posts';
+  isLoading = false;
+  errorMessage = '';
+  successMessage = '';
 
   // ============================================================
-  // PUBLICACIONES (posts)
+  // DATOS
   // ============================================================
   posts: Post[] = [];
-  postsFiltrados: Post[] = [];
-  loadingPosts = false;
-  errorPosts = '';
-  filtroEstadoPosts = 'todos';
+  reports: ContentReport[] = [];
+  filteredPosts: Post[] = [];
+  filteredReports: ContentReport[] = [];
 
   // ============================================================
-  // DENUNCIAS DE CONTENIDO (content_reports)
+  // FILTROS
   // ============================================================
-  reportes: ReporteContenido[] = [];
-  reportesFiltrados: ReporteContenido[] = [];
-  loadingReportes = false;
-  errorReportes = '';
-  filtroEstadoReportes = 'todos';
+  postFilter = 'pending';
+  reportFilter = 'pending';
 
   // ============================================================
-  // DENUNCIAS COMUNITARIAS (reports)
+  // CONSTRUCTOR
   // ============================================================
-  denuncias: DenunciaComunitaria[] = [];
-  denunciasFiltradas: DenunciaComunitaria[] = [];
-  loadingDenuncias = false;
-  errorDenuncias = '';
-  filtroEstadoDenuncias = 'todos';
-
-  // ============================================================
-  // MENSajes de éxito/error
-  // ============================================================
-  success = '';
-  error = '';
-
   constructor(private http: HttpClient) {}
 
+  // ============================================================
+  // NG ON INIT
+  // ============================================================
   ngOnInit(): void {
-    this.cargarTodos();
+    this.loadData();
   }
 
   // ============================================================
   // CARGA DE DATOS
   // ============================================================
-  cargarTodos(): void {
-    if (this.tabActivo === 'posts') this.cargarPosts();
-    else if (this.tabActivo === 'denuncias') this.cargarReportes();
-    else this.cargarDenunciasComunitarias();
+  loadData(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    if (this.activeTab === 'posts') {
+      this.loadPosts();
+    } else {
+      this.loadReports();
+    }
   }
 
-  cambiarTab(tab: 'posts' | 'denuncias' | 'comunitarias'): void {
-    this.tabActivo = tab;
-    this.error = '';
-    this.success = '';
-    this.cargarTodos();
-  }
-
-  // ============================================================
-  // 1. PUBLICACIONES (posts)
-  // ============================================================
-  cargarPosts(): void {
-    this.loadingPosts = true;
-    this.errorPosts = '';
-
+  loadPosts(): void {
     const token = localStorage.getItem('access_token');
     if (!token) {
-      this.errorPosts = 'No autenticado.';
-      this.loadingPosts = false;
+      this.errorMessage = 'No autenticado. Inicia sesión como administrador.';
+      this.isLoading = false;
       return;
     }
 
@@ -133,63 +103,128 @@ export class ModerationPageComponent implements OnInit {
       'ngrok-skip-browser-warning': 'true'
     });
 
-    this.http.get<{ data: Post[] }>(WebServices.PostsList, { headers })
+    // Usamos el endpoint de posts con filtro de estado
+    const url = this.postFilter === 'all' 
+      ? WebServices.PostsList 
+      : `${WebServices.PostsList}?status=${this.postFilter}`;
+
+    this.http.get<{ data: Post[] }>(url, { headers })
       .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this.errorPosts = err.error?.error || 'Error al cargar publicaciones.';
+        catchError((err) => {
+          this.errorMessage = err.error?.error || 'Error al cargar publicaciones.';
           return of({ data: [] });
         }),
-        finalize(() => { this.loadingPosts = false; })
+        finalize(() => { this.isLoading = false; })
       )
       .subscribe({
         next: (resp) => {
           this.posts = resp.data || [];
-          this.aplicarFiltroPosts();
+          this.filteredPosts = this.posts;
         }
       });
   }
 
-  aplicarFiltroPosts(): void {
-    if (this.filtroEstadoPosts === 'todos') {
-      this.postsFiltrados = this.posts;
-    } else {
-      this.postsFiltrados = this.posts.filter(p => p.status === this.filtroEstadoPosts);
-    }
-  }
-
-  cambiarEstadoPost(post: Post, nuevoEstado: string): void {
-    if (!confirm(`¿Cambiar estado de la publicación a "${nuevoEstado}"?`)) return;
-
+  loadReports(): void {
     const token = localStorage.getItem('access_token');
-    if (!token) return;
+    if (!token) {
+      this.errorMessage = 'No autenticado. Inicia sesión como administrador.';
+      this.isLoading = false;
+      return;
+    }
 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'ngrok-skip-browser-warning': 'true'
     });
 
-    const payload = { status: nuevoEstado };
+    const url = this.reportFilter === 'all' 
+      ? WebServices.ContentReportsList 
+      : `${WebServices.ContentReportsList}?status=${this.reportFilter}`;
 
-    this.http.patch(WebServices.PostUpdate(post.id), payload, { headers })
+    this.http.get<{ data: ContentReport[] }>(url, { headers })
+      .pipe(
+        catchError((err) => {
+          this.errorMessage = err.error?.error || 'Error al cargar denuncias.';
+          return of({ data: [] });
+        }),
+        finalize(() => { this.isLoading = false; })
+      )
       .subscribe({
-        next: () => {
-          post.status = nuevoEstado as any;
-          this.success = `Publicación actualizada a "${nuevoEstado}".`;
-          this.aplicarFiltroPosts();
-          setTimeout(() => this.success = '', 3000);
-        },
-        error: (err) => {
-          this.error = err.error?.error || 'Error al actualizar publicación.';
-          setTimeout(() => this.error = '', 3000);
+        next: (resp) => {
+          this.reports = resp.data || [];
+          this.filteredReports = this.reports;
         }
       });
   }
 
-  eliminarPost(post: Post): void {
+  // ============================================================
+  // CAMBIOS DE FILTRO
+  // ============================================================
+  onTabChange(tab: 'posts' | 'reports'): void {
+    this.activeTab = tab;
+    this.loadData();
+  }
+
+  onPostFilterChange(): void {
+    this.loadPosts();
+  }
+
+  onReportFilterChange(): void {
+    this.loadReports();
+  }
+
+  // ============================================================
+  // ACCIONES PARA PUBLICACIONES
+  // ============================================================
+  approvePost(post: Post): void {
+    if (!confirm(`¿Aprobar la publicación "${post.title}"?`)) return;
+    this.updatePostStatus(post, 'active');
+  }
+
+  rejectPost(post: Post): void {
+    if (!confirm(`¿Rechazar la publicación "${post.title}"?`)) return;
+    this.updatePostStatus(post, 'archived');
+  }
+
+  private updatePostStatus(post: Post, status: 'active' | 'archived'): void {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      this.errorMessage = 'No autenticado.';
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'ngrok-skip-browser-warning': 'true'
+    });
+
+    this.http.patch(WebServices.PostUpdate(post.id), { status }, { headers })
+      .subscribe({
+        next: () => {
+          post.status = status;
+          this.successMessage = `Publicación ${status === 'active' ? 'aprobada' : 'rechazada'}.`;
+          // Remover de la lista si está en pendientes
+          if (this.postFilter === 'pending') {
+            this.posts = this.posts.filter(p => p.id !== post.id);
+            this.filteredPosts = this.filteredPosts.filter(p => p.id !== post.id);
+          }
+          setTimeout(() => this.successMessage = '', 3000);
+        },
+        error: (err) => {
+          this.errorMessage = err.error?.error || 'Error al actualizar estado.';
+          setTimeout(() => this.errorMessage = '', 3000);
+        }
+      });
+  }
+
+  deletePost(post: Post): void {
     if (!confirm(`¿Eliminar permanentemente la publicación "${post.title}"?`)) return;
 
     const token = localStorage.getItem('access_token');
-    if (!token) return;
+    if (!token) {
+      this.errorMessage = 'No autenticado.';
+      return;
+    }
 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
@@ -200,28 +235,34 @@ export class ModerationPageComponent implements OnInit {
       .subscribe({
         next: () => {
           this.posts = this.posts.filter(p => p.id !== post.id);
-          this.aplicarFiltroPosts();
-          this.success = 'Publicación eliminada.';
-          setTimeout(() => this.success = '', 3000);
+          this.filteredPosts = this.filteredPosts.filter(p => p.id !== post.id);
+          this.successMessage = 'Publicación eliminada.';
+          setTimeout(() => this.successMessage = '', 3000);
         },
         error: (err) => {
-          this.error = err.error?.error || 'Error al eliminar publicación.';
-          setTimeout(() => this.error = '', 3000);
+          this.errorMessage = err.error?.error || 'Error al eliminar publicación.';
+          setTimeout(() => this.errorMessage = '', 3000);
         }
       });
   }
 
   // ============================================================
-  // 2. DENUNCIAS DE CONTENIDO (content_reports)
+  // ACCIONES PARA DENUNCIAS
   // ============================================================
-  cargarReportes(): void {
-    this.loadingReportes = true;
-    this.errorReportes = '';
+  resolveReport(report: ContentReport): void {
+    if (!confirm(`¿Resolver esta denuncia?`)) return;
+    this.updateReportStatus(report, 'resuelto');
+  }
 
+  rejectReport(report: ContentReport): void {
+    if (!confirm(`¿Rechazar esta denuncia?`)) return;
+    this.updateReportStatus(report, 'rechazado');
+  }
+
+  private updateReportStatus(report: ContentReport, status: 'resuelto' | 'rechazado'): void {
     const token = localStorage.getItem('access_token');
     if (!token) {
-      this.errorReportes = 'No autenticado.';
-      this.loadingReportes = false;
+      this.errorMessage = 'No autenticado.';
       return;
     }
 
@@ -230,134 +271,23 @@ export class ModerationPageComponent implements OnInit {
       'ngrok-skip-browser-warning': 'true'
     });
 
-    this.http.get<{ data: ReporteContenido[] }>(WebServices.ContentReportsList, { headers })
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this.errorReportes = err.error?.error || 'Error al cargar reportes.';
-          return of({ data: [] });
-        }),
-        finalize(() => { this.loadingReportes = false; })
-      )
-      .subscribe({
-        next: (resp) => {
-          this.reportes = resp.data || [];
-          this.aplicarFiltroReportes();
-        }
-      });
-  }
-
-  aplicarFiltroReportes(): void {
-    if (this.filtroEstadoReportes === 'todos') {
-      this.reportesFiltrados = this.reportes;
-    } else {
-      this.reportesFiltrados = this.reportes.filter(r => r.status === this.filtroEstadoReportes);
-    }
-  }
-
-  cambiarEstadoReporte(reporte: ReporteContenido, nuevoEstado: string): void {
-    if (!confirm(`¿Cambiar estado del reporte a "${nuevoEstado}"?`)) return;
-
-    const token = localStorage.getItem('access_token');
-    if (!token) return;
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true'
-    });
-
-    const payload = { status: nuevoEstado, resolved_at: nuevoEstado === 'resuelto' ? new Date().toISOString() : null };
-
-    this.http.patch(WebServices.ContentReportUpdate(reporte.id), payload, { headers })
+    this.http.patch(WebServices.ContentReportUpdate(report.id), { 
+      status,
+      resolved_at: status === 'resuelto' ? new Date().toISOString() : null
+    }, { headers })
       .subscribe({
         next: () => {
-          reporte.status = nuevoEstado as any;
-          if (nuevoEstado === 'resuelto') {
-            reporte.resolved_at = new Date().toISOString();
+          report.status = status;
+          this.successMessage = `Denuncia ${status === 'resuelto' ? 'resuelta' : 'rechazada'}.`;
+          if (this.reportFilter === 'pending') {
+            this.reports = this.reports.filter(r => r.id !== report.id);
+            this.filteredReports = this.filteredReports.filter(r => r.id !== report.id);
           }
-          this.success = `Reporte actualizado a "${nuevoEstado}".`;
-          this.aplicarFiltroReportes();
-          setTimeout(() => this.success = '', 3000);
+          setTimeout(() => this.successMessage = '', 3000);
         },
         error: (err) => {
-          this.error = err.error?.error || 'Error al actualizar reporte.';
-          setTimeout(() => this.error = '', 3000);
-        }
-      });
-  }
-
-  // ============================================================
-  // 3. DENUNCIAS COMUNITARIAS (reports)
-  // ============================================================
-  cargarDenunciasComunitarias(): void {
-    this.loadingDenuncias = true;
-    this.errorDenuncias = '';
-
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      this.errorDenuncias = 'No autenticado.';
-      this.loadingDenuncias = false;
-      return;
-    }
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true'
-    });
-
-    this.http.get<{ data: DenunciaComunitaria[] }>(WebServices.ReportsList, { headers })
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this.errorDenuncias = err.error?.error || 'Error al cargar denuncias.';
-          return of({ data: [] });
-        }),
-        finalize(() => { this.loadingDenuncias = false; })
-      )
-      .subscribe({
-        next: (resp) => {
-          this.denuncias = resp.data || [];
-          this.aplicarFiltroDenuncias();
-        }
-      });
-  }
-
-  aplicarFiltroDenuncias(): void {
-    if (this.filtroEstadoDenuncias === 'todos') {
-      this.denunciasFiltradas = this.denuncias;
-    } else {
-      this.denunciasFiltradas = this.denuncias.filter(d => d.status === this.filtroEstadoDenuncias);
-    }
-  }
-
-  cambiarEstadoDenunciaComunitaria(denuncia: DenunciaComunitaria, nuevoEstado: string): void {
-    if (!confirm(`¿Cambiar estado de la denuncia a "${nuevoEstado}"?`)) return;
-
-    const token = localStorage.getItem('access_token');
-    if (!token) return;
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true'
-    });
-
-    const payload = {
-      status: nuevoEstado,
-      resolved_at: nuevoEstado === 'resuelto' ? new Date().toISOString() : null
-    };
-
-    this.http.patch(WebServices.ReportUpdate(denuncia.id), payload, { headers })
-      .subscribe({
-        next: () => {
-          denuncia.status = nuevoEstado;
-          if (nuevoEstado === 'resuelto') {
-            denuncia.resolved_at = new Date().toISOString();
-          }
-          this.success = `Denuncia actualizada a "${nuevoEstado}".`;
-          this.aplicarFiltroDenuncias();
-          setTimeout(() => this.success = '', 3000);
-        },
-        error: (err) => {
-          this.error = err.error?.error || 'Error al actualizar denuncia.';
-          setTimeout(() => this.error = '', 3000);
+          this.errorMessage = err.error?.error || 'Error al actualizar estado.';
+          setTimeout(() => this.errorMessage = '', 3000);
         }
       });
   }
@@ -365,63 +295,43 @@ export class ModerationPageComponent implements OnInit {
   // ============================================================
   // UTILIDADES
   // ============================================================
-  obtenerClaseEstado(status: string): string {
-    const clases: Record<string, string> = {
-      active: 'estado-active',
-      inactive: 'estado-inactive',
-      archived: 'estado-archived',
-      pendiente: 'status-pending',
-      revisado: 'status-review',
-      resuelto: 'status-resolved',
-      rechazado: 'status-rejected',
-      en_proceso: 'status-progress'
+  getStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      active: 'Activo',
+      archived: 'Archivado',
+      pending: 'Pendiente',
+      inactive: 'Inactivo'
     };
-    return clases[status] || '';
+    return labels[status] || status;
   }
 
-  obtenerEtiquetaEstado(status: string): string {
-    const etiquetas: Record<string, string> = {
-      active: 'Activo',
-      inactive: 'Inactivo',
-      archived: 'Archivado',
+  getReportStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
       pendiente: 'Pendiente',
       revisado: 'Revisado',
       resuelto: 'Resuelto',
-      rechazado: 'Rechazado',
-      en_proceso: 'En proceso'
+      rechazado: 'Rechazado'
     };
-    return etiquetas[status] || status;
+    return labels[status] || status;
   }
 
-  obtenerEtiquetaTipo(entityType: string): string {
-    const tipos: Record<string, string> = {
-      post: 'Publicación',
-      comment: 'Comentario',
-      review: 'Reseña',
-      service: 'Servicio',
-      place: 'Lugar',
-      event: 'Evento'
+  getStatusClass(status: string): string {
+    const classes: Record<string, string> = {
+      active: 'status-active',
+      archived: 'status-archived',
+      pending: 'status-pending',
+      inactive: 'status-inactive'
     };
-    return tipos[entityType] || entityType;
+    return classes[status] || '';
   }
 
-  obtenerClasePrioridad(prioridad: string): string {
-    const clases: Record<string, string> = {
-      baja: 'pri-baja',
-      media: 'pri-media',
-      alta: 'pri-alta',
-      urgente: 'pri-urgente'
+  getReportStatusClass(status: string): string {
+    const classes: Record<string, string> = {
+      pendiente: 'status-pending',
+      revisado: 'status-review',
+      resuelto: 'status-resolved',
+      rechazado: 'status-rejected'
     };
-    return clases[prioridad] || '';
-  }
-
-  obtenerEtiquetaPrioridad(prioridad: string): string {
-    const etiquetas: Record<string, string> = {
-      baja: 'Baja',
-      media: 'Media',
-      alta: 'Alta',
-      urgente: 'Urgente'
-    };
-    return etiquetas[prioridad] || prioridad;
+    return classes[status] || '';
   }
 }

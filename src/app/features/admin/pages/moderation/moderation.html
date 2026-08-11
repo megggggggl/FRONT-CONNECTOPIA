@@ -1,173 +1,90 @@
-<!-- src/app/features/admin/pages/moderation/moderation.html -->
-<div class="admin-page">
-  <div class="page-header">
-    <h1>🛡️ Moderación</h1>
-  </div>
+<!-- src/app/features/admin/pages/moderation/moderation.component.html -->
+<div class="moderation-container">
+  <h1>Panel de Moderación</h1>
 
-  <!-- Alertas -->
-  <div *ngIf="error" class="alert error">{{ error }}</div>
-  <div *ngIf="success" class="alert success">{{ success }}</div>
-
-  <!-- Tabs -->
+  <!-- Pestañas -->
   <div class="tabs">
-    <button class="tab" [class.active]="tabActivo === 'posts'" (click)="cambiarTab('posts')">
-      📝 Publicaciones
+    <button class="tab" [class.active]="activeTab === 'posts'" (click)="onTabChange('posts')">
+      Publicaciones
     </button>
-    <button class="tab" [class.active]="tabActivo === 'denuncias'" (click)="cambiarTab('denuncias')">
-      ⚠️ Denuncias de contenido
-    </button>
-    <button class="tab" [class.active]="tabActivo === 'comunitarias'" (click)="cambiarTab('comunitarias')">
-      🚧 Denuncias comunitarias
+    <button class="tab" [class.active]="activeTab === 'reports'" (click)="onTabChange('reports')">
+      Denuncias
     </button>
   </div>
 
-  <!-- ========================================================== -->
-  <!-- TAB: PUBLICACIONES -->
-  <!-- ========================================================== -->
-  <div *ngIf="tabActivo === 'posts'">
-    <div class="filters">
-      <select [(ngModel)]="filtroEstadoPosts" (change)="aplicarFiltroPosts()">
-        <option value="todos">Todos los estados</option>
-        <option value="active">🟢 Activo</option>
-        <option value="inactive">🔴 Inactivo</option>
-        <option value="archived">📦 Archivado</option>
+  <!-- Filtros -->
+  <div class="toolbar">
+    <div class="filter-group">
+      <label for="statusFilter">Filtrar por estado:</label>
+
+      <!-- Filtro para publicaciones -->
+      <select
+        id="postFilter"
+        *ngIf="activeTab === 'posts'"
+        [(ngModel)]="postFilter"
+        (change)="onPostFilterChange()"
+      >
+        <option value="pending">Pendiente</option>
+        <option value="approved">Aprobado</option>
+        <option value="rejected">Rechazado</option>
       </select>
-      <button class="btn-refresh" (click)="cargarPosts()">🔄 Actualizar</button>
+
+      <!-- Filtro para denuncias -->
+      <select
+        id="reportFilter"
+        *ngIf="activeTab === 'reports'"
+        [(ngModel)]="reportFilter"
+        (change)="onReportFilterChange()"
+      >
+        <option value="pending">Pendiente</option>
+        <option value="resolved">Resuelto</option>
+        <option value="rejected">Rechazado</option>
+      </select>
     </div>
+    <button class="btn-refresh" (click)="loadData()">🔄 Actualizar</button>
+  </div>
 
-    <div *ngIf="loadingPosts" class="loading">Cargando publicaciones...</div>
+  <!-- Mensajes de Estado -->
+  <div *ngIf="isLoading" class="loading">Cargando...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
 
-    <div *ngIf="!loadingPosts && postsFiltrados.length === 0" class="empty">
-      No hay publicaciones que coincidan con el filtro.
-    </div>
-
-    <div class="posts-grid" *ngIf="!loadingPosts && postsFiltrados.length > 0">
-      <div *ngFor="let post of postsFiltrados" class="post-card">
-        <div class="post-header">
-          <h3>{{ post.title }}</h3>
-          <span class="estado" [ngClass]="obtenerClaseEstado(post.status)">
-            {{ obtenerEtiquetaEstado(post.status) }}
-          </span>
-        </div>
-        <p>{{ post.content | slice:0:200 }}{{ post.content.length > 200 ? '...' : '' }}</p>
-        <div class="post-meta">
-          <span><strong>Tipo:</strong> {{ post.type | titlecase }}</span>
-          <span><strong>Urgente:</strong> {{ post.is_urgent ? '🔴 Sí' : '⚪ No' }}</span>
-          <span><strong>Autor:</strong> {{ post.author?.name || 'Desconocido' }}</span>
-          <small>{{ post.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
-        </div>
-        <div class="acciones">
-          <button *ngIf="post.status !== 'active'" class="btn-approve" (click)="cambiarEstadoPost(post, 'active')">
-            ✅ Aprobar
-          </button>
-          <button *ngIf="post.status !== 'inactive'" class="btn-reject" (click)="cambiarEstadoPost(post, 'inactive')">
-            ❌ Rechazar
-          </button>
-          <button class="btn-delete" (click)="eliminarPost(post)">🗑️ Eliminar</button>
-        </div>
+  <!-- Lista de Publicaciones -->
+  <div *ngIf="activeTab === 'posts' && !isLoading">
+    <div *ngIf="posts.length === 0" class="empty-state">No hay publicaciones que mostrar.</div>
+    <div *ngFor="let post of posts" class="item-card">
+      <div class="item-header">
+        <h3>{{ post.title }}</h3>
+        <span class="status-badge" [class]="post.status">{{ post.status }}</span>
       </div>
-    </div>
-  </div>
-
-  <!-- ========================================================== -->
-  <!-- TAB: DENUNCIAS DE CONTENIDO -->
-  <!-- ========================================================== -->
-  <div *ngIf="tabActivo === 'denuncias'">
-    <div class="filters">
-      <select [(ngModel)]="filtroEstadoReportes" (change)="aplicarFiltroReportes()">
-        <option value="todos">Todos los estados</option>
-        <option value="pendiente">🟡 Pendiente</option>
-        <option value="revisado">🔵 Revisado</option>
-        <option value="resuelto">🟢 Resuelto</option>
-        <option value="rechazado">⚫ Rechazado</option>
-      </select>
-      <button class="btn-refresh" (click)="cargarReportes()">🔄 Actualizar</button>
-    </div>
-
-    <div *ngIf="loadingReportes" class="loading">Cargando reportes...</div>
-
-    <div *ngIf="!loadingReportes && reportesFiltrados.length === 0" class="empty">
-      No hay reportes que coincidan con el filtro.
-    </div>
-
-    <div class="reportes-grid" *ngIf="!loadingReportes && reportesFiltrados.length > 0">
-      <div *ngFor="let reporte of reportesFiltrados" class="reporte-card">
-        <div class="reporte-header">
-          <span class="tipo">{{ obtenerEtiquetaTipo(reporte.entity_type) }}</span>
-          <span class="estado" [ngClass]="obtenerClaseEstado(reporte.status)">
-            {{ obtenerEtiquetaEstado(reporte.status) }}
-          </span>
-        </div>
-        <h3>{{ reporte.reason }}</h3>
-        <p>{{ reporte.description || 'Sin descripción adicional.' }}</p>
-        <div class="reporte-meta">
-          <span><strong>Reportado por:</strong> {{ reporte.reporter?.name || 'Usuario' }}</span>
-          <span><strong>ID:</strong> #{{ reporte.id }}</span>
-        </div>
-        <small class="fecha">{{ reporte.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
-        <div class="acciones" *ngIf="reporte.status === 'pendiente'">
-          <button class="btn-review" (click)="cambiarEstadoReporte(reporte, 'revisado')">📋 Revisar</button>
-          <button class="btn-resolve" (click)="cambiarEstadoReporte(reporte, 'resuelto')">✅ Resolver</button>
-          <button class="btn-reject" (click)="cambiarEstadoReporte(reporte, 'rechazado')">❌ Rechazar</button>
-        </div>
-        <div class="acciones" *ngIf="reporte.status !== 'pendiente'">
-          <span class="status-message">Este reporte ya fue {{ obtenerEtiquetaEstado(reporte.status).toLowerCase() }}.</span>
-        </div>
+      <p>{{ post.content }}</p>
+      <div class="item-meta">
+        <span>👤 {{ post.author?.name || 'Anónimo' }}</span>
+        <span>📅 {{ post.created_at | date:'medium' }}</span>
       </div>
+      <div class="item-actions" *ngIf="post.status === 'pendiente'">
+        <button class="btn-approve" (click)="approvePost(post)">✅ Aprobar</button>
+        <button class="btn-reject" (click)="rejectPost(post)">❌ Rechazar</button>
+      </div>
+      <button class="btn-delete" (click)="deletePost(post)">🗑️ Eliminar</button>
     </div>
   </div>
 
-  <!-- ========================================================== -->
-  <!-- TAB: DENUNCIAS COMUNITARIAS -->
-  <!-- ========================================================== -->
-  <div *ngIf="tabActivo === 'comunitarias'">
-    <div class="filters">
-      <select [(ngModel)]="filtroEstadoDenuncias" (change)="aplicarFiltroDenuncias()">
-        <option value="todos">Todos los estados</option>
-        <option value="pendiente">🟡 Pendiente</option>
-        <option value="en_proceso">🔵 En proceso</option>
-        <option value="resuelto">🟢 Resuelto</option>
-        <option value="rechazado">⚫ Rechazado</option>
-      </select>
-      <button class="btn-refresh" (click)="cargarDenunciasComunitarias()">🔄 Actualizar</button>
-    </div>
-
-    <div *ngIf="loadingDenuncias" class="loading">Cargando denuncias...</div>
-
-    <div *ngIf="!loadingDenuncias && denunciasFiltradas.length === 0" class="empty">
-      No hay denuncias que coincidan con el filtro.
-    </div>
-
-    <div class="denuncias-grid" *ngIf="!loadingDenuncias && denunciasFiltradas.length > 0">
-      <div *ngFor="let den of denunciasFiltradas" class="denuncia-card">
-        <div class="denuncia-header">
-          <span class="tipo">{{ den.type | titlecase }}</span>
-          <span class="prioridad" [ngClass]="obtenerClasePrioridad(den.priority)">
-            {{ obtenerEtiquetaPrioridad(den.priority) }}
-          </span>
-          <span class="estado" [ngClass]="obtenerClaseEstado(den.status)">
-            {{ obtenerEtiquetaEstado(den.status) }}
-          </span>
-        </div>
-        <h3>{{ den.title }}</h3>
-        <p>{{ den.description }}</p>
-        <p *ngIf="den.address" class="direccion">📍 {{ den.address }}</p>
-        <img *ngIf="den.photo_url" [src]="den.photo_url" class="foto" />
-        <div class="denuncia-meta">
-          <span><strong>Autor:</strong> {{ den.author?.name || 'Desconocido' }}</span>
-          <small>{{ den.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
-          <small *ngIf="den.resolved_at">✅ Resuelto: {{ den.resolved_at | date:'dd/MM/yyyy HH:mm' }}</small>
-        </div>
-        <div class="acciones" *ngIf="den.status === 'pendiente' || den.status === 'en_proceso'">
-          <button *ngIf="den.status === 'pendiente'" class="btn-review" (click)="cambiarEstadoDenunciaComunitaria(den, 'en_proceso')">
-            📋 En proceso
-          </button>
-          <button class="btn-resolve" (click)="cambiarEstadoDenunciaComunitaria(den, 'resuelto')">✅ Resolver</button>
-          <button class="btn-reject" (click)="cambiarEstadoDenunciaComunitaria(den, 'rechazado')">❌ Rechazar</button>
-        </div>
-        <div class="acciones" *ngIf="den.status === 'resuelto' || den.status === 'rechazado'">
-          <span class="status-message">Esta denuncia ya fue {{ obtenerEtiquetaEstado(den.status).toLowerCase() }}.</span>
-        </div>
+  <!-- Lista de Denuncias -->
+  <div *ngIf="activeTab === 'reports' && !isLoading">
+    <div *ngIf="reports.length === 0" class="empty-state">No hay denuncias que mostrar.</div>
+    <div *ngFor="let report of reports" class="item-card">
+      <div class="item-header">
+        <h3>Denuncia #{{ report.id }}</h3>
+        <span class="status-badge" [class]="report.status">{{ report.status }}</span>
+      </div>
+      <p><strong>Motivo:</strong> {{ report.reason }}</p>
+      <p><strong>Publicación denunciada:</strong> ID {{ report.entity_id }}</p>
+      <div class="item-meta">
+        <span>📅 {{ report.created_at | date:'medium' }}</span>
+      </div>
+      <div class="item-actions" *ngIf="report.status === 'pendiente'">
+        <button class="btn-resolve" (click)="resolveReport(report)">✅ Resolver</button>
+        <button class="btn-reject" (click)="rejectReport(report)">❌ Rechazar</button>
       </div>
     </div>
   </div>
