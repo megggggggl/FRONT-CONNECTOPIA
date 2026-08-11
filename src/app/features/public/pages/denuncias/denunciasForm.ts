@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+// src/app/features/public/pages/denuncias/denunciasForm.ts
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportService } from '../../../../core/services/report.service';
@@ -57,7 +58,8 @@ export class DenunciasComunitariasComponent implements OnInit {
 
   constructor(
     private reportService: ReportService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -69,14 +71,16 @@ export class DenunciasComunitariasComponent implements OnInit {
     this.loading = true;
     this.error = '';
     this.reportService.listarDenuncias().subscribe({
-      next: (denuncias) => {
-        this.denuncias = denuncias;
+      next: (data) => {
+        this.denuncias = data || [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error(err);
-        this.error = 'No se pudieron cargar las denuncias';
+        console.error('Error al cargar denuncias:', err);
+        this.error = 'Error al cargar denuncias.';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -86,6 +90,7 @@ export class DenunciasComunitariasComponent implements OnInit {
     return this.denuncias.filter(d => d.status === this.filtroEstado);
   }
 
+  // ===== MODAL =====
   abrirModal(): void {
     this.modalAbierto = true;
     this.nuevaDenuncia = {
@@ -112,6 +117,7 @@ export class DenunciasComunitariasComponent implements OnInit {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude
         };
+        this.cdr.detectChanges();
       },
       () => {},
       { enableHighAccuracy: true, timeout: 10000 }
@@ -125,13 +131,13 @@ export class DenunciasComunitariasComponent implements OnInit {
     const reader = new FileReader();
     reader.onload = () => {
       this.nuevaDenuncia.imagen = reader.result as string;
+      this.cdr.detectChanges();
     };
     reader.readAsDataURL(file);
   }
 
   enviarDenuncia(): void {
-    const { titulo, descripcion, tipo, prioridad, direccion, ubicacion, imagen } = this.nuevaDenuncia;
-    if (!titulo.trim() || !descripcion.trim()) {
+    if (!this.nuevaDenuncia.titulo.trim() || !this.nuevaDenuncia.descripcion.trim()) {
       alert('Completa el título y la descripción.');
       return;
     }
@@ -146,19 +152,19 @@ export class DenunciasComunitariasComponent implements OnInit {
 
     const payload: any = {
       author_id: user.id,
-      title: titulo,
-      description: descripcion,
-      type: tipo,
-      priority: prioridad,
-      address: direccion || null,
-      photo_url: imagen,
-      status: 'pendiente'
+      title: this.nuevaDenuncia.titulo,
+      description: this.nuevaDenuncia.descripcion,
+      type: this.nuevaDenuncia.tipo,
+      priority: this.nuevaDenuncia.prioridad,
+      address: this.nuevaDenuncia.direccion || null,
+      photo_url: this.nuevaDenuncia.imagen,
+      status: 'pendiente' as const
     };
 
-    if (ubicacion) {
+    if (this.nuevaDenuncia.ubicacion) {
       payload.location = {
         type: 'Point',
-        coordinates: [ubicacion.lng, ubicacion.lat]
+        coordinates: [this.nuevaDenuncia.ubicacion.lng, this.nuevaDenuncia.ubicacion.lat]
       };
     }
 
@@ -167,16 +173,19 @@ export class DenunciasComunitariasComponent implements OnInit {
         this.enviando = false;
         this.denuncias.unshift(nueva);
         this.cerrarModal();
+        this.cdr.detectChanges();
         alert('✅ Denuncia enviada');
       },
       error: (err) => {
         this.enviando = false;
-        console.error(err);
-        alert('❌ Error al enviar');
+        console.error('Error al enviar denuncia:', err);
+        alert('❌ Error al enviar la denuncia');
+        this.cdr.detectChanges();
       }
     });
   }
 
+  // ===== ADMIN =====
   cambiarEstado(denuncia: Report, nuevoEstado: string): void {
     if (!this.esAdmin) return;
     if (!confirm(`¿Cambiar estado a "${this.estadosMap[nuevoEstado]}"?`)) return;
@@ -187,7 +196,10 @@ export class DenunciasComunitariasComponent implements OnInit {
     }).subscribe({
       next: () => {
         denuncia.status = nuevoEstado as any;
-        if (nuevoEstado === 'resuelto') denuncia.resolved_at = new Date().toISOString();
+        if (nuevoEstado === 'resuelto') {
+          denuncia.resolved_at = new Date().toISOString();
+        }
+        this.cdr.detectChanges();
         alert('✅ Estado actualizado');
       },
       error: (err) => {
@@ -215,5 +227,9 @@ export class DenunciasComunitariasComponent implements OnInit {
       urgente: 'prioridad-urgente'
     };
     return clases[prioridad] || '';
+  }
+
+  trackById(index: number, item: Report): string {
+    return item.id;
   }
 }

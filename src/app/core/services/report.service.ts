@@ -1,3 +1,4 @@
+// src/app/core/services/report.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -13,7 +14,12 @@ export class ReportService {
   }
 
   crearDenuncia(report: Partial<Report>): Observable<Report> {
-    return this.http.post<Report>(WebServices.ReportsCreate, report);
+    // Asegurar que el status sea uno de los literales permitidos
+    const payload = {
+      ...report,
+      status: (report.status as 'pendiente' | 'en_proceso' | 'resuelto' | 'rechazado') || 'pendiente'
+    };
+    return this.http.post<Report>(WebServices.ReportsCreate, payload);
   }
 
   actualizarDenuncia(id: string, data: Partial<Report>): Observable<Report> {

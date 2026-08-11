@@ -1,9 +1,11 @@
+<!-- src/app/features/public/pages/denuncias/denunciasForm.html -->
 <div class="denuncias-container">
   <div class="header">
     <h1>🚧 Denuncias Comunitarias</h1>
     <button class="btn-nueva" (click)="abrirModal()">+ Nueva denuncia</button>
   </div>
 
+  <!-- Filtro -->
   <div class="filtros">
     <select [(ngModel)]="filtroEstado" (change)="cargarDenuncias()">
       <option value="todas">Todas</option>
@@ -14,14 +16,17 @@
     </select>
   </div>
 
+  <!-- Carga / Error -->
   <div *ngIf="loading" class="loading">Cargando denuncias...</div>
   <div *ngIf="error && !loading" class="error">{{ error }}</div>
 
+  <!-- Sin resultados -->
   <div *ngIf="!loading && !error && denunciasFiltradas.length === 0">
     No hay denuncias con este estado.
   </div>
 
-  <div class="denuncia-card" *ngFor="let d of denunciasFiltradas">
+  <!-- Tarjetas -->
+  <div *ngFor="let d of denunciasFiltradas; trackBy: trackById" class="denuncia-card">
     <div class="card-header">
       <span class="tipo">{{ d.type }}</span>
       <span class="prioridad" [ngClass]="obtenerClasePrioridad(d.priority)">
@@ -34,7 +39,7 @@
     <h3>{{ d.title }}</h3>
     <p>{{ d.description }}</p>
     <p *ngIf="d.address" class="direccion">📍 {{ d.address }}</p>
-    <img *ngIf="d.photo_url" [src]="d.photo_url" class="foto" />
+    <img *ngIf="d.photo_url" [src]="d.photo_url" class="foto" alt="Foto de la denuncia" />
     <div class="footer">
       <small>Reportado: {{ d.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
       <small *ngIf="d.resolved_at">✅ Resuelto: {{ d.resolved_at | date:'dd/MM/yyyy HH:mm' }}</small>
@@ -53,26 +58,27 @@
     <button class="btn-cerrar" (click)="cerrarModal()">×</button>
     <h2>Nueva denuncia comunitaria</h2>
 
-    <form (ngSubmit)="enviarDenuncia()">
+    <form (ngSubmit)="enviarDenuncia()" #form="ngForm">
       <div class="campo">
         <label>Título *</label>
-        <input type="text" [(ngModel)]="nuevaDenuncia.titulo" name="tituloModal" required />
+        <input type="text" [(ngModel)]="nuevaDenuncia.titulo" name="titulo" required />
       </div>
+
       <div class="campo">
         <label>Descripción *</label>
-        <textarea [(ngModel)]="nuevaDenuncia.descripcion" name="descripcionModal" rows="3" required></textarea>
+        <textarea [(ngModel)]="nuevaDenuncia.descripcion" name="descripcion" rows="3" required></textarea>
       </div>
 
       <div class="campo-row">
         <div class="campo">
           <label>Tipo</label>
-          <select [(ngModel)]="nuevaDenuncia.tipo" name="tipoModal">
+          <select [(ngModel)]="nuevaDenuncia.tipo" name="tipo">
             <option *ngFor="let t of tipos" [value]="t.value">{{ t.label }}</option>
           </select>
         </div>
         <div class="campo">
           <label>Prioridad</label>
-          <select [(ngModel)]="nuevaDenuncia.prioridad" name="prioridadModal">
+          <select [(ngModel)]="nuevaDenuncia.prioridad" name="prioridad">
             <option *ngFor="let p of prioridades" [value]="p.value">{{ p.label }}</option>
           </select>
         </div>
@@ -80,7 +86,7 @@
 
       <div class="campo">
         <label>Dirección (opcional)</label>
-        <input type="text" [(ngModel)]="nuevaDenuncia.direccion" name="direccionModal" />
+        <input type="text" [(ngModel)]="nuevaDenuncia.direccion" name="direccion" />
       </div>
 
       <div class="ubicacion-modal">

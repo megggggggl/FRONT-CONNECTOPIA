@@ -1,3 +1,4 @@
+// src/app/core/models/report.model.ts
 export interface Report {
   id: string;
   author_id: string;
