@@ -1,5 +1,5 @@
 // src/app/features/auth/components/verification-form/verification-form.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ import { BrowserQRCodeReader } from '@zxing/browser';
   templateUrl: './verification-form.html',
   styleUrls: ['./verification-form.css']
 })
-export class VerificationForm {
+export class VerificationForm implements OnInit {
   documentFrontFile: File | null = null;
   documentBackFile: File | null = null;
   selfieFile: File | null = null;
@@ -28,8 +28,6 @@ export class VerificationForm {
   qrCodigo: string | null = null;
   qrMensaje: string = '';
   qrCargando: boolean = false;
-
-  // Permitir ingreso manual como fallback
   numeroManual: string = '';
   usarManual: boolean = false;
 
@@ -43,6 +41,23 @@ export class VerificationForm {
     private router: Router,
     private authService: AuthService
   ) {}
+
+  ngOnInit(): void {
+    // ✅ Verificar que el usuario esté autenticado
+    if (!this.authService.isAuthenticated()) {
+      console.warn('⚠️ Usuario no autenticado, redirigiendo a login...');
+      this.router.navigate(['/auth']);
+      return;
+    }
+
+    const user = this.authService.getUser();
+    console.log('👤 Usuario autenticado:', user?.email);
+
+    // Si ya está verificado, redirigir
+    if (user?.id_verified) {
+      this.authService.redirigirPorRol(user);
+    }
+  }
 
   // ============================================================
   // SELECCIÓN DE ARCHIVOS
@@ -79,7 +94,7 @@ export class VerificationForm {
   }
 
   // ============================================================
-  // LECTURA DE QR CON @zxing/browser
+  // LECTURA DE QR
   // ============================================================
   async leerQRDelReverso(): Promise<void> {
     if (!this.documentBackFile) return;
@@ -111,7 +126,6 @@ export class VerificationForm {
       } else {
         this.qrMensaje = '⚠️ El QR detectado no corresponde a la RNP.';
       }
-
     } catch (error: any) {
       console.error('❌ Error al leer QR:', error);
       this.qrMensaje = 'Error al leer el QR. Asegúrate de que la imagen esté enfocada.';
@@ -120,9 +134,6 @@ export class VerificationForm {
     }
   }
 
-  // ============================================================
-  // VALIDACIÓN DEL QR
-  // ============================================================
   private esQRValido(qr: string): boolean {
     const normalized = qr.trim().toLowerCase();
     return (
@@ -141,15 +152,12 @@ export class VerificationForm {
     return numMatch ? numMatch[1] : null;
   }
 
-  // ============================================================
-  // USAR MODO MANUAL
-  // ============================================================
   activarManual(): void {
     this.usarManual = true;
   }
 
   // ============================================================
-  // NAVEGACIÓN
+  // NAVEGACIÓN DE STEPS
   // ============================================================
   siguienteStep(): void {
     if (this.step === 1) {
@@ -184,7 +192,7 @@ export class VerificationForm {
   }
 
   // ============================================================
-  // ENVÍO DE VERIFICACIÓN (CON TOKEN)
+  // ENVÍO DE VERIFICACIÓN
   // ============================================================
   async enviarVerificacion(): Promise<void> {
     if (!this.selfieFile) {
@@ -204,11 +212,7 @@ export class VerificationForm {
     formData.append('documento', this.documentFrontFile);
     formData.append('selfie', this.selfieFile);
 
-    const email = localStorage.getItem('pending_verification_email') || '';
-    if (email) formData.append('email', email);
-    if (this.qrCodigo) formData.append('numero_documento', this.qrCodigo);
-
-    // 🔥 OBTENER TOKEN Y ENVIARLO EN LOS HEADERS
+    // Obtener headers con token
     const token = this.authService.getToken();
     const headers = new HttpHeaders({
       'Authorization': token ? `Bearer ${token}` : '',
@@ -220,14 +224,19 @@ export class VerificationForm {
         this.exito = '✅ Verificación exitosa. Usuario verificado.';
         this.cargando = false;
         setTimeout(() => {
-          localStorage.removeItem('pending_verification_email');
-          this.router.navigate(['/auth']);
+          // Recargar usuario para actualizar id_verified
+          this.authService.getMe().subscribe((user: any) => {
+            if (user) {
+              localStorage.setItem('usuario', JSON.stringify(user));
+            }
+            this.router.navigate(['/perfil']);
+          });
         }, 2000);
       },
       error: (error: any) => {
         this.cargando = false;
+        this.error = error.error?.error || 'Error al verificar.';
         console.error('❌ Error en verificación:', error);
-        this.error = error.error?.error || error.error?.message || 'Error al verificar.';
       }
     });
   }

@@ -55,7 +55,7 @@ export class RegisterForm {
     this.error = '';
     this.exito = '';
 
-    // Construir payload
+    // Payload de registro
     const payload: any = {
       email: this.email.trim().toLowerCase(),
       password: this.password,
@@ -67,24 +67,30 @@ export class RegisterForm {
     if (this.fechaNacimiento) payload.fecha_nacimiento = this.fechaNacimiento;
     if (this.idDocumentNumber) payload.id_document_number = this.idDocumentNumber;
 
-    console.log('📦 Payload de registro:', payload);
+    console.log('📦 Registrando usuario:', payload);
 
-    // 1. Registrar usuario
+    // 1️⃣ REGISTRO
     this.http.post(WebServices.AuthRegister, payload).subscribe({
       next: (respuesta: any) => {
         console.log('✅ Registro exitoso:', respuesta);
         this.exito = '✅ Cuenta creada. Iniciando sesión...';
 
-        // 2. Login automático con las mismas credenciales
+        // 2️⃣ LOGIN AUTOMÁTICO
         this.authService.login(this.email, this.password).subscribe({
           next: (loginResp: any) => {
             console.log('🔐 Login automático exitoso');
-            // 3. Guardar sesión
+
+            // Guardar sesión (token + usuario)
             this.authService.guardarSesion(loginResp);
+
+            // Verificar que el token se guardó
+            const token = this.authService.getToken();
+            console.log('🔑 Token guardado:', token ? '✅ Sí' : '❌ No');
+
             this.exito = '✅ Sesión iniciada. Redirigiendo a verificación...';
 
-            // 4. Redirigir a verificación
             setTimeout(() => {
+              // 3️⃣ REDIRIGIR A VERIFICACIÓN (YA CON TOKEN)
               this.router.navigate(['/auth/verificacion']);
             }, 1500);
           },
@@ -101,7 +107,7 @@ export class RegisterForm {
       error: (error: HttpErrorResponse) => {
         this.cargando = false;
         console.error('❌ Error en registro:', error);
-        if (error.status === 409 || error.error?.error?.includes('duplicate')) {
+        if (error.status === 409) {
           this.error = 'El correo ya está registrado.';
         } else {
           this.error = error.error?.error || 'Error al registrar. Inténtalo de nuevo.';
@@ -112,13 +118,5 @@ export class RegisterForm {
 
   volverAlLogin(): void {
     this.router.navigate(['/auth']);
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
   }
 }

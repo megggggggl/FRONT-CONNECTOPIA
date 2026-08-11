@@ -172,7 +172,7 @@ static readonly PlaceDelete = (id: string) => `${WebServices.BASE_URL}/places/${
   // ==================== VERIFICATION ====================
   // En WebServices (webServices.ts)
 static readonly VerificationDocument = `${WebServices.BASE_URL}/verification/document`;
-  static readonly VerificationStart = `${WebServices.BASE_URL}/verification/start`;
+static readonly VerificationStart = `${WebServices.BASE_URL}/verification/start`;
   static readonly VerificationStatus = `${WebServices.BASE_URL}/verification/status`;
   // ==================== HEALTH ====================
   static readonly Health = `${WebServices.BASE_URL}/health`;

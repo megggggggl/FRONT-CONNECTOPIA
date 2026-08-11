@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
 export class AuthInterceptor implements HttpInterceptor {
   private isBrowser: boolean;
 
-  // 🔥 Rutas PÚBLICAS (no requieren token) – EXCLUIR /verification
+  // 🔥 SOLO RUTAS PÚBLICAS (NO incluir /verification)
   private readonly publicRoutes: { url: string; methods?: string[] }[] = [
     { url: '/auth/login', methods: ['POST'] },
     { url: '/auth/register', methods: ['POST'] },
@@ -24,7 +24,7 @@ export class AuthInterceptor implements HttpInterceptor {
     { url: '/health' },
     { url: '/categories' },
     { url: '/places', methods: ['GET'] }
-    // ❌ ELIMINADO: { url: '/verification' }  → AHORA REQUIERE TOKEN
+    // ❌ /verification NO está aquí → requiere token
   ];
 
   constructor(
@@ -39,7 +39,6 @@ export class AuthInterceptor implements HttpInterceptor {
       return next.handle(request);
     }
 
-    // Verificar si la ruta es pública
     const isPublic = this.publicRoutes.some(route => {
       const urlMatch = request.url.includes(route.url);
       if (!urlMatch) return false;
@@ -47,14 +46,12 @@ export class AuthInterceptor implements HttpInterceptor {
       return route.methods.includes(request.method);
     });
 
-    // Clonar con headers base
     let authRequest = request.clone({
       setHeaders: {
         'ngrok-skip-browser-warning': 'true'
       }
     });
 
-    // Si NO es pública, agregar el token
     if (!isPublic) {
       const token = localStorage.getItem('access_token');
       if (token) {
