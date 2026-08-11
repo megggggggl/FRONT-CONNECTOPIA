@@ -1,10 +1,11 @@
 // src/app/features/admin/pages/moderation/moderation.ts
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, finalize, of } from 'rxjs';
 import { WebServices } from '../../../../core/services/webServices';
+import { FeedbackService } from '../../../../core/services/feedback.service';
 
 interface ReporteContenido {
   id: number;
@@ -35,7 +36,11 @@ export class ModerationPageComponent implements OnInit {
   success = '';
   filtroEstado = 'todos';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+    private feedback: FeedbackService
+  ) {}
 
   ngOnInit(): void {
     this.cargarReportes();
@@ -50,6 +55,7 @@ export class ModerationPageComponent implements OnInit {
     if (!token) {
       this.error = 'No autenticado. Inicia sesión como administrador.';
       this.loading = false;
+      this.cdr.detectChanges();
       return;
     }
 
@@ -60,7 +66,7 @@ export class ModerationPageComponent implements OnInit {
 
     console.log('📡 Cargando reportes desde:', WebServices.ContentReportsList);
 
-    this.http.get<{ data: ReporteContenido[] }>(WebServices.ContentReportsList, { headers })
+    this.http.get<any>(WebServices.ReportsList, { headers })
       .pipe(
         catchError((err: HttpErrorResponse) => {
           console.error('❌ Error al cargar reportes:', err);
@@ -69,12 +75,25 @@ export class ModerationPageComponent implements OnInit {
         }),
         finalize(() => {
           this.loading = false;
+          this.cdr.detectChanges();
         })
       )
       .subscribe({
         next: (resp) => {
           console.log('✅ Reportes recibidos:', resp);
-          this.reportes = resp.data || [];
+          const lista = Array.isArray(resp) ? resp : resp.data ?? [];
+          this.reportes = lista.map((reporte: any) => ({
+            id: reporte.id,
+            reporter_id: reporte.author_id,
+            entity_type: reporte.type || 'report',
+            entity_id: String(reporte.id),
+            reason: reporte.title,
+            description: reporte.description,
+            status: reporte.status === 'en_proceso' ? 'revisado' : reporte.status,
+            created_at: reporte.created_at,
+            resolved_at: reporte.resolved_at,
+            reporter: reporte.author
+          }));
           this.aplicarFiltros();
         }
       });
@@ -89,8 +108,8 @@ export class ModerationPageComponent implements OnInit {
     console.log('📋 Reportes filtrados:', this.reportesFiltrados.length);
   }
 
-  cambiarEstado(reporte: ReporteContenido, nuevoEstado: string): void {
-    if (!confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) return;
+  async cambiarEstado(reporte: ReporteContenido, nuevoEstado: string): Promise<void> {
+    if (!await this.feedback.confirm(`¿Cambiar estado a "${nuevoEstado}"?`, { title: 'Actualizar reporte', confirmText: 'Actualizar' })) return;
 
     const token = localStorage.getItem('access_token');
     if (!token) {
@@ -104,11 +123,11 @@ export class ModerationPageComponent implements OnInit {
     });
 
     const payload = {
-      status: nuevoEstado,
+      status: nuevoEstado === 'revisado' ? 'en_proceso' : nuevoEstado,
       resolved_at: nuevoEstado === 'resuelto' ? new Date().toISOString() : null
     };
 
-    this.http.patch(WebServices.ContentReportUpdate(reporte.id), payload, { headers })
+    this.http.patch(WebServices.ReportUpdate(reporte.id), payload, { headers })
       .subscribe({
         next: () => {
           reporte.status = nuevoEstado as any;
@@ -117,12 +136,20 @@ export class ModerationPageComponent implements OnInit {
           }
           this.success = `Estado actualizado a "${nuevoEstado}".`;
           this.aplicarFiltros();
-          setTimeout(() => this.success = '', 3000);
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.success = '';
+            this.cdr.detectChanges();
+          }, 3000);
         },
         error: (err) => {
           console.error('❌ Error al actualizar estado:', err);
           this.error = err.error?.error || 'Error al actualizar estado.';
-          setTimeout(() => this.error = '', 3000);
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.error = '';
+            this.cdr.detectChanges();
+          }, 3000);
         }
       });
   }

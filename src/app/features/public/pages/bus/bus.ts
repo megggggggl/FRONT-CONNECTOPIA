@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../../../core/services/auth.service';
 import { WebServices } from '../../../../core/services/webServices';
+import { FeedbackService } from '../../../../core/services/feedback.service';
 
 interface BusRoute {
   id?: string;
@@ -27,15 +28,19 @@ export class BusRoutesComponent implements OnInit {
   destino = '';
   modalAbierto = false;
   editando = false;
+  loading = true;
+  error = '';
   form: BusRoute = { name: '', origin: '', destination: '', stops: [], schedules: [] };
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(private http: HttpClient, private auth: AuthService, private cdr: ChangeDetectorRef, private feedback: FeedbackService) {}
 
   ngOnInit() {
     this.cargarRutas();
   }
 
   cargarRutas() {
+    this.loading = true;
+    this.error = '';
     this.http.get<any>(WebServices.BusRoutesList).subscribe({
       next: (resp) => {
         let data = resp?.data || resp || [];
@@ -45,8 +50,15 @@ export class BusRoutesComponent implements OnInit {
           stops: Array.isArray(r.stops) ? r.stops : [],
           schedules: Array.isArray(r.schedules) ? r.schedules : []
         }));
+        this.loading = false;
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error al cargar rutas:', err)
+      error: (err) => {
+        console.error('Error al cargar rutas:', err);
+        this.error = 'No se pudieron cargar las rutas de buses.';
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -60,6 +72,8 @@ export class BusRoutesComponent implements OnInit {
   }
 
   buscarRutas() {
+    this.loading = true;
+    this.error = '';
     const url = `${WebServices.BusRoutesList}?origin=${this.origen}&destination=${this.destino}`;
     this.http.get<any>(url).subscribe({
       next: (resp) => {
@@ -70,6 +84,14 @@ export class BusRoutesComponent implements OnInit {
           stops: Array.isArray(r.stops) ? r.stops : [],
           schedules: Array.isArray(r.schedules) ? r.schedules : []
         }));
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al buscar rutas:', err);
+        this.error = 'No se pudo completar la búsqueda.';
+        this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -91,7 +113,10 @@ export class BusRoutesComponent implements OnInit {
     }
   }
 
-  cerrarModal() { this.modalAbierto = false; }
+  cerrarModal() {
+    this.modalAbierto = false;
+    this.cdr.detectChanges();
+  }
 
   agregarParada() {
     this.form.stops.push({ name: '', order_index: this.form.stops.length });
@@ -104,7 +129,7 @@ export class BusRoutesComponent implements OnInit {
   guardarRuta() {
     const token = localStorage.getItem('access_token');
     if (!token) {
-      alert('Debes iniciar sesión');
+      this.feedback.info('Debes iniciar sesión');
       return;
     }
 
@@ -120,30 +145,30 @@ export class BusRoutesComponent implements OnInit {
     if (this.editando) {
       this.http.patch(`${WebServices.BusRoutesList}/${this.form.id}`, payload, { headers })
         .subscribe({
-          next: () => { this.cargarRutas(); this.cerrarModal(); alert('✅ Ruta actualizada'); },
-          error: (err) => console.error('Error al actualizar:', err)
+          next: (resp: any) => { const actualizada = resp?.data ?? resp; this.rutas = this.rutas.map(r => r.id === this.form.id ? { ...r, ...this.form, ...actualizada } : r); this.cerrarModal(); this.feedback.success('Ruta actualizada correctamente'); this.cdr.detectChanges(); },
+          error: (err) => { console.error('Error al actualizar:', err); this.feedback.error('No se pudo actualizar la ruta'); }
         });
     } else {
       this.http.post(WebServices.BusRoutesList, payload, { headers })
         .subscribe({
-          next: () => { this.cargarRutas(); this.cerrarModal(); alert('✅ Ruta creada'); },
-          error: (err) => console.error('Error al crear:', err)
+          next: (resp: any) => { const creada = resp?.data ?? resp; this.rutas = [creada, ...this.rutas]; this.cerrarModal(); this.feedback.success('Ruta creada correctamente'); this.cdr.detectChanges(); },
+          error: (err) => { console.error('Error al crear:', err); this.feedback.error('No se pudo crear la ruta'); }
         });
     }
   }
 
-  eliminarRuta(id: string) {
-    if (!confirm('¿Eliminar esta ruta?')) return;
+  async eliminarRuta(id: string) {
+    if (!await this.feedback.confirm('¿Eliminar esta ruta?', { title: 'Eliminar ruta', confirmText: 'Eliminar', danger: true })) return;
     const token = localStorage.getItem('access_token');
     if (!token) {
-      alert('Debes iniciar sesión');
+      this.feedback.info('Debes iniciar sesión');
       return;
     }
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     this.http.delete(`${WebServices.BusRoutesList}/${id}`, { headers })
       .subscribe({
-        next: () => { this.cargarRutas(); alert('✅ Ruta eliminada'); },
-        error: (err) => console.error('Error al eliminar:', err)
+        next: () => { this.rutas = this.rutas.filter(r => r.id !== id); this.feedback.success('Ruta eliminada correctamente'); this.cdr.detectChanges(); },
+        error: (err) => { console.error('Error al eliminar:', err); this.feedback.error('No se pudo eliminar la ruta'); }
       });
   }
 }

@@ -1,71 +1,38 @@
-<!-- src/app/features/admin/pages/moderation/moderation.html -->
-<div class="admin-page">
-  <div class="page-header">
-    <h1>🛡️ Moderación de Contenido</h1>
-    <button class="btn-refresh" (click)="cargarReportes()" [disabled]="loading">
-      {{ loading ? 'Cargando...' : '🔄 Actualizar' }}
-    </button>
-  </div>
-
-  <!-- Alertas -->
-  <div *ngIf="error" class="alert error">{{ error }}</div>
-  <div *ngIf="success" class="alert success">{{ success }}</div>
-
-  <!-- Filtros -->
-  <div class="filters">
-    <select [(ngModel)]="filtroEstado" (change)="aplicarFiltros()">
-      <option value="todos">Todos los estados</option>
-      <option value="pendiente">🔴 Pendiente</option>
-      <option value="revisado">🟡 Revisado</option>
-      <option value="resuelto">🟢 Resuelto</option>
-      <option value="rechazado">⚫ Rechazado</option>
-    </select>
-    <span class="total-count" *ngIf="!loading">
-      {{ reportesFiltrados.length }} reporte(s)
-    </span>
-  </div>
-
-  <!-- Loading -->
-  <div *ngIf="loading" class="loading">
-    <span>Cargando reportes...</span>
-  </div>
-
-  <!-- Sin reportes -->
-  <div *ngIf="!loading && reportesFiltrados.length === 0" class="empty">
-    <p *ngIf="reportes.length === 0">📭 No hay reportes de contenido en la plataforma.</p>
-    <p *ngIf="reportes.length > 0 && reportesFiltrados.length === 0">
-      No hay reportes con el estado "{{ obtenerEtiquetaEstado(filtroEstado) }}".
-    </p>
-  </div>
-
-  <!-- Grid de reportes -->
-  <div class="reportes-grid" *ngIf="!loading && reportesFiltrados.length > 0">
-    <div *ngFor="let reporte of reportesFiltrados" class="reporte-card">
-      <div class="reporte-header">
-        <span class="tipo">{{ obtenerEtiquetaTipo(reporte.entity_type) }}</span>
-        <span class="estado" [ngClass]="obtenerClaseEstado(reporte.status)">
-          {{ obtenerEtiquetaEstado(reporte.status) }}
-        </span>
-      </div>
-
-      <h3>{{ reporte.reason }}</h3>
-      <p class="descripcion">{{ reporte.description || 'Sin descripción adicional.' }}</p>
-
-      <div class="reporte-meta">
-        <span><strong>Reportado por:</strong> {{ reporte.reporter?.name || 'Usuario' }}</span>
-        <span><strong>ID:</strong> #{{ reporte.id }}</span>
-      </div>
-
-      <small class="fecha">{{ reporte.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
-
-      <div class="acciones" *ngIf="reporte.status === 'pendiente'">
-        <button class="btn-review" (click)="cambiarEstado(reporte, 'revisado')">📋 Revisar</button>
-        <button class="btn-resolve" (click)="cambiarEstado(reporte, 'resuelto')">✅ Resolver</button>
-        <button class="btn-reject" (click)="cambiarEstado(reporte, 'rechazado')">❌ Rechazar</button>
-      </div>
-      <div class="acciones" *ngIf="reporte.status !== 'pendiente'">
-        <span class="status-message">Este reporte ya fue {{ obtenerEtiquetaEstado(reporte.status).toLowerCase() }}.</span>
-      </div>
+<section class="admin-page moderation-page">
+  <header class="module-header">
+    <div class="module-title">
+      <span class="title-icon"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
+      <div><span class="eyebrow">Seguridad comunitaria</span><h1>Moderación de contenido</h1><p>Revisa reportes y mantén conversaciones seguras dentro de Connectopia.</p></div>
     </div>
-  </div>
-</div>
+    <button type="button" class="refresh-button" (click)="cargarReportes()" [disabled]="loading"><i class="fa-solid fa-rotate" [class.spinning]="loading" aria-hidden="true"></i>{{ loading ? 'Actualizando' : 'Actualizar reportes' }}</button>
+  </header>
+
+  <div *ngIf="error" class="notice error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><span>{{ error }}</span></div>
+  <div *ngIf="success" class="notice success" role="status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>{{ success }}</span></div>
+
+  <section class="workspace-card">
+    <header class="workspace-toolbar">
+      <div><span class="section-label">Bandeja de revisión</span><h2>Reportes recibidos</h2></div>
+      <div class="filter-control"><i class="fa-solid fa-filter" aria-hidden="true"></i><select aria-label="Filtrar reportes por estado" [(ngModel)]="filtroEstado" (change)="aplicarFiltros()"><option value="todos">Todos los estados</option><option value="pendiente">Pendientes</option><option value="revisado">Revisados</option><option value="resuelto">Resueltos</option><option value="rechazado">Rechazados</option></select></div>
+      <span class="total-count" *ngIf="!loading">{{ reportesFiltrados.length }} reporte(s)</span>
+    </header>
+
+    <div *ngIf="loading" class="skeleton-grid" aria-label="Cargando reportes"><div class="skeleton-card" *ngFor="let item of [1,2,3]"><i></i><span></span><span></span><b></b></div></div>
+
+    <div *ngIf="!loading && reportesFiltrados.length === 0" class="empty-state">
+      <span><i class="fa-regular fa-flag" aria-hidden="true"></i></span>
+      <h3>{{ reportes.length === 0 ? 'No hay reportes pendientes' : 'No hay resultados para este filtro' }}</h3>
+      <p>{{ reportes.length === 0 ? 'La bandeja está al día. Los nuevos reportes aparecerán aquí.' : 'Selecciona otro estado para consultar el resto de reportes.' }}</p>
+    </div>
+
+    <div class="reportes-grid" *ngIf="!loading && reportesFiltrados.length > 0">
+      <article *ngFor="let reporte of reportesFiltrados" class="reporte-card">
+        <header class="reporte-header"><span class="tipo"><i class="fa-regular fa-file-lines" aria-hidden="true"></i>{{ obtenerEtiquetaTipo(reporte.entity_type) }}</span><span class="estado" [ngClass]="obtenerClaseEstado(reporte.status)">{{ obtenerEtiquetaEstado(reporte.status) }}</span></header>
+        <div class="reporte-content"><span class="report-id">Reporte #{{ reporte.id }}</span><h3>{{ reporte.reason }}</h3><p class="descripcion">{{ reporte.description || 'Sin descripción adicional.' }}</p></div>
+        <dl class="reporte-meta"><div><dt>Reportado por</dt><dd>{{ reporte.reporter?.name || 'Usuario' }}</dd></div><div><dt>Fecha</dt><dd>{{ reporte.created_at | date:'dd MMM y, HH:mm' }}</dd></div></dl>
+        <footer class="acciones" *ngIf="reporte.status === 'pendiente'"><button type="button" class="btn-review" (click)="cambiarEstado(reporte, 'revisado')"><i class="fa-regular fa-eye" aria-hidden="true"></i>Revisar</button><button type="button" class="btn-resolve" (click)="cambiarEstado(reporte, 'resuelto')"><i class="fa-solid fa-check" aria-hidden="true"></i>Resolver</button><button type="button" class="btn-reject" (click)="cambiarEstado(reporte, 'rechazado')"><i class="fa-solid fa-xmark" aria-hidden="true"></i>Rechazar</button></footer>
+        <footer class="resolved-state" *ngIf="reporte.status !== 'pendiente'"><i class="fa-solid fa-lock" aria-hidden="true"></i><span>Este reporte ya fue {{ obtenerEtiquetaEstado(reporte.status).toLowerCase() }}.</span></footer>
+      </article>
+    </div>
+  </section>
+</section>

@@ -20,49 +20,49 @@ export class MenuService {
       {
         id: 'explorar',
         label: 'Explorar',
-        icon: 'bi-compass',
+        icon: 'fa-solid fa-compass',
         route: '/explorar',
         roles: ['turista', 'vecino', 'prestador', 'admin']
       },
       {
         id: 'servicios',
         label: 'Servicios',
-        icon: 'bi-list-ul',
+        icon: 'fa-solid fa-people-group',
         route: '/servicios',
         roles: ['turista', 'vecino', 'prestador', 'admin']
       },
       {
         id: 'lugares-turisticos',
         label: 'Lugares Turísticos',
-        icon: 'bi-pin-map',
+        icon: 'fa-solid fa-location-dot',
         route: '/lugares-turisticos',
         roles: ['turista', 'vecino', 'prestador', 'admin']
       },
       {
         id: 'bus-routes',
         label: 'Rutas de Buses',
-        icon: 'bi-bus-front',
+        icon: 'fa-solid fa-bus-simple',
         route: '/bus-routes',
         roles: ['turista', 'vecino', 'prestador', 'admin']
       },
       {
         id: 'mapa',
         label: 'Mapa',
-        icon: 'bi-map',
+        icon: 'fa-solid fa-map',
         route: '/mapa',
         roles: ['turista', 'vecino', 'prestador', 'admin']
       },
       {
         id: 'terminos',
         label: 'Términos',
-        icon: 'bi-file-text',
+        icon: 'fa-solid fa-file-lines',
         route: '/terminos',
         roles: ['turista']
       },
       {
         id: 'contacto',
         label: 'Contacto',
-        icon: 'bi-envelope',
+        icon: 'fa-solid fa-envelope',
         route: '/contacto',
         roles: ['turista']
       },
@@ -73,14 +73,14 @@ export class MenuService {
       {
         id: 'perfil',
         label: 'Mi Perfil',
-        icon: 'bi-person-circle',
+        icon: 'fa-solid fa-circle-user',
         route: '/perfil',
         roles: ['vecino', 'prestador', 'admin']
       },
       {
         id: 'eventos',
         label: 'Eventos',
-        icon: 'bi-calendar-event',
+        icon: 'fa-solid fa-calendar-days',
         route: '/eventos',
         roles: ['vecino', 'prestador', 'admin']
       },
@@ -95,7 +95,7 @@ export class MenuService {
       {
         id: 'mis-servicios',
         label: 'Mis Servicios',
-        icon: 'bi-briefcase',
+        icon: 'fa-solid fa-briefcase',
         route: '/mis-servicios',
         roles: ['prestador', 'admin']
       },
@@ -106,44 +106,56 @@ export class MenuService {
       {
         id: 'admin',
         label: 'Administración',
-        icon: 'bi-shield-lock',
+        icon: 'fa-solid fa-shield-halved',
         roles: ['admin'],
         children: [
           {
             id: 'admin-dashboard',
             label: 'Dashboard',
-            icon: 'bi-speedometer2',
+            icon: 'fa-solid fa-gauge-high',
             route: '/admin/dashboard'
           },
           {
             id: 'admin-users',
             label: 'Usuarios',
-            icon: 'bi-people',
+            icon: 'fa-solid fa-users',
             route: '/admin/users'
           },
           {
             id: 'admin-categories',
             label: 'Categorías',
-            icon: 'bi-tags',
+            icon: 'fa-solid fa-tags',
             route: '/admin/categories'
           },
           {
             id: 'admin-moderation',
             label: 'Moderación',
-            icon: 'bi-shield-check',
+            icon: 'fa-solid fa-shield',
             route: '/admin/moderation'
           },
           {
             id: 'admin-verifications',
             label: 'Verificaciones',
-            icon: 'bi-check-circle',
+            icon: 'fa-solid fa-circle-check',
             route: '/admin/verifications'
           },
           {
             id: 'admin-events',
             label: 'Eventos',
-            icon: 'bi-calendar-event',
+            icon: 'fa-solid fa-calendar-days',
             route: '/admin/events'
+          },
+          {
+            id: 'admin-reports',
+            label: 'Reportes',
+            icon: 'fa-solid fa-flag',
+            route: '/admin/reports'
+          },
+          {
+            id: 'admin-tourism',
+            label: 'Turismo',
+            icon: 'fa-solid fa-map-location-dot',
+            route: '/admin/turismo'
           }
         ]
       }

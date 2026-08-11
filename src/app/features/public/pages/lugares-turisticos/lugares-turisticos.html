@@ -1,119 +1,138 @@
-<div class="lugares-container">
-  <!-- HEADER -->
-  <div class="header">
-    <h1>🏛️ Lugares Turísticos</h1>
-    <!-- Botón "Añadir lugar" solo visible si está autenticado -->
+<section class="lugares-container">
+  <header class="page-header">
+    <div>
+      <span>Guía local</span>
+      <h1>Lugares turísticos</h1>
+      <p>Explora espacios especiales recomendados por la comunidad.</p>
+    </div>
     <button *ngIf="authService.isAuthenticated()" class="btn-nuevo" (click)="abrirModal()">
-      + Añadir lugar
+      <i class="fa-solid fa-plus"></i>Añadir lugar
     </button>
-  </div>
-
-  <!-- BUSCADOR -->
-  <div class="filtros">
-    <input
-      type="text"
+  </header>
+  <label class="buscador"
+    ><i class="fa-solid fa-magnifying-glass"></i
+    ><input
       [(ngModel)]="searchTerm"
       (input)="onSearch()"
-      placeholder="Buscar lugares..."
-      class="input-busqueda"
-    />
+      placeholder="Buscar por nombre o ubicación"
+  /></label>
+  <div *ngIf="loading" class="skeleton-grid">
+    <article *ngFor="let item of [1, 2, 3, 4, 5, 6]"><i></i><span></span><span></span></article>
   </div>
-
-  <!-- ESTADOS -->
-  <div *ngIf="loading" class="loading">Cargando lugares...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
-
-  <!-- LISTA DE LUGARES -->
+  <div *ngIf="error" class="state error">
+    <i class="fa-solid fa-cloud-arrow-down"></i>
+    <h2>No pudimos cargar los lugares</h2>
+    <p>{{ error }}</p>
+  </div>
   <div *ngIf="!loading && !error">
-    <div *ngIf="lugares.length === 0" class="sin-resultados">
-      No hay lugares turísticos disponibles.
+    <div *ngIf="lugares.length === 0" class="state">
+      <i class="fa-regular fa-map"></i>
+      <h2>Aún no hay lugares disponibles</h2>
+      <p>Los nuevos destinos recomendados aparecerán aquí.</p>
+      <button *ngIf="authService.isAuthenticated()" (click)="abrirModal()">
+        Añadir el primero
+      </button>
     </div>
-
-    <div class="grid-lugares" *ngIf="lugares.length > 0">
-      <div class="lugar-card" *ngFor="let lugar of lugares">
-        <img
-          *ngIf="lugar.images?.length"
-          [src]="lugar.images[0]"
-          [alt]="lugar.name"
-          class="lugar-imagen"
-        />
-        <div *ngIf="!lugar.images?.length" class="lugar-imagen-vacia">
-          🏛️
+    <header class="results" *ngIf="lugares.length">
+      <div>
+        <span>Destinos</span>
+        <h2>Explora la comunidad</h2>
+      </div>
+      <strong>{{ lugares.length }} lugar(es)</strong>
+    </header>
+    <div class="grid-lugares">
+      <article class="lugar-card" *ngFor="let lugar of lugares">
+        <div class="image-wrap">
+          <img
+            *ngIf="lugar.images?.length"
+            [src]="lugar.images[0]"
+            [alt]="lugar.name"
+            (error)="$any($event.target).style.display = 'none'"
+          />
+          <div class="image-fallback"><i class="fa-solid fa-mountain-sun"></i></div>
         </div>
         <div class="lugar-content">
+          <div class="rating" *ngIf="lugar.avg_rating > 0">
+            <i class="fa-solid fa-star"></i>{{ lugar.avg_rating }}
+            <span>({{ lugar.reviews_count }})</span>
+          </div>
           <h3>{{ lugar.name }}</h3>
-          <p>{{ lugar.description || 'Sin descripción' }}</p>
-          <p *ngIf="lugar.address">📍 {{ lugar.address }}</p>
-          <p *ngIf="lugar.avg_rating > 0">⭐ {{ lugar.avg_rating }} ({{ lugar.reviews_count }} reseñas)</p>
-          <a [routerLink]="['/lugar-turistico', lugar.id]" class="btn-detalle">Ver detalle</a>
+          <p>{{ lugar.description || 'Sin descripción disponible.' }}</p>
+          <p class="address" *ngIf="lugar.address">
+            <i class="fa-solid fa-location-dot"></i>{{ lugar.address }}
+          </p>
+          <a [routerLink]="['/lugares-turisticos', lugar.id]"
+            >Ver detalle<i class="fa-solid fa-arrow-right"></i
+          ></a>
+          <button
+            *ngIf="puedeEliminar(lugar)"
+            type="button"
+            class="btn-eliminar-lugar"
+            (click)="eliminarLugar(lugar)"
+            [disabled]="eliminandoLugarId === lugar.id"
+          >
+            <i [class]="eliminandoLugarId === lugar.id ? 'fa-solid fa-spinner fa-spin' : 'fa-regular fa-trash-can'"></i>
+            {{ eliminandoLugarId === lugar.id ? 'Eliminando...' : 'Eliminar lugar' }}
+          </button>
         </div>
-      </div>
+      </article>
     </div>
   </div>
-
-  <!-- ========================================================== -->
-  <!-- MODAL PARA CREAR LUGAR (solo autenticados) -->
-  <!-- ========================================================== -->
   <div class="modal-backdrop" *ngIf="modalAbierto" (click)="cerrarModal()">
-    <div class="modal-contenido" (click)="$event.stopPropagation()">
-      <button class="btn-cerrar" (click)="cerrarModal()">×</button>
-      <h2>➕ Nuevo lugar turístico</h2>
-
+    <section
+      class="modal-contenido"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-place-title"
+      (click)="$event.stopPropagation()"
+    >
+      <header>
+        <div>
+          <span>Nuevo destino</span>
+          <h2 id="new-place-title">Añadir lugar turístico</h2>
+        </div>
+        <button type="button" class="btn-cerrar" (click)="cerrarModal()" aria-label="Cerrar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
       <form (ngSubmit)="guardarLugar()">
-        <!-- ✅ Cada input debe tener name o standalone -->
-        <div class="campo">
-          <label>Nombre *</label>
-          <input type="text" [(ngModel)]="nuevoLugar.name" name="nombre" required />
-        </div>
-
-        <div class="campo">
-          <label>Descripción</label>
-          <textarea [(ngModel)]="nuevoLugar.description" name="descripcion" rows="3"></textarea>
-        </div>
-
-        <div class="campo">
-          <label>Dirección</label>
-          <input type="text" [(ngModel)]="nuevoLugar.address" name="direccion" />
-        </div>
-
+        <label>Nombre *<input [(ngModel)]="nuevoLugar.name" name="nombre" required /></label
+        ><label
+          >Descripción<textarea
+            [(ngModel)]="nuevoLugar.description"
+            name="descripcion"
+            rows="3"
+          ></textarea></label
+        ><label>Dirección<input [(ngModel)]="nuevoLugar.address" name="direccion" /></label>
         <div class="campo-row">
-          <div class="campo">
-            <label>Teléfono</label>
-            <input type="text" [(ngModel)]="nuevoLugar.phone" name="telefono" />
-          </div>
-          <div class="campo">
-            <label>Website</label>
-            <input type="text" [(ngModel)]="nuevoLugar.website" name="website" />
-          </div>
+          <label>Teléfono<input [(ngModel)]="nuevoLugar.phone" name="telefono" /></label
+          ><label>Sitio web<input [(ngModel)]="nuevoLugar.website" name="website" /></label>
         </div>
-
-        <div class="campo">
-          <label>Costo de entrada</label>
-          <input type="text" [(ngModel)]="nuevoLugar.entrance_fee" name="costo" placeholder="Ej: Gratis, L 50" />
+        <label
+          >Costo de entrada<input
+            [(ngModel)]="nuevoLugar.entrance_fee"
+            name="costo"
+            placeholder="Ej. Gratis o L 50" /></label
+        ><label class="upload"
+          ><i class="fa-regular fa-image"></i><span>Seleccionar imagen</span
+          ><input type="file" (change)="onImageSelected($event)" accept="image/*" name="imagen"
+        /></label>
+        <div class="location-field">
+          <span>Ubicación opcional</span
+          ><button type="button" (click)="obtenerUbicacion()">
+            <i class="fa-solid fa-location-crosshairs"></i>Usar ubicación actual</button
+          ><small *ngIf="ubicacion"
+            >Lat: {{ ubicacion.lat | number: '1.4' }}, Lng:
+            {{ ubicacion.lng | number: '1.4' }}</small
+          >
         </div>
-
-        <div class="campo">
-          <label>Imagen (opcional)</label>
-          <input type="file" (change)="onImageSelected($event)" accept="image/*" name="imagen" />
-        </div>
-
-        <div class="campo">
-          <label>Ubicación (opcional)</label>
-          <button type="button" class="btn-secundario" (click)="obtenerUbicacion()">
-            📍 Obtener ubicación actual
+        <footer>
+          <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button
+          ><button type="submit" class="btn-guardar" [disabled]="enviando">
+            <i class="fa-solid fa-check"></i>{{ enviando ? 'Guardando…' : 'Guardar lugar' }}
           </button>
-          <span *ngIf="ubicacion" class="ubicacion-info">
-            Lat: {{ ubicacion.lat | number:'1.4' }}, Lng: {{ ubicacion.lng | number:'1.4' }}
-          </span>
-        </div>
-
-        <div class="acciones-modal">
-          <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-          <button type="submit" class="btn-guardar" [disabled]="enviando">
-            {{ enviando ? 'Guardando...' : 'Guardar lugar' }}
-          </button>
-        </div>
+        </footer>
       </form>
-    </div>
+    </section>
   </div>
-</div>
+</section>

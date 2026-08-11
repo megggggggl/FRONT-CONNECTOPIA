@@ -1,11 +1,11 @@
 // src/app/features/admin/pages/verifications/verifications.ts
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, finalize, of } from 'rxjs';
-import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
 import { WebServices } from '../../../../core/services/webServices';
+import { FeedbackService } from '../../../../core/services/feedback.service';
 
 interface SolicitudVerificacion {
   id: string;
@@ -19,12 +19,13 @@ interface SolicitudVerificacion {
   id_verification_attempts: number;
   created_at: string;
   updated_at: string;
+  id_verification_status?: string | null;
 }
 
 @Component({
   selector: 'app-verifications',
   standalone: true,
-  imports: [CommonModule, FormsModule, MainLayout],
+  imports: [CommonModule, FormsModule],
   templateUrl: './verifications.html',
   styleUrls: ['./verifications.css']
 })
@@ -36,7 +37,11 @@ export class VerificationsPageComponent implements OnInit {
   selectedId: string | null = null;
   motivoRechazo = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+    private feedback: FeedbackService
+  ) {}
 
   ngOnInit(): void {
     this.cargarSolicitudes();
@@ -50,6 +55,7 @@ export class VerificationsPageComponent implements OnInit {
     if (!token) {
       this.error = 'No autenticado.';
       this.loading = false;
+      this.cdr.detectChanges();
       return;
     }
 
@@ -58,33 +64,40 @@ export class VerificationsPageComponent implements OnInit {
       'ngrok-skip-browser-warning': 'true'
     });
 
-    this.http.get<{ data: SolicitudVerificacion[] }>(WebServices.VerificationPending, { headers })
+    this.http.get<any>(WebServices.ProfilesList, { headers })
       .pipe(
         catchError((err: HttpErrorResponse) => {
           this.error = err.error?.error || 'Error al cargar solicitudes.';
           return of({ data: [] });
         }),
-        finalize(() => { this.loading = false; })
+        finalize(() => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        })
       )
       .subscribe({
         next: (resp) => {
-          this.solicitudes = resp.data || [];
+          const perfiles: SolicitudVerificacion[] = Array.isArray(resp) ? resp : resp.data ?? [];
+          this.solicitudes = perfiles.filter((perfil) => {
+            const estado = String(perfil.id_verification_status ?? '').toLowerCase();
+            return estado === 'pending' || estado === 'pendiente';
+          });
         }
       });
   }
 
-  aprobar(id: string): void {
-    if (!confirm('¿Aprobar esta verificación?')) return;
-    this.accion(id, WebServices.VerificationApprove);
+  async aprobar(id: string): Promise<void> {
+    if (!await this.feedback.confirm('¿Aprobar esta verificación?', { title: 'Aprobar identidad', confirmText: 'Aprobar' })) return;
+    this.accion(id, true);
   }
 
-  rechazar(id: string): void {
-    const motivo = prompt('Motivo del rechazo (opcional):');
+  async rechazar(id: string): Promise<void> {
+    const motivo = await this.feedback.prompt('Indicá por qué se rechaza esta verificación.', { title: 'Rechazar identidad', inputLabel: 'Motivo', confirmText: 'Rechazar', danger: true });
     if (motivo === null) return; // cancelar
-    this.accion(id, WebServices.VerificationReject, { reason: motivo || 'Documentación insuficiente' });
+    this.accion(id, false, motivo || 'Documentación insuficiente');
   }
 
-  private accion(id: string, endpoint: (id: string) => string, body?: any): void {
+  private accion(id: string, approved: boolean, notes?: string): void {
     const token = localStorage.getItem('access_token');
     if (!token) return;
 
@@ -93,7 +106,7 @@ export class VerificationsPageComponent implements OnInit {
       'ngrok-skip-browser-warning': 'true'
     });
 
-    this.http.patch(endpoint(id), body || {}, { headers })
+    this.http.patch(WebServices.ProfileVerify(id), { approved, notes }, { headers })
       .subscribe({
         next: () => {
           this.success = 'Verificación actualizada.';
@@ -101,6 +114,7 @@ export class VerificationsPageComponent implements OnInit {
         },
         error: (err) => {
           this.error = err.error?.error || 'Error al procesar verificación.';
+          this.cdr.detectChanges();
         }
       });
   }

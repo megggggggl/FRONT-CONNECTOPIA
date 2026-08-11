@@ -60,9 +60,10 @@ export class AuthService {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('usuario');
+      localStorage.removeItem('user');
     }
     this.notifyAuthChange();
-    this.router.navigate(['/']);
+    this.router.navigateByUrl('/', { replaceUrl: true });
   }
 
   /**

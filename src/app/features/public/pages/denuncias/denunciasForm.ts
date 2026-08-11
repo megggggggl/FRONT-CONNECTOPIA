@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportService } from '../../../../core/services/report.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Report } from '../../../../core/models/report.model';
+import { FeedbackService } from '../../../../core/services/feedback.service';
 
 @Component({
   selector: 'app-denuncias-comunitarias',
@@ -57,7 +58,9 @@ export class DenunciasComunitariasComponent implements OnInit {
 
   constructor(
     private reportService: ReportService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private feedback: FeedbackService
   ) {}
 
   ngOnInit(): void {
@@ -72,11 +75,13 @@ export class DenunciasComunitariasComponent implements OnInit {
       next: (denuncias) => {
         this.denuncias = denuncias;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error(err);
         this.error = 'No se pudieron cargar las denuncias';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -132,13 +137,13 @@ export class DenunciasComunitariasComponent implements OnInit {
   enviarDenuncia(): void {
     const { titulo, descripcion, tipo, prioridad, direccion, ubicacion, imagen } = this.nuevaDenuncia;
     if (!titulo.trim() || !descripcion.trim()) {
-      alert('Completa el título y la descripción.');
+      this.feedback.info('Completa el título y la descripción.');
       return;
     }
 
     const user = this.authService.getUser();
-    if (!user) {
-      alert('Debes iniciar sesión.');
+    if (!user || !this.authService.isAuthenticated() || !localStorage.getItem('access_token')) {
+      this.feedback.info('Debes iniciar sesión.');
       return;
     }
 
@@ -165,14 +170,17 @@ export class DenunciasComunitariasComponent implements OnInit {
     this.reportService.crearDenuncia(payload).subscribe({
       next: (nueva) => {
         this.enviando = false;
-        this.denuncias.unshift(nueva);
+        this.denuncias = [nueva, ...this.denuncias];
         this.cerrarModal();
-        alert('✅ Denuncia enviada');
+        this.feedback.success('Denuncia enviada y guardada correctamente.');
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.enviando = false;
         console.error(err);
-        alert('❌ Error al enviar');
+        const mensaje = err?.error?.error || err?.error?.message || err?.message || 'No se pudo guardar la denuncia.';
+        this.feedback.error(mensaje);
+        this.cdr.detectChanges();
       }
     });
   }

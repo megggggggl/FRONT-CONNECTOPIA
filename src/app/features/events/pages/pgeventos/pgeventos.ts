@@ -4,7 +4,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 
-import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
 import { WebServices } from '../../../../core/services/webServices';
 
 const DASHBOARD_CACHE_KEY = 'connectopia.dashboard.stats';
@@ -63,7 +62,7 @@ interface EventoForm {
 
 @Component({
   selector: 'app-pgeventos',
-  imports: [CommonModule, FormsModule, MainLayout],
+  imports: [CommonModule, FormsModule],
   templateUrl: './pgeventos.html',
   styleUrl: './pgeventos.css',
 })

@@ -3,9 +3,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from '../../core/guards/auth.guard';
 import { vecinoGuard, prestadorGuard } from '../../core/guards/rol.guard';
-import { PerfilVecino } from './components/perfil-vecino/perfil-vecino';
-import { PerfilPrestador } from './components/perfil-prestador/perfil-prestador';
-import { MainLayout } from '../../core/layout/main-layout/main-layout';
 
 const routes: Routes = [
   {

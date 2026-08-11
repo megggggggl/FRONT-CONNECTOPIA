@@ -11,7 +11,7 @@
     <ng-container *ngIf="!cargando && !error && perfil">
       <app-encabezado-perfil
         [perfil]="perfil"
-        (editarPerfil)="abrirModalEditar()">
+        (editar)="abrirModalEditar()">
       </app-encabezado-perfil>
 
       <!-- Estado de cuenta -->
@@ -114,9 +114,10 @@
           <label class="campo-completo">Dirección <input type="text" [(ngModel)]="formPerfil.address" name="address" /></label>
           <label class="campo-completo">URL de foto <input type="text" [(ngModel)]="formPerfil.avatar_url" name="avatar_url" /></label>
         </form>
+        <p *ngIf="errorGuardadoPerfil" class="estado-error">{{ errorGuardadoPerfil }}</p>
         <div class="acciones-modal">
-          <button class="boton-secundario" (click)="cerrarModalEditar()">Cancelar</button>
-          <button class="boton-guardar" (click)="guardarPerfil()">Guardar</button>
+          <button class="boton-secundario" type="button" (click)="cerrarModalEditar()" [disabled]="guardandoPerfil">Cancelar</button>
+          <button class="boton-guardar" type="button" (click)="guardarPerfil()" [disabled]="guardandoPerfil || !formPerfil.name.trim()">{{ guardandoPerfil ? 'Guardando...' : 'Guardar' }}</button>
         </div>
       </section>
     </div>

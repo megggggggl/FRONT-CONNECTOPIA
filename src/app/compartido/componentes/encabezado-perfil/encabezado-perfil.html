@@ -1,13 +1,14 @@
 <section class="encabezado-perfil">
   <div class="foto-contenedor">
     <img
-      *ngIf="perfil.avatar_url"
+      *ngIf="perfil.avatar_url && !avatarError"
       [src]="perfil.avatar_url"
       alt="Foto de perfil"
       class="foto-perfil"
+      (error)="ocultarAvatar()"
     />
 
-    <div *ngIf="!perfil.avatar_url" class="foto-placeholder">
+    <div *ngIf="!perfil.avatar_url || avatarError" class="foto-placeholder">
       {{ inicialPerfil }}
     </div>
   </div>
@@ -29,6 +30,6 @@
   </div>
 
   <button class="boton-principal" type="button" (click)="abrirEdicion()">
-    Editar perfil
+    <i class="fa-solid fa-pen"></i> Editar perfil
   </button>
 </section>

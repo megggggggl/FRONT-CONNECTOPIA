@@ -2,14 +2,14 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
 import { EventService, Event } from '../../../../core/services/event.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TarjetaEvento } from '../../../../compartido/componentes/tarjeta-eventos/tarjeta-eventos';
+import { FeedbackService } from '../../../../core/services/feedback.service';
 @Component({
   selector: 'app-eventos-publicos',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MainLayout, TarjetaEvento],
+  imports: [CommonModule, RouterModule, FormsModule, TarjetaEvento],
   templateUrl: './eventos-publicos.html',
   styleUrls: ['./eventos-publicos.css']
 })
@@ -25,7 +25,8 @@ export class EventosPublicosComponent implements OnInit {
   constructor(
     private eventService: EventService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private feedback: FeedbackService
   ) {}
 
   ngOnInit(): void {
@@ -88,7 +89,7 @@ export class EventosPublicosComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al registrarse:', err);
-        alert('No se pudo completar el registro. Inténtalo de nuevo.');
+        this.feedback.error('No se pudo completar el registro. Inténtalo de nuevo.');
       }
     });
   }
@@ -106,20 +107,20 @@ export class EventosPublicosComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cancelar registro:', err);
-        alert('No se pudo cancelar el registro. Inténtalo de nuevo.');
+        this.feedback.error('No se pudo cancelar el registro. Inténtalo de nuevo.');
       }
     });
   }
 
-  eliminarEvento(eventoId: string): void {
-    if (!confirm('¿Eliminar este evento permanentemente?')) return;
+  async eliminarEvento(eventoId: string): Promise<void> {
+    if (!await this.feedback.confirm('¿Eliminar este evento permanentemente?', { title: 'Eliminar evento', confirmText: 'Eliminar', danger: true })) return;
     this.eventService.eliminarEvento(eventoId).subscribe({
       next: () => {
-        alert('Evento eliminado.');
         this.eventos = this.eventos.filter(e => e.id !== eventoId);
+        this.feedback.success('Evento eliminado.');
         this.cdr.detectChanges();
       },
-      error: () => alert('Error al eliminar evento.')
+      error: () => this.feedback.error('Error al eliminar evento.')
     });
   }
 

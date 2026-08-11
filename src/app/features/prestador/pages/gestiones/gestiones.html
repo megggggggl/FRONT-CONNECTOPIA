@@ -8,35 +8,35 @@
         <p>Gestiona tus servicios y citas</p>
       </div>
       <button class="btn-primary" (click)="abrirModalCrearServicio()">
-        + Nuevo Servicio
+        <i class="fa-solid fa-plus"></i> Nuevo servicio
       </button>
     </div>
 
     <!-- ESTADÍSTICAS -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-icon green">📦</div>
+        <div class="stat-icon green"><i class="fa-solid fa-layer-group"></i></div>
         <div>
           <p>Total servicios</p>
           <h2>{{ totalServicios }}</h2>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon blue">✅</div>
+        <div class="stat-icon blue"><i class="fa-solid fa-circle-check"></i></div>
         <div>
           <p>Activos</p>
           <h2>{{ serviciosActivos }}</h2>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon orange">⏳</div>
+        <div class="stat-icon orange"><i class="fa-regular fa-clock"></i></div>
         <div>
           <p>Pendientes</p>
           <h2>{{ serviciosPendientes }}</h2>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon purple">⭐</div>
+        <div class="stat-icon purple"><i class="fa-solid fa-star"></i></div>
         <div>
           <p>Calificación</p>
           <h2>{{ calificacionPromedio | number:'1.1-1' }}</h2>
@@ -48,7 +48,7 @@
     <div class="telegram-section">
       <div class="telegram-header">
         <div>
-          <h3>📱 Telegram</h3>
+          <h3><i class="fa-brands fa-telegram"></i> Telegram</h3>
           <p>Vincula tu cuenta para recibir solicitudes desde @ConnectopiaHNBot</p>
         </div>
         <button class="btn-secondary" (click)="actualizarEstadoTelegram()" [disabled]="telegramCargando">
@@ -56,7 +56,7 @@
         </button>
       </div>
       <div class="telegram-status" [class.vinculado]="telegramVinculado">
-        <span>{{ telegramVinculado ? '✅ Vinculado' : '❌ No vinculado' }}</span>
+        <span><i [class]="telegramVinculado ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'"></i>{{ telegramVinculado ? 'Vinculado' : 'No vinculado' }}</span>
         <button class="btn-telegram" (click)="vincularTelegram()" [disabled]="telegramCargando">
           {{ telegramVinculado ? 'Reconectar' : 'Conectar Telegram' }}
         </button>
@@ -67,7 +67,7 @@
 
     <!-- CITAS RECIBIDAS (resumen) -->
     <div class="citas-resumen">
-      <h3>📋 Solicitudes recibidas</h3>
+      <h3><i class="fa-solid fa-inbox"></i> Solicitudes recibidas</h3>
       <div class="citas-stats">
         <span class="badge pending">Pendientes: {{ citasRecibidasPendientes }}</span>
         <span class="badge accepted">Aceptadas: {{ citasRecibidasAceptadas }}</span>
@@ -98,14 +98,14 @@
             <span class="badge" [class.active]="servicio.status === 'active'" [class.pending]="servicio.status === 'pending'" [class.inactive]="servicio.status === 'inactive'">
               {{ servicio.status }}
             </span>
-            <span>💰 {{ servicio.price || 'Consultar' }}</span>
-            <span>⭐ {{ servicio.avg_rating || 0 }} ({{ servicio.reviews_count || 0 }})</span>
+            <span><i class="fa-solid fa-coins"></i> {{ servicio.price || 'Consultar' }}</span>
+            <span><i class="fa-solid fa-star"></i> {{ servicio.avg_rating || 0 }} ({{ servicio.reviews_count || 0 }})</span>
           </div>
         </div>
         <div class="servicio-actions">
-          <button class="btn-edit" (click)="abrirModalEditarServicio(servicio)">✏️ Editar</button>
+          <button class="btn-edit" (click)="abrirModalEditarServicio(servicio)"><i class="fa-solid fa-pen"></i> Editar</button>
           <button class="btn-delete" (click)="eliminarServicio(servicio)" [disabled]="eliminandoServicioId === servicio.id">
-            {{ eliminandoServicioId === servicio.id ? 'Eliminando...' : '🗑️ Eliminar' }}
+            <i class="fa-regular fa-trash-can"></i> {{ eliminandoServicioId === servicio.id ? 'Eliminando…' : 'Eliminar' }}
           </button>
         </div>
       </div>
@@ -116,7 +116,7 @@
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h2>{{ esEdicion ? 'Editar servicio' : 'Nuevo servicio' }}</h2>
-          <button class="modal-close" (click)="cerrarModalServicio()">×</button>
+          <button class="modal-close" (click)="cerrarModalServicio()" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
           <div class="form-group">
@@ -142,8 +142,8 @@
             <input type="text" [(ngModel)]="formServicio.address" placeholder="Dirección del servicio">
           </div>
           <div class="form-group">
-            <label>URL de imagen</label>
-            <input type="text" [(ngModel)]="formServicio.image" placeholder="https://...">
+            <label>Imagen del servicio</label>
+            <div class="image-field"><i class="fa-regular fa-image"></i><input type="text" [(ngModel)]="formServicio.image" placeholder="URL de imagen"></div>
           </div>
           <div *ngIf="servicioError" class="alert error">{{ servicioError }}</div>
         </div>

@@ -1,274 +1,58 @@
-  <section class="dashboard-header">
-    <div>
-      <h1>Turimos y Seguridad</h1>
-      <p>Explora mejores destinos y rincones de nuestra comunidad</p>
+<section class="reports-page">
+  <header class="module-header">
+    <div class="module-title">
+      <span class="title-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></span>
+      <div><span class="eyebrow">Participación ciudadana</span><h1>Reportes comunitarios</h1><p>Consulta y registra incidencias que requieren atención en la comunidad.</p></div>
     </div>
+    <div class="summary"><span><strong>{{ reports.length }}</strong> reportes</span><span><strong>{{ pendingCount }}</strong> por atender</span><span><strong>{{ resolvedCount }}</strong> resueltos</span></div>
+  </header>
 
-    <button class="date-button"> 22 de junio de 2026</button>
-  </section>
+  <div class="notice success" *ngIf="successMessage" role="status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i>{{ successMessage }}</div>
 
-
-
-<div class="pagina">
-
-  <!-- IZQUIERDA -->
-  <main class="contenido">
-
-    <div class="filtros">
-  <button class="activo" onclick="filtrar('todas', this)">Todas</button>
-  <button onclick="filtrar('pendiente', this)">Pendientes</button>
-  <button onclick="filtrar('proceso', this)">En Proceso</button>
-  <button onclick="filtrar('resuelta', this)">Resueltas</button>
-
-  <input type="text" id="buscador" placeholder="Buscar denuncia..." onkeyup="buscarDenuncias()">
-</div>
-
-    <h3>Denuncias recientes</h3>
-
-    <div class="lista-denuncias" id="listaDenuncias">
-
-      <div class="denuncia">
-        <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=500">
-        <span class="estado pendiente">Pendiente</span>
-        <div>
-          <h4>Alumbrado público dañado</h4>
-          <p>Lámpara de alumbrado apagada desde hace varios días en la calle principal.</p>
-          <small>📍 Col. Villa Nueva, Calle Principal</small>
-          <small>Hace 30 min</small>
+  <div class="reports-layout">
+    <main class="report-feed">
+      <section class="toolbar-card">
+        <div class="filters" aria-label="Filtrar reportes">
+          <button *ngFor="let filter of filters" type="button" [class.active]="activeFilter === filter.value" (click)="setFilter(filter.value)">{{ filter.label }}</button>
         </div>
-        <div class="acciones">
-  <button onclick="darLike(this)">👍 Me gusta <span>0</span></button>
-  <button onclick="mostrarComentario(this)">💬 Comentar</button>
+        <label class="search-box"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input type="search" [(ngModel)]="searchTerm" placeholder="Buscar por título o ubicación" aria-label="Buscar reportes"></label>
+      </section>
 
-</div>
+      <div class="feed-heading"><div><span class="section-label">Actividad reciente</span><h2>Denuncias de la comunidad</h2></div><span>{{ filteredReports.length }} resultado(s)</span></div>
 
-<div class="comentarios">
-  <input type="text" placeholder="Escribe un comentario..." onkeypress="agregarComentario(event, this)">
-  <div class="lista-comentarios"></div>
-</div>
-      </div>
+      <section class="empty-state" *ngIf="filteredReports.length === 0">
+        <span><i class="fa-regular fa-folder-open" aria-hidden="true"></i></span><h3>No encontramos reportes</h3><p>Prueba con otra búsqueda o selecciona un estado diferente.</p>
+      </section>
 
-      <div class="denuncia">
-        <img src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?w=500">
-        <span class="estado proceso">En proceso</span>
-        <div>
-          <h4>Basura acumulada</h4>
-          <p>Hay acumulación de basura en esquina del parque.</p>
-          <small>📍 Barrio el Centro, 2da Avenida</small>
-          <small>Hace 2 horas</small>
+      <article class="report-card" *ngFor="let report of filteredReports">
+        <img [src]="report.image" [alt]="report.title">
+        <div class="report-body">
+          <header><span class="status" [ngClass]="report.status">{{ statusLabel(report.status) }}</span><span class="time">{{ report.createdAt }}</span></header>
+          <h3>{{ report.title }}</h3><p>{{ report.description }}</p>
+          <div class="location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i>{{ report.location }}</div>
         </div>
-        <div class="acciones">
-  <button onclick="darLike(this)">👍 Me gusta <span>0</span></button>
-  <button onclick="mostrarComentario(this)">💬 Comentar</button>
+        <footer class="card-actions">
+          <button type="button" (click)="like(report)"><i class="fa-regular fa-thumbs-up" aria-hidden="true"></i>Útil <span>{{ report.likes }}</span></button>
+          <button type="button" (click)="toggleComments(report)"><i class="fa-regular fa-comment" aria-hidden="true"></i>Comentar <span *ngIf="report.comments.length">{{ report.comments.length }}</span></button>
+        </footer>
+        <section class="comments" *ngIf="report.commentsOpen">
+          <form (ngSubmit)="addComment(report)"><input name="comment-{{ report.id }}" [(ngModel)]="report.draftComment" placeholder="Escribe un comentario" aria-label="Escribe un comentario"><button type="submit" aria-label="Enviar comentario"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button></form>
+          <p *ngFor="let comment of report.comments"><strong>Usuario</strong>{{ comment }}</p>
+        </section>
+      </article>
+    </main>
 
-</div>
-
-<div class="comentarios">
-  <input type="text" placeholder="Escribe un comentario..." onkeypress="agregarComentario(event, this)">
-  <div class="lista-comentarios"></div>
-</div>
-      </div>
-
-      <div class="denuncia">
-        <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?w=500">
-        <span class="estado urgente">Urgente</span>
-        <div>
-          <h4>Hueco en la vía</h4>
-          <p>Gran hueco en la carretera, peligroso para automovilistas.</p>
-          <small>📍 Carretera Valle Verde, Km 3</small>
-          <small>Hace 5 horas</small>
-          <div class="acciones">
-  <button onclick="darLike(this)">👍 Me gusta <span>0</span></button>
-  <button onclick="mostrarComentario(this)">💬 Comentar</button>
-
-</div>
-
-<div class="comentarios">
-  <input type="text" placeholder="Escribe un comentario..." onkeypress="agregarComentario(event, this)">
-  <div class="lista-comentarios"></div>
-</div>
-        </div>
-      </div>
-
-      <div class="denuncia">
-        <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=500">
-        <span class="estado resuelta">Resuelta</span>
-        <div>
-          <h4>Perro callejero agresivo</h4>
-          <p>Perro agresivo suelto en la zona.</p>
-          <small>📍 Colonia San Miguel</small>
-          <small>Hace 1 día</small>
-        </div>
-        <div class="acciones">
-  <button onclick="darLike(this)">👍 Me gusta <span>0</span></button>
-  <button onclick="mostrarComentario(this)">💬 Comentar</button>
-
-</div>
-
-<div class="comentarios">
-  <input type="text" placeholder="Escribe un comentario..." onkeypress="agregarComentario(event, this)">
-  <div class="lista-comentarios"></div>
-</div>
-      </div>
-
-    </div>
-  </main>
-
-  <!-- DERECHA FIJA -->
-  <aside class="panel-fijo">
-
-    <form id="formDenuncia" class="formulario">
-      <h3>🚨 Nueva Denuncia</h3>
-
-      <label>Título</label>
-      <input type="text" id="titulo" placeholder="Ej: Alumbrado público dañado" required>
-
-      <label>Descripción</label>
-      <input type="text" id="descripcion" placeholder="Describe detalladamente la situación..." required>
-
-      <label>Ubicación</label>
-      <input type="text" id="ubicacion" placeholder="Selecciona o escribe tu ubicación" required>
-
-      <label>Foto o video</label>
-      <input type="file" id="foto" accept="image/*">
-
-      <button type="submit">Reportar denuncia</button>
-    </form>
-
-    <div class="card-info">
-      <h4>🛡 ¿Sabías qué?</h4>
-      <p>Tus denuncias ayudan a mantener nuestra ciudad segura.</p>
-    </div>
-
-    <div class="card-info">
-      <h4>☎ Emergencias</h4>
-      <p>Si es una emergencia, llama al 911.</p>
-    </div>
-
-  </aside>
-
-</div>
-
-<script >
- const form = document.getElementById("formDenuncia");
-const lista = document.getElementById("listaDenuncias");
-
-form.insertAdjacentHTML("beforeend", `<div class="mensaje-exito" id="mensajeExito">Denuncia creada correctamente ✅</div>`);
-
-form.addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const titulo = document.getElementById("titulo").value;
-  const descripcion = document.getElementById("descripcion").value;
-  const ubicacion = document.getElementById("ubicacion").value;
-  const foto = document.getElementById("foto").files[0];
-
-  let imagen = "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=500";
-
-  if (foto) {
-    imagen = URL.createObjectURL(foto);
-  }
-
-  const nueva = document.createElement("div");
-  nueva.classList.add("denuncia");
-  nueva.setAttribute("data-estado", "pendiente");
-
-  nueva.innerHTML = `
-    <img src="${imagen}">
-    <span class="estado pendiente">Pendiente</span>
-
-    <div>
-      <h4>${titulo}</h4>
-      <p>${descripcion}</p>
-      <small>📍 ${ubicacion}</small>
-      <small>Hace un momento</small>
-    </div>
-
-    <div class="acciones">
-      <button onclick="darLike(this)">👍 Me gusta <span>0</span></button>
-      <button onclick="mostrarComentario(this)">💬 Comentar</button>
-      <button onclick="compartir()">🔗 Compartir</button>
-    </div>
-
-    <div class="comentarios">
-      <input type="text" placeholder="Escribe un comentario..." onkeypress="agregarComentario(event, this)">
-      <div class="lista-comentarios"></div>
-    </div>
-  `;
-
-  lista.prepend(nueva);
-  form.reset();
-
-  const mensaje = document.getElementById("mensajeExito");
-  mensaje.style.display = "block";
-
-  setTimeout(() => {
-    mensaje.style.display = "none";
-  }, 2500);
-});
-
-function darLike(boton) {
-  const span = boton.querySelector("span");
-  span.textContent = parseInt(span.textContent) + 1;
-}
-
-function mostrarComentario(boton) {
-  const denuncia = boton.closest(".denuncia");
-  const comentarios = denuncia.querySelector(".comentarios");
-
-  comentarios.style.display =
-    comentarios.style.display === "block" ? "none" : "block";
-}
-
-function agregarComentario(event, input) {
-  if (event.key === "Enter" && input.value.trim() !== "") {
-    const listaComentarios = input.nextElementSibling;
-
-    const comentario = document.createElement("p");
-    comentario.innerHTML = `<b>Usuario:</b> ${input.value}`;
-
-    listaComentarios.prepend(comentario);
-    input.value = "";
-  }
-}
-
-function compartir() {
-  alert("Enlace de denuncia copiado ✅");
-}
-
-function filtrar(estado, boton) {
-  const botones = document.querySelectorAll(".filtros button");
-  botones.forEach(b => b.classList.remove("activo"));
-  boton.classList.add("activo");
-
-  const denuncias = document.querySelectorAll(".denuncia");
-
-  denuncias.forEach(denuncia => {
-    const estadoDenuncia = denuncia.getAttribute("data-estado");
-
-    if (estado === "todas" || estadoDenuncia === estado) {
-      denuncia.style.display = "grid";
-    } else {
-      denuncia.style.display = "none";
-    }
-  });
-}
-
-function buscarDenuncias() {
-  const texto = document.getElementById("buscador").value.toLowerCase();
-  const denuncias = document.querySelectorAll(".denuncia");
-
-  denuncias.forEach(denuncia => {
-    const contenido = denuncia.innerText.toLowerCase();
-
-    if (contenido.includes(texto)) {
-      denuncia.style.display = "grid";
-    } else {
-      denuncia.style.display = "none";
-    }
-  });
-}
-</script>
-
-
-
+    <aside class="side-panel">
+      <form class="new-report-card" (ngSubmit)="createReport()">
+        <header><span><i class="fa-solid fa-bullhorn" aria-hidden="true"></i></span><div><span class="section-label">Nueva incidencia</span><h2>Crear reporte</h2></div></header>
+        <label>Título<input name="title" [(ngModel)]="newReport.title" placeholder="Ej. Alumbrado dañado" required></label>
+        <label>Descripción<textarea name="description" [(ngModel)]="newReport.description" rows="4" placeholder="Describe la situación" required></textarea></label>
+        <label>Ubicación<input name="location" [(ngModel)]="newReport.location" placeholder="Calle, barrio o referencia" required></label>
+        <label class="file-field"><span>Foto opcional</span><input type="file" accept="image/*" (change)="handleImage($event)"></label>
+        <button type="submit" class="primary-button"><i class="fa-solid fa-plus" aria-hidden="true"></i>Registrar denuncia</button>
+      </form>
+      <div class="info-card"><i class="fa-solid fa-shield-heart" aria-hidden="true"></i><div><h3>Tu reporte importa</h3><p>La información clara ayuda a priorizar la atención de cada incidencia.</p></div></div>
+      <div class="emergency-card"><i class="fa-solid fa-phone" aria-hidden="true"></i><div><h3>¿Es una emergencia?</h3><p>Comunícate de inmediato con los servicios locales de emergencia.</p></div></div>
+    </aside>
+  </div>
+</section>

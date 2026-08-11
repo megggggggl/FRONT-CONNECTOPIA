@@ -202,6 +202,16 @@ export const routes: Routes = [
             path: 'events',
             loadComponent: () => import('./features/admin/pages/events/events')
               .then(m => m.EventsPageComponent)
+          },
+          {
+            path: 'reports',
+            loadComponent: () => import('./features/admin/pages/reports/reports')
+              .then(m => m.ReportsPageComponent)
+          },
+          {
+            path: 'turismo',
+            loadComponent: () => import('./features/admin/pages/turismo/turismo')
+              .then(m => m.TurismoPageComponent)
           }
         ]
       }

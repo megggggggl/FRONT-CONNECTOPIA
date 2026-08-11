@@ -27,6 +27,10 @@
 
 .imagen-servicio-vacia {
   background: linear-gradient(135deg, #e5e7eb, #cbd5e1);
+  display: grid;
+  place-items: center;
+  color: #6d9384;
+  font-size: 28px;
 }
 
 .estado-servicio {
@@ -133,8 +137,13 @@
 }
 
 .btn-favorito {
-  font-size: 22px;
+  font-size: 16px;
+  color: #68746e;
 }
+
+.btn-favorito.saved { color: #bd4662; background: #fff1f3; }
+.metricas-servicio span { display:flex; align-items:center; gap:5px; color:#6d7872; font-size:12px; }
+.metricas-servicio i { color:#d58c23; }
 
 .btn-calificar {
   color: #f59e0b;
