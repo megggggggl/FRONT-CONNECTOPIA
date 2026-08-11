@@ -1,8 +1,10 @@
+// src/app/features/auth/components/verification-form/verification-form.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../../../../core/services/auth.service';
 import { WebServices } from '../../../../core/services/webServices';
 import { BrowserQRCodeReader } from '@zxing/browser';
 
@@ -36,7 +38,11 @@ export class VerificationForm {
   exito = '';
   step = 1;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   // ============================================================
   // SELECCIÓN DE ARCHIVOS
@@ -152,14 +158,12 @@ export class VerificationForm {
         return;
       }
 
-      // Si el QR es válido, continuar
       if (this.qrValidado) {
         this.error = '';
         this.step = 2;
         return;
       }
 
-      // Si no hay QR válido pero el usuario quiere continuar manualmente
       if (this.usarManual && this.numeroManual.length >= 8) {
         this.qrValidado = true;
         this.qrCodigo = this.numeroManual;
@@ -169,10 +173,8 @@ export class VerificationForm {
         return;
       }
 
-      // Si no hay QR y no se ingresó manualmente
       if (!this.usarManual) {
         this.error = '⚠️ No se pudo leer el QR. Puedes intentar de nuevo con una imagen más clara o ingresar el número manualmente.';
-        // Mostrar opción manual
         this.usarManual = true;
         return;
       } else {
@@ -182,45 +184,51 @@ export class VerificationForm {
   }
 
   // ============================================================
-  // ENVÍO
+  // ENVÍO DE VERIFICACIÓN (CON TOKEN)
   // ============================================================
- // verification-form.ts - método enviarVerificacion()
-// verification-form.ts
-// verification-form.ts - método enviarVerificacion()
-async enviarVerificacion(): Promise<void> {
-  if (!this.selfieFile) {
-    this.error = 'Debes tomarte una selfie.';
-    return;
-  }
-  if (!this.documentFrontFile) {
-    this.error = 'Debes subir el anverso del documento.';
-    return;
-  }
-
-  this.cargando = true;
-  this.error = '';
-  this.exito = '';
-
-  const formData = new FormData();
-  formData.append('documento', this.documentFrontFile); // ✅ Solo anverso
-  formData.append('selfie', this.selfieFile);
-
-  const email = localStorage.getItem('pending_verification_email') || '';
-  formData.append('email', email);
-
-  this.http.post(WebServices.VerificationStart, formData).subscribe({
-    next: (respuesta: any) => {
-      this.exito = '✅ Verificación exitosa. Usuario verificado.';
-      this.cargando = false;
-      setTimeout(() => {
-        localStorage.removeItem('pending_verification_email');
-        this.router.navigate(['/auth']);
-      }, 2000);
-    },
-    error: (error: any) => {
-      this.cargando = false;
-      this.error = error.error?.error || 'Error al verificar.';
-      console.error('❌ Error en verificación:', error);
+  async enviarVerificacion(): Promise<void> {
+    if (!this.selfieFile) {
+      this.error = 'Debes tomarte una selfie.';
+      return;
     }
-  });
-}}
+    if (!this.documentFrontFile) {
+      this.error = 'Debes subir el anverso del documento.';
+      return;
+    }
+
+    this.cargando = true;
+    this.error = '';
+    this.exito = '';
+
+    const formData = new FormData();
+    formData.append('documento', this.documentFrontFile);
+    formData.append('selfie', this.selfieFile);
+
+    const email = localStorage.getItem('pending_verification_email') || '';
+    if (email) formData.append('email', email);
+    if (this.qrCodigo) formData.append('numero_documento', this.qrCodigo);
+
+    // 🔥 OBTENER TOKEN Y ENVIARLO EN LOS HEADERS
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': token ? `Bearer ${token}` : '',
+      'ngrok-skip-browser-warning': 'true'
+    });
+
+    this.http.post(WebServices.VerificationStart, formData, { headers }).subscribe({
+      next: (respuesta: any) => {
+        this.exito = '✅ Verificación exitosa. Usuario verificado.';
+        this.cargando = false;
+        setTimeout(() => {
+          localStorage.removeItem('pending_verification_email');
+          this.router.navigate(['/auth']);
+        }, 2000);
+      },
+      error: (error: any) => {
+        this.cargando = false;
+        console.error('❌ Error en verificación:', error);
+        this.error = error.error?.error || error.error?.message || 'Error al verificar.';
+      }
+    });
+  }
+}

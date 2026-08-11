@@ -16,17 +16,15 @@ import { Router } from '@angular/router';
 export class AuthInterceptor implements HttpInterceptor {
   private isBrowser: boolean;
 
-  // Definir rutas públicas con método específico
+  // 🔥 Rutas PÚBLICAS (no requieren token) – EXCLUIR /verification
   private readonly publicRoutes: { url: string; methods?: string[] }[] = [
     { url: '/auth/login', methods: ['POST'] },
     { url: '/auth/register', methods: ['POST'] },
     { url: '/auth/refresh', methods: ['POST'] },
-    { url: '/health' }, // todos los métodos
-    { url: '/categories' }, // todos los métodos
-    // 👇 IMPORTANTE: GET a places es público, POST/PATCH/DELETE NO
-    { url: '/places', methods: ['GET'] },
-{ url: '/verification/status', methods: ['GET'] },
-{ url: '/verification/pending', methods: ['GET'] }, // si es público (no debería)
+    { url: '/health' },
+    { url: '/categories' },
+    { url: '/places', methods: ['GET'] }
+    // ❌ ELIMINADO: { url: '/verification' }  → AHORA REQUIERE TOKEN
   ];
 
   constructor(
@@ -41,13 +39,11 @@ export class AuthInterceptor implements HttpInterceptor {
       return next.handle(request);
     }
 
-    // Verificar si la ruta es pública (considerando método)
+    // Verificar si la ruta es pública
     const isPublic = this.publicRoutes.some(route => {
       const urlMatch = request.url.includes(route.url);
       if (!urlMatch) return false;
-      // Si no tiene métodos definidos, todos son públicos
       if (!route.methods) return true;
-      // Si tiene métodos, verificar que el método coincida
       return route.methods.includes(request.method);
     });
 
