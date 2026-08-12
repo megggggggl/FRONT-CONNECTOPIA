@@ -10,17 +10,30 @@ import { Report } from '../../../../core/models/report.model';
   selector: 'app-denuncias-comunitarias',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './denunciasF.html',
-  styleUrls: ['./denunciasF.css']
+  templateUrl: './reports.html',
+  styleUrls: ['./reports.css']
 })
 export class DenunciasComunitariasComponent implements OnInit {
+  // ===== LISTADO DE DENUNCIAS =====
   denuncias: Report[] = [];
   loading = true;
   error = '';
+  successMessage = '';
   esAdmin = false;
+  
+  // ===== FILTROS Y BÚSQUEDA =====
   filtroEstado = 'todas';
+  searchTerm = '';
+  
+  // ===== ESTADÍSTICAS =====
+  get pendingCount(): number {
+    return this.denuncias.filter(d => d.status === 'pendiente' || d.status === 'en_proceso').length;
+  }
+  get resolvedCount(): number {
+    return this.denuncias.filter(d => d.status === 'resuelto').length;
+  }
 
-  // Modal de creación
+  // ===== MODAL DE CREACIÓN =====
   modalAbierto = false;
   enviando = false;
   nuevaDenuncia = {
@@ -56,6 +69,19 @@ export class DenunciasComunitariasComponent implements OnInit {
     rechazado: 'Rechazado'
   };
 
+  // ===== FILTROS (para el HTML) =====
+  filters = [
+    { value: 'todas', label: 'Todas' },
+    { value: 'pendiente', label: 'Pendientes' },
+    { value: 'en_proceso', label: 'En proceso' },
+    { value: 'resuelto', label: 'Resueltas' },
+    { value: 'rechazado', label: 'Rechazadas' }
+  ];
+
+  get activeFilter(): string {
+    return this.filtroEstado;
+  }
+
   constructor(
     private reportService: ReportService,
     private authService: AuthService,
@@ -67,6 +93,9 @@ export class DenunciasComunitariasComponent implements OnInit {
     this.cargarDenuncias();
   }
 
+  // ============================================================
+  // CARGAR DENUNCIAS
+  // ============================================================
   cargarDenuncias(): void {
     this.loading = true;
     this.error = '';
@@ -85,12 +114,31 @@ export class DenunciasComunitariasComponent implements OnInit {
     });
   }
 
-  get denunciasFiltradas(): Report[] {
-    if (this.filtroEstado === 'todas') return this.denuncias;
-    return this.denuncias.filter(d => d.status === this.filtroEstado);
+  // ============================================================
+  // FILTROS Y BÚSQUEDA
+  // ============================================================
+  setFilter(value: string): void {
+    this.filtroEstado = value;
   }
 
-  // ===== MODAL =====
+  get filteredReports(): Report[] {
+    let reports = this.denuncias;
+    if (this.filtroEstado !== 'todas') {
+      reports = reports.filter(d => d.status === this.filtroEstado);
+    }
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      reports = reports.filter(d => 
+        d.title?.toLowerCase().includes(term) || 
+        d.address?.toLowerCase().includes(term)
+      );
+    }
+    return reports;
+  }
+
+  // ============================================================
+  // MODAL DE CREACIÓN
+  // ============================================================
   abrirModal(): void {
     this.modalAbierto = true;
     this.nuevaDenuncia = {
@@ -173,19 +221,23 @@ export class DenunciasComunitariasComponent implements OnInit {
         this.enviando = false;
         this.denuncias.unshift(nueva);
         this.cerrarModal();
+        this.successMessage = '✅ Denuncia enviada correctamente';
+        setTimeout(() => this.successMessage = '', 4000);
         this.cdr.detectChanges();
-        alert('✅ Denuncia enviada');
       },
       error: (err) => {
         this.enviando = false;
         console.error('Error al enviar denuncia:', err);
-        alert('❌ Error al enviar la denuncia');
+        this.error = '❌ Error al enviar la denuncia';
+        setTimeout(() => this.error = '', 4000);
         this.cdr.detectChanges();
       }
     });
   }
 
-  // ===== ADMIN =====
+  // ============================================================
+  // ADMIN: CAMBIAR ESTADO
+  // ============================================================
   cambiarEstado(denuncia: Report, nuevoEstado: string): void {
     if (!this.esAdmin) return;
     if (!confirm(`¿Cambiar estado a "${this.estadosMap[nuevoEstado]}"?`)) return;
@@ -199,14 +251,24 @@ export class DenunciasComunitariasComponent implements OnInit {
         if (nuevoEstado === 'resuelto') {
           denuncia.resolved_at = new Date().toISOString();
         }
+        this.successMessage = '✅ Estado actualizado';
+        setTimeout(() => this.successMessage = '', 3000);
         this.cdr.detectChanges();
-        alert('✅ Estado actualizado');
       },
       error: (err) => {
         console.error(err);
-        alert('❌ Error al actualizar estado');
+        this.error = '❌ Error al actualizar estado';
+        setTimeout(() => this.error = '', 3000);
       }
     });
+  }
+
+
+  // ============================================================
+  // UTILIDADES
+  // ============================================================
+  statusLabel(status: string): string {
+    return this.estadosMap[status] || status;
   }
 
   obtenerClaseEstado(estado: string): string {
@@ -231,5 +293,16 @@ export class DenunciasComunitariasComponent implements OnInit {
 
   trackById(index: number, item: Report): string {
     return item.id;
+  }
+
+  // ============================================================
+  // HANDLER PARA EL FORMULARIO DEL HTML (side panel)
+  // ============================================================
+  createReport(): void {
+    this.enviarDenuncia();
+  }
+
+  handleImage(event: Event): void {
+    this.seleccionarImagen(event);
   }
 }

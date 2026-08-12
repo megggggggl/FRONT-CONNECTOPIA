@@ -2,57 +2,127 @@
   <header class="module-header">
     <div class="module-title">
       <span class="title-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></span>
-      <div><span class="eyebrow">Participación ciudadana</span><h1>Reportes comunitarios</h1><p>Consulta y registra incidencias que requieren atención en la comunidad.</p></div>
+      <div>
+        <span class="eyebrow">Participación ciudadana</span>
+        <h1>Reportes comunitarios</h1>
+        <p>Consulta y registra incidencias que requieren atención en la comunidad.</p>
+      </div>
     </div>
-    <div class="summary"><span><strong>{{ reports.length }}</strong> reportes</span><span><strong>{{ pendingCount }}</strong> por atender</span><span><strong>{{ resolvedCount }}</strong> resueltos</span></div>
+    <div class="summary">
+      <span><strong>{{ denuncias.length }}</strong> reportes</span>
+      <span><strong>{{ pendingCount }}</strong> por atender</span>
+      <span><strong>{{ resolvedCount }}</strong> resueltos</span>
+    </div>
   </header>
 
-  <div class="notice success" *ngIf="successMessage" role="status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i>{{ successMessage }}</div>
+  <div class="notice success" *ngIf="successMessage" role="status">
+    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>{{ successMessage }}
+  </div>
+  <div class="notice error" *ngIf="error" role="alert">
+    <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>{{ error }}
+  </div>
 
   <div class="reports-layout">
     <main class="report-feed">
       <section class="toolbar-card">
         <div class="filters" aria-label="Filtrar reportes">
-          <button *ngFor="let filter of filters" type="button" [class.active]="activeFilter === filter.value" (click)="setFilter(filter.value)">{{ filter.label }}</button>
+          <button *ngFor="let filter of filters" type="button" 
+                  [class.active]="activeFilter === filter.value" 
+                  (click)="setFilter(filter.value)">
+            {{ filter.label }}
+          </button>
         </div>
-        <label class="search-box"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input type="search" [(ngModel)]="searchTerm" placeholder="Buscar por título o ubicación" aria-label="Buscar reportes"></label>
+        <label class="search-box">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input type="search" [(ngModel)]="searchTerm" placeholder="Buscar por título o ubicación" aria-label="Buscar reportes">
+        </label>
       </section>
 
-      <div class="feed-heading"><div><span class="section-label">Actividad reciente</span><h2>Denuncias de la comunidad</h2></div><span>{{ filteredReports.length }} resultado(s)</span></div>
+      <div class="feed-heading">
+        <div>
+          <span class="section-label">Actividad reciente</span>
+          <h2>Denuncias de la comunidad</h2>
+        </div>
+        <span>{{ filteredReports.length }} resultado(s)</span>
+      </div>
 
       <section class="empty-state" *ngIf="filteredReports.length === 0">
-        <span><i class="fa-regular fa-folder-open" aria-hidden="true"></i></span><h3>No encontramos reportes</h3><p>Prueba con otra búsqueda o selecciona un estado diferente.</p>
+        <span><i class="fa-regular fa-folder-open" aria-hidden="true"></i></span>
+        <h3>No encontramos reportes</h3>
+        <p>Prueba con otra búsqueda o selecciona un estado diferente.</p>
       </section>
 
-      <article class="report-card" *ngFor="let report of filteredReports">
-        <img [src]="report.image" [alt]="report.title">
+      <article class="report-card" *ngFor="let report of filteredReports; trackBy: trackById">
+        <img [src]="report.photo_url || 'assets/default-report.jpg'" [alt]="report.title">
         <div class="report-body">
-          <header><span class="status" [ngClass]="report.status">{{ statusLabel(report.status) }}</span><span class="time">{{ report.createdAt }}</span></header>
-          <h3>{{ report.title }}</h3><p>{{ report.description }}</p>
-          <div class="location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i>{{ report.location }}</div>
+          <header>
+            <span class="status" [ngClass]="report.status">{{ statusLabel(report.status) }}</span>
+            <span class="time">{{ report.created_at | date:'short' }}</span>
+          </header>
+          <h3>{{ report.title }}</h3>
+          <p>{{ report.description }}</p>
+          <div class="location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i>{{ report.address || 'Sin ubicación' }}</div>
+          <!-- Si es admin, mostrar selector de estado -->
+          <div *ngIf="esAdmin" class="admin-actions">
+            <label>Cambiar estado:</label>
+            <select (change)="cambiarEstado(report, $any($event.target).value)" [value]="report.status">
+              <option value="pendiente">Pendiente</option>
+              <option value="en_proceso">En proceso</option>
+              <option value="resuelto">Resuelto</option>
+              <option value="rechazado">Rechazado</option>
+            </select>
+          </div>
         </div>
-        <footer class="card-actions">
-          <button type="button" (click)="like(report)"><i class="fa-regular fa-thumbs-up" aria-hidden="true"></i>Útil <span>{{ report.likes }}</span></button>
-          <button type="button" (click)="toggleComments(report)"><i class="fa-regular fa-comment" aria-hidden="true"></i>Comentar <span *ngIf="report.comments.length">{{ report.comments.length }}</span></button>
-        </footer>
-        <section class="comments" *ngIf="report.commentsOpen">
-          <form (ngSubmit)="addComment(report)"><input name="comment-{{ report.id }}" [(ngModel)]="report.draftComment" placeholder="Escribe un comentario" aria-label="Escribe un comentario"><button type="submit" aria-label="Enviar comentario"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button></form>
-          <p *ngFor="let comment of report.comments"><strong>Usuario</strong>{{ comment }}</p>
-        </section>
+       
       </article>
     </main>
 
     <aside class="side-panel">
+      <!-- Formulario para crear reporte -->
       <form class="new-report-card" (ngSubmit)="createReport()">
-        <header><span><i class="fa-solid fa-bullhorn" aria-hidden="true"></i></span><div><span class="section-label">Nueva incidencia</span><h2>Crear reporte</h2></div></header>
-        <label>Título<input name="title" [(ngModel)]="newReport.title" placeholder="Ej. Alumbrado dañado" required></label>
-        <label>Descripción<textarea name="description" [(ngModel)]="newReport.description" rows="4" placeholder="Describe la situación" required></textarea></label>
-        <label>Ubicación<input name="location" [(ngModel)]="newReport.location" placeholder="Calle, barrio o referencia" required></label>
-        <label class="file-field"><span>Foto opcional</span><input type="file" accept="image/*" (change)="handleImage($event)"></label>
-        <button type="submit" class="primary-button"><i class="fa-solid fa-plus" aria-hidden="true"></i>Registrar denuncia</button>
+        <header>
+          <span><i class="fa-solid fa-bullhorn" aria-hidden="true"></i></span>
+          <div>
+            <span class="section-label">Nueva incidencia</span>
+            <h2>Crear reporte</h2>
+          </div>
+        </header>
+        <label>
+          Título
+          <input name="title" [(ngModel)]="nuevaDenuncia.titulo" placeholder="Ej. Alumbrado dañado" required>
+        </label>
+        <label>
+          Descripción
+          <textarea name="description" [(ngModel)]="nuevaDenuncia.descripcion" rows="4" placeholder="Describe la situación" required></textarea>
+        </label>
+        <label>
+          Ubicación
+          <input name="location" [(ngModel)]="nuevaDenuncia.direccion" placeholder="Calle, barrio o referencia" required>
+        </label>
+        <label class="file-field">
+          <span>Foto opcional</span>
+          <input type="file" accept="image/*" (change)="handleImage($event)">
+        </label>
+        <button type="submit" class="primary-button" [disabled]="enviando">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          {{ enviando ? 'Enviando...' : 'Registrar denuncia' }}
+        </button>
       </form>
-      <div class="info-card"><i class="fa-solid fa-shield-heart" aria-hidden="true"></i><div><h3>Tu reporte importa</h3><p>La información clara ayuda a priorizar la atención de cada incidencia.</p></div></div>
-      <div class="emergency-card"><i class="fa-solid fa-phone" aria-hidden="true"></i><div><h3>¿Es una emergencia?</h3><p>Comunícate de inmediato con los servicios locales de emergencia.</p></div></div>
+
+      <div class="info-card">
+        <i class="fa-solid fa-shield-heart" aria-hidden="true"></i>
+        <div>
+          <h3>Tu reporte importa</h3>
+          <p>La información clara ayuda a priorizar la atención de cada incidencia.</p>
+        </div>
+      </div>
+      <div class="emergency-card">
+        <i class="fa-solid fa-phone" aria-hidden="true"></i>
+        <div>
+          <h3>¿Es una emergencia?</h3>
+          <p>Comunícate de inmediato con los servicios locales de emergencia.</p>
+        </div>
+      </div>
     </aside>
   </div>
 </section>

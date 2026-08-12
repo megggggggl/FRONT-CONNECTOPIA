@@ -1,129 +1,134 @@
-<<<<<<< HEAD
-<!-- src/app/features/admin/pages/verifications/verifications.component.html -->
-<div class="admin-page">
-  <div class="page-header">
-    <h1>🪪 Verificaciones de Identidad</h1>
-    <button class="btn-refresh" (click)="cargarSolicitudes()" [disabled]="loading">
-      {{ loading ? 'Cargando...' : '🔄 Actualizar' }}
-    </button>
-  </div>
-
-  <!-- Alertas -->
-  <div *ngIf="error" class="alert error">{{ error }}</div>
-  <div *ngIf="success" class="alert success">{{ success }}</div>
-
-  <!-- Loading -->
-  <div *ngIf="loading" class="loading">Cargando solicitudes...</div>
-
-  <!-- Sin solicitudes -->
-  <div *ngIf="!loading && solicitudes.length === 0" class="empty">
-    <p>📭 No hay solicitudes de verificación pendientes.</p>
-  </div>
-
-  <!-- Grid de solicitudes -->
-  <div class="verificaciones-grid" *ngIf="!loading && solicitudes.length > 0">
-    <div *ngFor="let sol of solicitudes" class="verificacion-card">
-      <div class="card-header">
-        <div class="user-info">
-          <div class="avatar">{{ getInitials(sol.name) }}</div>
-          <div>
-            <h3>{{ sol.name }}</h3>
-            <span class="email">{{ sol.email }}</span>
-          </div>
-        </div>
-        <span class="badge">{{ obtenerTipoDocumento(sol.id_document_type) }}</span>
-      </div>
-
-      <div class="card-body">
-        <p><strong>Teléfono:</strong> {{ sol.phone || 'No proporcionado' }}</p>
-        <p><strong>N° Documento:</strong> {{ sol.id_document_number || 'No proporcionado' }}</p>
-        <p><strong>Intentos:</strong> {{ sol.id_verification_attempts || 0 }}</p>
-        <p><strong>Solicitado:</strong> {{ sol.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
-        <p *ngIf="sol.id_verification_notes" class="notes">
-          <strong>Notas previas:</strong> {{ sol.id_verification_notes }}
-        </p>
-      </div>
-
-      <div class="card-actions">
-        <button class="btn-fotos" (click)="verFotos(sol)">
-          📷 Ver fotos
-        </button>
-        <button class="btn-approve" (click)="aprobar(sol)">
-          ✅ Aprobar
-        </button>
-        <button class="btn-reject" (click)="abrirModalRechazo(sol)">
-          ❌ Rechazar
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================================== -->
-  <!-- MODAL PARA VER FOTOS -->
-  <!-- ========================================================== -->
-  <div class="modal-overlay" *ngIf="modalFotosAbierto" (click)="cerrarModalFotos()">
-    <div class="modal-content modal-fotos" (click)="$event.stopPropagation()">
-      <button class="modal-close" (click)="cerrarModalFotos()">×</button>
-      <h2>📷 Fotos de verificación</h2>
-      <div class="fotos-grid">
-        <div class="foto-item">
-          <h4>Documento</h4>
-          <img *ngIf="fotoDocumento" [src]="fotoDocumento" alt="Documento" />
-          <p *ngIf="!fotoDocumento">No disponible</p>
-        </div>
-        <div class="foto-item">
-          <h4>Selfie</h4>
-          <img *ngIf="fotoSelfie" [src]="fotoSelfie" alt="Selfie" />
-          <p *ngIf="!fotoSelfie">No disponible</p>
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-secondary" (click)="cerrarModalFotos()">Cerrar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================================== -->
-  <!-- MODAL PARA RECHAZAR (con motivo) -->
-  <!-- ========================================================== -->
-  <div class="modal-overlay" *ngIf="mostrarModalRechazo" (click)="cerrarModalRechazo()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <button class="modal-close" (click)="cerrarModalRechazo()">×</button>
-      <h2>❌ Rechazar verificación</h2>
-      <p>Estás a punto de rechazar la verificación de <strong>{{ solicitudActual?.name }}</strong>.</p>
-      <div class="form-group">
-        <label for="motivo">Motivo del rechazo (opcional)</label>
-        <textarea id="motivo" [(ngModel)]="motivoRechazo" placeholder="Ej: Documento ilegible, selfie no coincide, etc." rows="3"></textarea>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-secondary" (click)="cerrarModalRechazo()">Cancelar</button>
-        <button class="btn-danger" (click)="confirmarRechazo()">Rechazar</button>
-      </div>
-    </div>
-  </div>
-</div>
-=======
 <section class="admin-page verification-page">
   <header class="module-header">
-    <div class="module-title"><span class="title-icon"><i class="fa-solid fa-id-card" aria-hidden="true"></i></span><div><span class="eyebrow">Confianza y seguridad</span><h1>Verificaciones de identidad</h1><p>Evalúa solicitudes pendientes y protege la autenticidad de la comunidad.</p></div></div>
-    <button type="button" class="refresh-button" (click)="cargarSolicitudes()" [disabled]="loading"><i class="fa-solid fa-rotate" [class.spinning]="loading" aria-hidden="true"></i>{{ loading ? 'Actualizando' : 'Actualizar solicitudes' }}</button>
+    <div class="module-title">
+      <span class="title-icon"><i class="fa-solid fa-id-card" aria-hidden="true"></i></span>
+      <div>
+        <span class="eyebrow">Confianza y seguridad</span>
+        <h1>Verificaciones de identidad</h1>
+        <p>Evalúa solicitudes pendientes y protege la autenticidad de la comunidad.</p>
+      </div>
+    </div>
+    <button type="button" class="refresh-button" (click)="cargarSolicitudes()" [disabled]="loading">
+      <i class="fa-solid fa-rotate" [class.spinning]="loading" aria-hidden="true"></i>
+      {{ loading ? 'Actualizando' : 'Actualizar solicitudes' }}
+    </button>
   </header>
 
-  <div *ngIf="error" class="notice error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>{{ error }}</div>
-  <div *ngIf="success" class="notice success" role="status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i>{{ success }}</div>
+  <!-- Notificaciones -->
+  <div *ngIf="error" class="notice error" role="alert">
+    <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>{{ error }}
+  </div>
+  <div *ngIf="success" class="notice success" role="status">
+    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>{{ success }}
+  </div>
 
+  <!-- Bandeja de validación -->
   <section class="queue-card">
-    <header class="queue-header"><div><span class="eyebrow">Bandeja de validación</span><h2>Solicitudes pendientes</h2></div><span class="queue-count" *ngIf="!loading">{{ solicitudes.length }}</span></header>
-    <div *ngIf="loading" class="skeleton-grid" aria-label="Cargando solicitudes"><div class="skeleton-card" *ngFor="let item of [1,2,3]"><i></i><span></span><span></span><b></b></div></div>
+    <header class="queue-header">
+      <div>
+        <span class="eyebrow">Bandeja de validación</span>
+        <h2>Solicitudes pendientes</h2>
+      </div>
+      <span class="queue-count" *ngIf="!loading">{{ solicitudes.length }}</span>
+    </header>
+
+    <!-- Skeleton loading -->
+    <div *ngIf="loading" class="skeleton-grid" aria-label="Cargando solicitudes">
+      <div class="skeleton-card" *ngFor="let item of [1,2,3,4]">
+        <i></i><span></span><span></span><b></b>
+      </div>
+    </div>
+
+    <!-- Lista de solicitudes -->
     <div class="verificaciones-grid" *ngIf="!loading && solicitudes.length">
       <article *ngFor="let sol of solicitudes" class="verificacion-card">
-        <header class="card-header"><span class="identity-avatar">{{ sol.name.charAt(0) }}</span><div><h3>{{ sol.name }}</h3><span>{{ sol.email }}</span></div><span class="badge">{{ sol.id_document_type || 'Documento' }}</span></header>
-        <dl class="identity-data"><div><dt>Teléfono</dt><dd>{{ sol.phone || 'No registrado' }}</dd></div><div><dt>Número de documento</dt><dd>{{ sol.id_document_number || 'No registrado' }}</dd></div><div><dt>Intentos</dt><dd>{{ sol.id_verification_attempts || 0 }}</dd></div><div><dt>Solicitud</dt><dd>{{ sol.created_at | date:'dd MMM y, HH:mm' }}</dd></div></dl>
-        <button type="button" class="photos-button" *ngIf="sol.id_document_photo_url" (click)="abrirFotos({ doc: sol.id_document_photo_url, selfie: sol.id_selfie_photo_url })"><i class="fa-regular fa-images" aria-hidden="true"></i>Revisar evidencias</button>
-        <footer class="acciones"><button type="button" class="btn-approve" (click)="aprobar(sol.id)"><i class="fa-solid fa-check" aria-hidden="true"></i>Aprobar</button><button type="button" class="btn-reject" (click)="rechazar(sol.id)"><i class="fa-solid fa-xmark" aria-hidden="true"></i>Rechazar</button></footer>
+        <header class="card-header">
+          <span class="identity-avatar">{{ getInitials(sol.name) }}</span>
+          <div>
+            <h3>{{ sol.name }}</h3>
+            <span>{{ sol.email }}</span>
+          </div>
+          <span class="badge">{{ obtenerTipoDocumento(sol.id_document_type) }}</span>
+        </header>
+
+        <dl class="identity-data">
+          <div>
+            <dt>Teléfono</dt>
+            <dd>{{ sol.phone || 'No registrado' }}</dd>
+          </div>
+          <div>
+            <dt>Número de documento</dt>
+            <dd>{{ sol.id_document_number || 'No registrado' }}</dd>
+          </div>
+          <div>
+            <dt>Intentos</dt>
+            <dd>{{ sol.id_verification_attempts || 0 }}</dd>
+          </div>
+          <div>
+            <dt>Solicitud</dt>
+            <dd>{{ sol.created_at | date:'dd MMM y, HH:mm' }}</dd>
+          </div>
+        </dl>
+
+        <button
+          type="button"
+          class="photos-button"
+          *ngIf="sol.id_document_photo_url"
+          (click)="verFotos(sol)"
+        >
+          <i class="fa-regular fa-images" aria-hidden="true"></i>
+          Revisar evidencias
+        </button>
+
+        <footer class="acciones">
+          <button type="button" class="btn-approve" (click)="aprobar(sol.id)">
+            <i class="fa-solid fa-check" aria-hidden="true"></i>Aprobar
+          </button>
+          <button type="button" class="btn-reject" (click)="rechazar(sol.id)">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>Rechazar
+          </button>
+        </footer>
       </article>
     </div>
-    <div *ngIf="!loading && solicitudes.length === 0" class="empty-state"><span><i class="fa-solid fa-user-check" aria-hidden="true"></i></span><h3>No hay verificaciones pendientes</h3><p>La bandeja está al día. Las nuevas solicitudes aparecerán aquí.</p></div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="!loading && solicitudes.length === 0" class="empty-state">
+      <span><i class="fa-solid fa-user-check" aria-hidden="true"></i></span>
+      <h3>No hay verificaciones pendientes</h3>
+      <p>La bandeja está al día. Las nuevas solicitudes aparecerán aquí.</p>
+    </div>
   </section>
 </section>
->>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
+
+<!-- ============================================================ -->
+<!-- MODAL DE FOTOS (documento y selfie)                          -->
+<!-- ============================================================ -->
+<div class="modal-overlay" *ngIf="modalFotosAbierto" (click)="cerrarModalFotos()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <header>
+      <h2>Evidencias de verificación</h2>
+      <button type="button" class="close-modal" (click)="cerrarModalFotos()">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </header>
+    <div class="fotos-grid">
+      <div class="foto-item">
+        <h4>Documento de identidad</h4>
+        <img [src]="fotoDocumento" alt="Documento de identidad" *ngIf="fotoDocumento; else noDoc">
+        <ng-template #noDoc>
+          <p class="sin-foto">Sin foto de documento</p>
+        </ng-template>
+      </div>
+      <div class="foto-item">
+        <h4>Selfie con documento</h4>
+        <img [src]="fotoSelfie" alt="Selfie con documento" *ngIf="fotoSelfie; else noSelfie">
+        <ng-template #noSelfie>
+          <p class="sin-foto">Sin selfie</p>
+        </ng-template>
+      </div>
+    </div>
+    <footer>
+      <button type="button" class="btn-secondary" (click)="cerrarModalFotos()">Cerrar</button>
+    </footer>
+  </div>
+</div>
