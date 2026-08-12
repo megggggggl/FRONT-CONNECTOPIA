@@ -204,7 +204,7 @@ export const routes: Routes = [
           {
             path: 'moderation',
             loadComponent: () => import('./features/admin/pages/moderation/moderation')
-              .then(m => m.ModerationComponent)
+              .then(m => m.ModerationPageComponent)
           },
           {
             path: 'verifications',

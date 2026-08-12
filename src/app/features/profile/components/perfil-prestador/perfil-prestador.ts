@@ -6,10 +6,7 @@ import { RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, map, of, timeout } from 'rxjs';
 import { WebServices } from '../../../../core/services/webServices';
 import { EncabezadoPerfil } from '../../../../compartido/componentes/encabezado-perfil/encabezado-perfil';
-<<<<<<< HEAD
 
-=======
->>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
 import { Perfil, Resena, RespuestaLista, RespuestaPerfil, ServicioResumen } from '../../../../compartido/modelos/perfil.model';
 import { AccionHistorialCita, SolicitudCita } from '../../../../compartido/modelos/appointment.model';
 import { TelegramCitasService } from '../../../../compartido/servicios/appointment.service';
@@ -29,14 +26,9 @@ interface ServicioForm {
   imports: [
     CommonModule,
     FormsModule,
-<<<<<<< HEAD
     EncabezadoPerfil
     
     
-=======
-    EncabezadoPerfil,
-    RouterLink
->>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
   ],
   templateUrl: './perfil-prestador.html',
   styleUrl: './perfil-prestador.css'

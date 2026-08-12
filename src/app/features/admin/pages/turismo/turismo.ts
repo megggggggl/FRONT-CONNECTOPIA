@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-@Component({
-  selector: 'app-turismo',
-  standalone: true,
-  imports: [CommonModule],
-=======
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -30,7 +22,6 @@ interface TouristPlace {
   selector: 'app-turismo',
   standalone: true,
   imports: [CommonModule, FormsModule],
->>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
   templateUrl: './turismo.html',
   styleUrls: ['./turismo.css']
 })

@@ -8,23 +8,16 @@ import { ServiceService, Service } from '../../../../core/services/service.servi
 import { CategoryService, Category } from '../../../../core/services/category.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TelegramCitasService } from '../../../../compartido/servicios/appointment.service';
-import { CalificarServicioModal } from '../../../../compartido/componentes/calificarServicio/calificarServicio';
-<<<<<<< HEAD
 import { WebServices } from '../../../../core/services/webServices';
-=======
+import { CalificarServicioModal } from '../../../../compartido/componentes/calificarServicio/calificarServicio';
 import { FeedbackService } from '../../../../core/services/feedback.service';
 
->>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
 @Component({
   selector: 'app-servicios',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-<<<<<<< HEAD
-    
-=======
->>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
     TarjetaServicio,
  
     CalificarServicioModal

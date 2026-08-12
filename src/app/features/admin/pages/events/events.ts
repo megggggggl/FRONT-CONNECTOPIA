@@ -4,10 +4,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
-<<<<<<< HEAD
 
-=======
->>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
 import { WebServices } from '../../../../core/services/webServices';
 
 const DASHBOARD_CACHE_KEY = 'connectopia.dashboard.stats';
