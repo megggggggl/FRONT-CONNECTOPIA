@@ -77,9 +77,10 @@ export class AuthService {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('usuario');
+      localStorage.removeItem('user');
     }
     this.notifyAuthChange();
-    this.router.navigate(['/']);
+    this.router.navigateByUrl('/', { replaceUrl: true });
   }
 
   logout(): void {
@@ -137,7 +138,11 @@ export class AuthService {
     const user = this.getUser();
     if (!user) return 'turista';
     const role = user?.role || user?.rol || user?.user_role || '';
-    return String(role).trim().toLowerCase() || 'turista';
+    const normalizedRole = String(role).trim().toLowerCase();
+
+    if (normalizedRole === 'prestador de servicios') return 'prestador';
+
+    return normalizedRole || 'turista';
   }
 
   getMe() {

@@ -84,7 +84,7 @@ export class RegisterForm {
 
             // Verificar que el token se guardó
             const token = this.authService.getToken();
-            console.log('🔑 Token guardado en localStorage:', token ? '✅ Sí (primeros 20 chars: ' + token.substring(0, 20) + '...)' : '❌ No');
+            console.log('🔑 Token guardado:', token ? '✅ Sí' : '❌ No');
 
             this.exito = '✅ Sesión iniciada. Redirigiendo a verificación...';
 

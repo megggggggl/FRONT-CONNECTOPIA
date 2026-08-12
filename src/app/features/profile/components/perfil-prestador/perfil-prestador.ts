@@ -2,10 +2,14 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, map, of, timeout } from 'rxjs';
 import { WebServices } from '../../../../core/services/webServices';
 import { EncabezadoPerfil } from '../../../../compartido/componentes/encabezado-perfil/encabezado-perfil';
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
 import { Perfil, Resena, RespuestaLista, RespuestaPerfil, ServicioResumen } from '../../../../compartido/modelos/perfil.model';
 import { AccionHistorialCita, SolicitudCita } from '../../../../compartido/modelos/appointment.model';
 import { TelegramCitasService } from '../../../../compartido/servicios/appointment.service';
@@ -25,9 +29,14 @@ interface ServicioForm {
   imports: [
     CommonModule,
     FormsModule,
+<<<<<<< HEAD
     EncabezadoPerfil
     
     
+=======
+    EncabezadoPerfil,
+    RouterLink
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
   ],
   templateUrl: './perfil-prestador.html',
   styleUrl: './perfil-prestador.css'
@@ -53,6 +62,8 @@ export class PerfilPrestador implements OnInit, OnDestroy {
   citaHistorialExito = signal('');
 
   modalEditarAbierto = false;
+  guardandoPerfil = false;
+  errorGuardadoPerfil = '';
   telegramCargando = false;
   telegramError = '';
   telegramExito = '';
@@ -162,7 +173,9 @@ export class PerfilPrestador implements OnInit, OnDestroy {
       avatar_url: this.perfil?.avatar_url ?? ''
     };
 
+    this.errorGuardadoPerfil = '';
     this.modalEditarAbierto = true;
+    this.changeDetector.detectChanges();
   }
 
   cerrarModalEditar(): void {
@@ -170,34 +183,53 @@ export class PerfilPrestador implements OnInit, OnDestroy {
   }
 
   guardarPerfil(): void {
-    if (!this.perfil?.id) return;
+    if (!this.perfil?.id || this.guardandoPerfil) return;
+
+    const token = this.obtenerToken();
+    if (!token) {
+      this.errorGuardadoPerfil = 'Tu sesión expiró. Iniciá sesión nuevamente.';
+      this.changeDetector.detectChanges();
+      return;
+    }
+
+    if (!this.formPerfil.name.trim()) {
+      this.errorGuardadoPerfil = 'El nombre es obligatorio.';
+      this.changeDetector.detectChanges();
+      return;
+    }
 
     const datosActualizados = {
-      name: this.formPerfil.name,
-      phone: this.formPerfil.phone,
-      address: this.formPerfil.address,
-      avatar_url: this.formPerfil.avatar_url
+      name: this.formPerfil.name.trim(),
+      phone: this.formPerfil.phone.trim() || null,
+      address: this.formPerfil.address.trim() || null,
+      avatar_url: this.formPerfil.avatar_url.trim() || null
     };
+
+    this.guardandoPerfil = true;
+    this.errorGuardadoPerfil = '';
 
     this.http.patch<Perfil | RespuestaPerfil>(
       WebServices.ProfileUpdate(this.perfil.id),
-      datosActualizados
+      datosActualizados,
+      { headers: this.crearHeadersNgrok(token) }
     ).subscribe({
       next: (respuesta: any) => {
-        const perfilActualizado = this.extraerPerfil(respuesta);
-
-        if (!perfilActualizado) {
-          this.error = 'El servidor devolvió un perfil inválido.';
-          return;
-        }
+        const perfilActualizado = this.extraerPerfil(respuesta) ?? {
+          ...this.perfil!,
+          ...datosActualizados
+        };
 
         this.perfil = perfilActualizado;
         localStorage.setItem('user', JSON.stringify(perfilActualizado));
         this.modalEditarAbierto = false;
+        this.guardandoPerfil = false;
+        this.changeDetector.detectChanges();
       },
       error: (error: unknown) => {
         console.error('Error al actualizar perfil:', error);
-        this.error = 'No se pudo actualizar el perfil.';
+        this.errorGuardadoPerfil = 'No se pudo guardar el perfil en el servidor.';
+        this.guardandoPerfil = false;
+        this.changeDetector.detectChanges();
       }
     });
   }

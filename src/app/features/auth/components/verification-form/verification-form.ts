@@ -45,7 +45,7 @@ export class VerificationForm implements OnInit {
   ngOnInit(): void {
     // ✅ Verificar autenticación
     const token = this.authService.getToken();
-    console.log('🔍 VerificationForm.ngOnInit - Token en localStorage:', token ? '✅ Sí (primeros 20 chars: ' + token.substring(0, 20) + '...)' : '❌ No');
+    console.log('🔍 VerificationForm.ngOnInit - Token:', token ? '✅ Sí' : '❌ No');
 
     if (!this.authService.isAuthenticated()) {
       console.warn('⚠️ Usuario no autenticado, redirigiendo a login...');
@@ -211,21 +211,25 @@ export class VerificationForm implements OnInit {
     this.exito = '';
 
     const formData = new FormData();
-  formData.append('documento', this.documentFrontFile);
-  formData.append('selfie', this.selfieFile);
+    formData.append('documento', this.documentFrontFile);
+    formData.append('selfie', this.selfieFile);
 
-  // 🔥 OBTENER TOKEN Y AGREGARLO MANUALMENTE
-  const token = this.authService.getToken();
-  console.log('🔑 Token en verification-form:', token ? '✅ Sí' : '❌ No');
+    // 🔥 OBTENER TOKEN Y AGREGARLO EXPLÍCITAMENTE
+    const token = this.authService.getToken();
+    console.log('🔑 Enviando verificación con token:', token ? '✅ Sí' : '❌ No');
 
-  const headers = new HttpHeaders()
-    .set('Authorization', token ? `Bearer ${token}` : '')
-    .set('ngrok-skip-browser-warning', 'true');
+    const headers = new HttpHeaders({
+      'Authorization': token ? `Bearer ${token}` : '',
+      'ngrok-skip-browser-warning': 'true'
+    });
 
-  this.http.post(WebServices.VerificationStart, formData, { headers }).subscribe({
+    console.log('📤 Enviando a:', WebServices.VerificationStart);
+    console.log('📦 Headers:', headers);
+
+    this.http.post(WebServices.VerificationStart, formData, { headers }).subscribe({
       next: (respuesta: any) => {
         console.log('✅ Verificación exitosa:', respuesta);
-        this.exito = '✅ Verificación exitosa. Usuario verificado.';
+        this.exito = '✅ Verificación enviada. Espera la aprobación del administrador.';
         this.cargando = false;
         setTimeout(() => {
           this.authService.getMe().subscribe((user: any) => {

@@ -1,20 +1,24 @@
 <section class="encabezado-perfil">
+  <span class="decoracion decoracion-uno" aria-hidden="true"></span>
+  <span class="decoracion decoracion-dos" aria-hidden="true"></span>
   <div class="foto-contenedor">
     <img
-      *ngIf="perfil.avatar_url"
+      *ngIf="perfil.avatar_url && !avatarError"
       [src]="perfil.avatar_url"
       alt="Foto de perfil"
       class="foto-perfil"
+      (error)="ocultarAvatar()"
     />
 
-    <div *ngIf="!perfil.avatar_url" class="foto-placeholder">
+    <div *ngIf="!perfil.avatar_url || avatarError" class="foto-placeholder">
       {{ inicialPerfil }}
     </div>
   </div>
 
   <div class="informacion-perfil">
     <p class="tipo-perfil">
-      PERFIL DE {{ perfil.role === 'vecino' ? 'VECINO' : 'PRESTADOR' }}
+      <i class="fa-solid" [class.fa-house-user]="perfil.role === 'vecino'" [class.fa-briefcase]="perfil.role !== 'vecino'"></i>
+      Espacio de {{ perfil.role === 'vecino' ? 'vecino' : 'prestador' }}
     </p>
 
     <h1>{{ perfil.name }}</h1>
@@ -23,12 +27,16 @@
     <div class="chips">
       <span class="chip rol">{{ perfil.role }}</span>
       <span class="chip activo">
+        <i class="fa-solid" [class.fa-circle-check]="perfil.is_active" [class.fa-circle-xmark]="!perfil.is_active"></i>
         {{ perfil.is_active ? 'Cuenta activa' : 'Cuenta inactiva' }}
+      </span>
+      <span class="chip verificado" *ngIf="perfil.id_verified">
+        <i class="fa-solid fa-shield-halved"></i> Identidad verificada
       </span>
     </div>
   </div>
 
   <button class="boton-principal" type="button" (click)="abrirEdicion()">
-    Editar perfil
+    <i class="fa-solid fa-pen"></i> Editar perfil
   </button>
 </section>

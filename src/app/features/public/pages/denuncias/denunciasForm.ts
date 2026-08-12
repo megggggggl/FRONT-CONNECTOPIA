@@ -74,7 +74,6 @@ export class DenunciasComunitariasComponent implements OnInit {
       next: (data) => {
         this.denuncias = data || [];
         this.loading = false;
-        // ✅ Forzar detección de cambios solo después de cargar
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -230,7 +229,6 @@ export class DenunciasComunitariasComponent implements OnInit {
     return clases[prioridad] || '';
   }
 
-  // ✅ Método trackBy para optimizar el ngFor
   trackById(index: number, item: Report): string {
     return item.id;
   }

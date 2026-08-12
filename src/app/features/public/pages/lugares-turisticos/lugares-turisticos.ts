@@ -1,11 +1,12 @@
 // src/app/features/public/pages/lugares-turisticos/lugares-turisticos.component.ts
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { PlaceService } from '../../../../core/services/place.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Place } from '../../../../core/models/place.model';
+import { FeedbackService } from '../../../../core/services/feedback.service';
 
 @Component({
   selector: 'app-lugares-turisticos',
@@ -14,11 +15,12 @@ import { Place } from '../../../../core/models/place.model';
   templateUrl: './lugares-turisticos.html',
   styleUrls: ['./lugares-turisticos.css']
 })
-export class LugaresTuristicosComponent implements OnInit {
+export class LugaresTuristicosComponent implements OnInit, OnDestroy {
   lugares: Place[] = [];
   loading = true;
   error = '';
   searchTerm = '';
+  eliminandoLugarId: string | null = null;
 
   // Estado del formulario de creación
   modalAbierto = false;
@@ -36,14 +38,21 @@ export class LugaresTuristicosComponent implements OnInit {
 
   // Para la ubicación (opcional)
   ubicacion: { lat: number; lng: number } | null = null;
+  private searchTimeoutId: number | null = null;
 
   constructor(
     private placeService: PlaceService,
-    public authService: AuthService
+    public authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private feedback: FeedbackService
   ) {}
 
   ngOnInit(): void {
     this.cargarLugares();
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchTimeoutId !== null) window.clearTimeout(this.searchTimeoutId);
   }
 
   // ============================================================
@@ -60,17 +69,20 @@ export class LugaresTuristicosComponent implements OnInit {
       next: (data) => {
         this.lugares = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('❌ Error:', err);
         this.error = 'No se pudieron cargar los lugares turísticos';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
   onSearch(): void {
-    this.cargarLugares();
+    if (this.searchTimeoutId !== null) window.clearTimeout(this.searchTimeoutId);
+    this.searchTimeoutId = window.setTimeout(() => this.cargarLugares(), 250);
   }
 
   // ============================================================
@@ -78,7 +90,7 @@ export class LugaresTuristicosComponent implements OnInit {
   // ============================================================
   abrirModal(): void {
     if (!this.authService.isAuthenticated()) {
-      alert('Debes iniciar sesión para añadir un lugar turístico.');
+      this.feedback.info('Debes iniciar sesión para añadir un lugar turístico.');
       return;
     }
     this.modalAbierto = true;
@@ -130,7 +142,7 @@ export class LugaresTuristicosComponent implements OnInit {
 
   guardarLugar(): void {
     if (!this.nuevoLugar.name?.trim()) {
-      alert('El nombre es obligatorio.');
+      this.feedback.info('El nombre es obligatorio.');
       return;
     }
 
@@ -158,14 +170,55 @@ export class LugaresTuristicosComponent implements OnInit {
 
     this.placeService.crearLugar(payload).subscribe({
       next: (nuevo) => {
-        this.lugares.unshift(nuevo); // Agregar al inicio
+        this.lugares = [nuevo, ...this.lugares];
         this.cerrarModal();
-        alert('✅ Lugar turístico creado correctamente.');
+        this.cdr.detectChanges();
+        this.feedback.success('Lugar turístico creado correctamente.');
       },
       error: (err) => {
         console.error('❌ Error al crear lugar:', err);
-        alert('No se pudo crear el lugar turístico.');
+        this.feedback.error('No se pudo crear el lugar turístico.');
         this.enviando = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  puedeEliminar(lugar: Place): boolean {
+    const usuario = this.authService.getUser();
+    return !!usuario && (String(lugar.created_by) === String(usuario.id) || this.authService.getUserRole() === 'admin');
+  }
+
+  async eliminarLugar(lugar: Place): Promise<void> {
+    if (!this.puedeEliminar(lugar) || this.eliminandoLugarId) return;
+    const confirmado = await this.feedback.confirm(
+      `¿Querés eliminar "${lugar.name}"? Esta acción no se puede deshacer.`,
+      { title: 'Eliminar lugar turístico', confirmText: 'Eliminar lugar', danger: true }
+    );
+    if (!confirmado) return;
+
+    this.eliminandoLugarId = lugar.id;
+    const indiceAnterior = this.lugares.findIndex((item) => item.id === lugar.id);
+    this.lugares = this.lugares.filter((item) => item.id !== lugar.id);
+    this.cdr.detectChanges();
+
+    this.placeService.eliminarLugar(lugar.id).subscribe({
+      next: () => {
+        this.eliminandoLugarId = null;
+        this.feedback.success('Lugar turístico eliminado.');
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al eliminar lugar:', err);
+        const posicion = indiceAnterior < 0 ? this.lugares.length : indiceAnterior;
+        this.lugares = [
+          ...this.lugares.slice(0, posicion),
+          lugar,
+          ...this.lugares.slice(posicion)
+        ];
+        this.eliminandoLugarId = null;
+        this.feedback.error('No se pudo eliminar el lugar turístico.');
+        this.cdr.detectChanges();
       }
     });
   }

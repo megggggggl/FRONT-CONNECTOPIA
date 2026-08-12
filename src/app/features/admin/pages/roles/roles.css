@@ -337,3 +337,10 @@ td {
   font-weight: 800;
 }
 
+.title-icon i { color: #287c5e; font-size: 36px; }
+.stat-icon i { color: #287c5e; font-size: 27px; }
+.stat-icon.blue i { color: #356fa7; }
+.stat-icon.purple i { color: #7657b5; }
+.stat-icon.orange i { color: #b66a2f; }
+.search-user > i { color: #718078; }
+.actions button i { font-size: 14px; }

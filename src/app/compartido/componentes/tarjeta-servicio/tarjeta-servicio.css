@@ -27,6 +27,10 @@
 
 .imagen-servicio-vacia {
   background: linear-gradient(135deg, #e5e7eb, #cbd5e1);
+  display: grid;
+  place-items: center;
+  color: #6d9384;
+  font-size: 28px;
 }
 
 .estado-servicio {
@@ -133,8 +137,13 @@
 }
 
 .btn-favorito {
-  font-size: 22px;
+  font-size: 16px;
+  color: #68746e;
 }
+
+.btn-favorito.saved { color: #bd4662; background: #fff1f3; }
+.metricas-servicio span { display:flex; align-items:center; gap:5px; color:#6d7872; font-size:12px; }
+.metricas-servicio i { color:#d58c23; }
 
 .btn-calificar {
   color: #f59e0b;
@@ -169,6 +178,31 @@
 .boton-telegram:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.btn-eliminar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border: 1px solid #f2c8cf;
+  border-radius: 10px;
+  background: #fff5f6;
+  color: #b6384d;
+  font-weight: 750;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-eliminar:hover:not(:disabled) {
+  border-color: #dc8594;
+  background: #fee9ec;
+}
+
+.btn-eliminar:disabled {
+  opacity: 0.65;
+  cursor: wait;
 }
 
 @media (max-width: 480px) {

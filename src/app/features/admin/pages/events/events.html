@@ -3,7 +3,7 @@
     <header class="module-header">
       <div class="module-title">
         <div class="title-icon">
-          <img src="eventos.png" alt="" />
+          <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
         </div>
 
         <div>
@@ -14,14 +14,14 @@
       </div>
 
       <button type="button" class="shine-button" (click)="abrirCrear()">
-        <span>+</span>
+        <i class="fa-solid fa-plus" aria-hidden="true"></i>
         Nuevo evento
       </button>
     </header>
 
     <section class="stats-grid">
       <article class="stat-card">
-        <div class="stat-icon green"><img src="presentacion.gif" alt="" /></div>
+        <div class="stat-icon green"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i></div>
         <div>
           <p>Total</p>
           <h2>{{ eventos.length }}</h2>
@@ -30,7 +30,7 @@
       </article>
 
       <article class="stat-card">
-        <div class="stat-icon blue"><img src="demostracion.gif" alt="" /></div>
+        <div class="stat-icon blue"><i class="fa-solid fa-bolt" aria-hidden="true"></i></div>
         <div>
           <p>Activos</p>
           <h2>{{ eventosActivos }}</h2>
@@ -39,7 +39,7 @@
       </article>
 
       <article class="stat-card">
-        <div class="stat-icon purple"><img src="exito.gif" alt="" /></div>
+        <div class="stat-icon purple"><i class="fa-solid fa-users" aria-hidden="true"></i></div>
         <div>
           <p>Participantes</p>
           <h2>{{ totalParticipantes }}</h2>
@@ -48,7 +48,7 @@
       </article>
 
       <article class="stat-card">
-        <div class="stat-icon orange"><img src="permisos.gif" alt="" /></div>
+        <div class="stat-icon orange"><i class="fa-solid fa-flag-checkered" aria-hidden="true"></i></div>
         <div>
           <p>Finalizados</p>
           <h2>{{ eventosFinalizados }}</h2>
@@ -74,7 +74,7 @@
 
     <section class="toolbar-card">
       <div class="search-box">
-        <img src="lupa.png" alt="" />
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
         <input
           type="search"
           placeholder="Buscar por titulo, descripcion o ubicacion"
@@ -167,7 +167,7 @@
 
       <div class="modal-header">
         <div class="modal-icon">
-          <img src="crear.png" alt="" />
+          <i class="fa-regular fa-calendar-plus" aria-hidden="true"></i>
         </div>
 
         <div>

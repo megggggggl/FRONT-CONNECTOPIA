@@ -16,6 +16,8 @@ import { MenuItem } from '../../../core/models/menu-item.model';
 export class SidebarComponent implements OnInit {
   menuItems: MenuItem[] = [];
   user: any = null;
+  avatarError = false;
+  logoError = false;
 
   constructor(
     private menuService: MenuService,
@@ -75,12 +77,18 @@ export class SidebarComponent implements OnInit {
     this.router.navigate(['/perfil']);
   }
 
+  ocultarAvatar(): void {
+    this.avatarError = true;
+  }
+
+  ocultarLogo(): void {
+    this.logoError = true;
+  }
+
   /**
    * Cierra sesión y redirige al login
    */
   logout(): void {
     this.authService.logout();
-    // El authChange$ notificará al sidebar y recargará el menú automáticamente
-    this.router.navigate(['/auth/login']);
   }
 }

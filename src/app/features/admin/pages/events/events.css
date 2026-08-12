@@ -727,3 +727,19 @@ button:disabled {
     height: 72px;
   }
 }
+
+.title-icon i,
+.modal-icon i {
+  color: #287c5e;
+  font-size: 34px;
+}
+
+.stat-icon i {
+  color: #287e60;
+  font-size: 25px;
+}
+
+.stat-icon.blue i { color: #356fa7; }
+.stat-icon.purple i { color: #7858b8; }
+.stat-icon.orange i { color: #b66b2e; }
+.search-box > i { color: #708078; }

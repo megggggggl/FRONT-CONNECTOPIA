@@ -1,6 +1,7 @@
 <div class="perfil-container">
   <!-- Encabezado -->
   <app-encabezado-perfil
+    *ngIf="perfil"
     [perfil]="perfil"
     (editar)="abrirModalEditar()"
   ></app-encabezado-perfil>
@@ -21,7 +22,7 @@
     <!-- Estadísticas -->
     <div class="estadisticas-grid">
       <app-tarjeta-estadistica
-        icono="📝"
+        icono="fa-solid fa-file-pen"
         titulo="Publicaciones"
         [valor]="publicaciones"
         (click)="irPublicaciones()"
@@ -29,7 +30,7 @@
       ></app-tarjeta-estadistica>
 
       <app-tarjeta-estadistica
-        icono="🚨"
+        icono="fa-solid fa-triangle-exclamation"
         titulo="Denuncias"
         [valor]="denuncias"
         (click)="irDenuncias()"
@@ -37,7 +38,7 @@
       ></app-tarjeta-estadistica>
 
       <app-tarjeta-estadistica
-        icono="❤️"
+        icono="fa-solid fa-heart"
         titulo="Favoritos"
         [valor]="favoritos"
         (click)="irFavoritos()"
@@ -45,7 +46,7 @@
       ></app-tarjeta-estadistica>
 
       <app-tarjeta-estadistica
-        icono="📅"
+        icono="fa-solid fa-calendar-day"
         titulo="Eventos"
         [valor]="eventos"
         (click)="irEventos()"
@@ -53,7 +54,7 @@
       ></app-tarjeta-estadistica>
 
       <app-tarjeta-estadistica
-        icono="📋"
+        icono="fa-solid fa-clipboard-list"
         titulo="Servicios solicitados"
         [valor]="serviciosSolicitados"
         (click)="irMisCitas()"
@@ -61,21 +62,21 @@
       ></app-tarjeta-estadistica>
 
       <app-tarjeta-estadistica
-        icono="⭐"
+        icono="fa-solid fa-star"
         titulo="resenas recibidas"
         [valor]="resenasRecibidas"
         class="estadistica-card"
       ></app-tarjeta-estadistica>
 
       <app-tarjeta-estadistica
-        icono="✍️"
+        icono="fa-solid fa-pen-nib"
         titulo="resenas escritas"
         [valor]="resenasEscritas"
         class="estadistica-card"
       ></app-tarjeta-estadistica>
 
       <app-tarjeta-estadistica
-        icono="💬"
+        icono="fa-solid fa-comments"
         titulo="Comentarios"
         [valor]="comentarios"
         class="estadistica-card"
@@ -84,12 +85,12 @@
 
     <!-- Servicios Destacados (solo si es prestador) -->
     <div *ngIf="serviciosDestacados.length > 0" class="seccion-destacados">
-      <h3>🏆 Servicios mejor valorados</h3>
+      <h3><i class="fa-solid fa-trophy"></i> Servicios mejor valorados</h3>
       <div class="servicios-destacados">
         <div *ngFor="let s of serviciosDestacados" class="servicio-destacado">
           <div class="info">
             <h4>{{ s.name }}</h4>
-            <p>⭐ {{ s.avg_rating | number:'1.1' }}</p>
+            <p><i class="fa-solid fa-star"></i> {{ s.avg_rating | number:'1.1' }}</p>
             <small>{{ s.reviews_count || 0 }} resenas</small>
           </div>
         </div>
@@ -98,16 +99,42 @@
 
     <!-- resenas Recientes -->
     <div *ngIf="resenasRecientes.length > 0" class="seccion-resenas">
-      <h3>📝 resenas recientes</h3>
+      <h3><i class="fa-solid fa-pen-to-square"></i> Reseñas recientes</h3>
       <div class="resenas-lista">
         <div *ngFor="let r of resenasRecientes" class="resena-item">
           <div class="resena-header">
-            <span class="estrellas">{{ '⭐'.repeat(r.rating) }}</span>
+            <span class="estrellas"><i class="fa-solid fa-star"></i> {{ r.rating }}/5</span>
             <span class="fecha">{{ r.created_at | date:'dd/MM/yyyy' }}</span>
           </div>
           <p>{{ r.comment || 'Sin comentario' }}</p>
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="modalEditarAbierto" (click)="cerrarModalEditar()">
+    <section class="modal-perfil" role="dialog" aria-modal="true" aria-labelledby="titulo-editar-perfil" (click)="$event.stopPropagation()">
+      <button class="cerrar-modal" type="button" (click)="cerrarModalEditar()" aria-label="Cerrar">×</button>
+      <div class="modal-header">
+        <div class="avatar-preview">
+          <img *ngIf="formPerfil.avatar_url" [src]="formPerfil.avatar_url" alt="Vista previa de la foto" />
+          <span *ngIf="!formPerfil.avatar_url">{{ formPerfil.name.charAt(0) || 'P' }}</span>
+        </div>
+        <div><h2 id="titulo-editar-perfil">Editar perfil</h2><p>Actualizá tu información personal.</p></div>
+      </div>
+      <form class="form-modal" (ngSubmit)="guardarPerfil()">
+        <label>Nombre completo<input type="text" [(ngModel)]="formPerfil.name" name="name" required /></label>
+        <label>Teléfono<input type="tel" [(ngModel)]="formPerfil.phone" name="phone" /></label>
+        <label>Dirección<input type="text" [(ngModel)]="formPerfil.address" name="address" /></label>
+        <label>URL de foto<input type="url" [(ngModel)]="formPerfil.avatar_url" name="avatar_url" /></label>
+        <p *ngIf="errorGuardado" class="error-guardado" role="alert">{{ errorGuardado }}</p>
+        <div class="acciones-modal">
+          <button class="boton-secundario" type="button" (click)="cerrarModalEditar()" [disabled]="guardandoPerfil">Cancelar</button>
+          <button class="boton-guardar" type="submit" [disabled]="guardandoPerfil || !formPerfil.name.trim()">
+            {{ guardandoPerfil ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </form>
+    </section>
   </div>
 </div>
