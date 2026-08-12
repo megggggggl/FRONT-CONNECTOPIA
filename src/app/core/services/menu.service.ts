@@ -84,6 +84,27 @@ export class MenuService {
         route: '/eventos',
         roles: ['vecino', 'prestador', 'admin']
       },
+      {
+        id: 'comunidad',
+        label: 'Comunidad',
+        icon: 'fa-solid fa-comments',
+        route: '/comunidad',
+        roles: ['vecino', 'prestador']
+      },
+      {
+        id: 'mis-publicaciones',
+        label: 'Mis Publicaciones',
+        icon: 'fa-solid fa-newspaper',
+        route: '/mis-publicaciones',
+        roles: ['vecino']
+      },
+      {
+        id: 'denuncias',
+        label: 'Denuncias',
+        icon: 'fa-solid fa-triangle-exclamation',
+        route: '/denuncia/nueva',
+        roles: ['vecino']
+      },
       // ==========================================================
       // 🌐 COMUNIDAD (solo vecinos, prestadores y admin)
       // ==========================================================

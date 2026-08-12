@@ -1,11 +1,19 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MainLayout } from '../../../../core/layout/main-layout/main-layout';
+import { PublicidadComponent } from '../../../../compartido/componentes/publicidad/publicidad.component';
 @Component({
   selector: 'app-public-feed',
   standalone: true,
-  imports: [CommonModule, MainLayout],
-  templateUrl: './public.html',
+  imports: [CommonModule, PublicidadComponent],
+  template: `
+    <section class="mis-publicaciones-page">
+      <header>
+        <h1>Mis Publicaciones</h1>
+        <p>Consulta y administra el contenido que has compartido.</p>
+      </header>
+      <app-publicidad [soloAutorActual]="true"></app-publicidad>
+    </section>
+  `,
   styleUrls: ['./public.css']
 })
 export class PublicPageComponent {

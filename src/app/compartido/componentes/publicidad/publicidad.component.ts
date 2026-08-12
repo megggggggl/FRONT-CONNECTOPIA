@@ -1,5 +1,5 @@
 // src/app/compartido/componentes/publicidad/publicidad.component.ts
-import { ChangeDetectorRef, Component, OnInit, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -16,12 +16,14 @@ import { FeedbackService } from '../../../core/services/feedback.service';
   templateUrl: './publicidad.component.html',
   styleUrls: ['./publicidad.component.css']
 })
-export class PublicidadComponent implements OnInit {
+export class PublicidadComponent implements OnInit, OnChanges {
   // 👇 INPUTS PARA FILTROS (desde ComunidadComponent)
   @Input() tipoFiltro?: 'anuncio' | 'alerta' | 'evento' | 'general' | 'empleo' | '';
   @Input() soloUrgentes = false;
+  @Input() soloAutorActual = false;
 
   posts: Post[] = [];
+  private allPosts: Post[] = [];
   loading = false;
   error = '';
   likesMap: Record<string, { count: number; userLiked: boolean; reactionId?: number }> = {};
@@ -67,13 +69,20 @@ export class PublicidadComponent implements OnInit {
     this.cargarPosts();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if ((changes['tipoFiltro'] || changes['soloUrgentes'] || changes['soloAutorActual']) && this.allPosts.length) {
+      this.posts = this.aplicarFiltros(this.allPosts);
+    }
+  }
+
   // ============================================================
   // CARGAR POSTS (CON FILTROS)
   // ============================================================
   cargarPosts(): void {
     const cache = this.postService.obtenerCache();
     if (cache.length > 0 && this.posts.length === 0) {
-      this.posts = cache;
+      this.allPosts = cache;
+      this.posts = this.aplicarFiltros(cache);
       this.loading = false;
       this.cdr.detectChanges();
     } else {
@@ -91,7 +100,8 @@ export class PublicidadComponent implements OnInit {
         if (this.soloUrgentes) {
           filtrados = filtrados.filter(p => p.is_urgent === true);
         }
-        this.posts = filtrados;
+        this.allPosts = posts;
+        this.posts = this.aplicarFiltros(posts);
         this.loading = false;
         this.cargarReacciones();
         this.cargarComentarios();
@@ -412,6 +422,19 @@ export class PublicidadComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  private aplicarFiltros(posts: Post[]): Post[] {
+    let filtrados = [...posts];
+    if (this.tipoFiltro) filtrados = filtrados.filter((post) => post.type === this.tipoFiltro);
+    if (this.soloUrgentes) filtrados = filtrados.filter((post) => post.is_urgent === true);
+    if (this.soloAutorActual) {
+      const userId = this.authService.getUser()?.id;
+      filtrados = userId
+        ? filtrados.filter((post) => String(post.author_id) === String(userId))
+        : [];
+    }
+    return filtrados;
   }
   obtenerRequisitos(requisitos: string | string[]): string {
   if (!requisitos) return '';

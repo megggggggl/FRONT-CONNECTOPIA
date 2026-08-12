@@ -135,7 +135,11 @@ export class AuthService {
     if (!user) return 'turista'; // 👈 Valor por defecto para invitados
 
     const role = user?.role || user?.rol || user?.user_role || '';
-    return String(role).trim().toLowerCase() || 'turista';
+    const normalizedRole = String(role).trim().toLowerCase();
+
+    if (normalizedRole === 'prestador de servicios') return 'prestador';
+
+    return normalizedRole || 'turista';
   }
 
   getMe() {

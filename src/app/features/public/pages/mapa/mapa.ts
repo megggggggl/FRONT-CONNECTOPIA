@@ -1,6 +1,6 @@
 // src/app/features/public/pages/mapa/mapa.component.ts
-import { Component, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, AfterViewInit, Inject, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
@@ -18,6 +18,7 @@ declare let L: any;
   styleUrls: ['./mapa.css']
 })
 export class MapaComponent implements AfterViewInit, OnDestroy {
+  private readonly isBrowser: boolean;
   private map: any;
   private markers: any[] = [];
   private ubicacionUsuario: { lat: number; lng: number } | null = null;
@@ -38,9 +39,17 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
     { label: 'Paradas de Bus', color: '#8b5cf6' }
   ];
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService,
+    @Inject(PLATFORM_ID) platformId: object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
+
     // Esperar un tick para asegurar que el DOM esté listo
     setTimeout(() => {
       this.inicializarMapa();
@@ -78,6 +87,7 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
   }
 
   private obtenerUbicacion(): void {
+    if (!this.isBrowser) return;
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       (pos) => {

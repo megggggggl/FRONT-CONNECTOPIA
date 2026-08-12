@@ -8,7 +8,7 @@
       <div *ngFor="let c of comentarios" class="comentario">
         <div class="comentario-header">
           <img
-            [src]="c.author?.avatar_url || 'assets/avatar.png'"
+            [src]="c.author?.avatar_url || '/perfil.png'"
             class="avatar-mini"
           />
           <strong>{{ c.author?.name || 'Usuario' }}</strong>

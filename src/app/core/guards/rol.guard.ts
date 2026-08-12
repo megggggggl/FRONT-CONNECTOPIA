@@ -45,7 +45,7 @@ export const vecinoGuard: CanActivateFn = () => {
   }
 
   const role = authService.getUserRole();
-  if (role === 'vecino' || role === 'admin') {
+  if (role === 'vecino') {
     return true;
   }
 
@@ -64,7 +64,7 @@ export const prestadorGuard: CanActivateFn = () => {
   }
 
   const role = authService.getUserRole();
-  if (role === 'prestador' || role === 'admin') {
+  if (role === 'prestador') {
     return true;
   }
 
@@ -93,4 +93,17 @@ export const adminGuard: CanActivateFn = () => {
     router.navigate(['/']);
   }
   return false;
+};
+
+/** Lleva /perfil a la vista correspondiente al rol autenticado. */
+export const profileRedirectGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  const role = authService.getUserRole();
+
+  if (role === 'vecino') return router.createUrlTree(['/perfil/vecino']);
+  if (role === 'prestador') return router.createUrlTree(['/perfil/prestador']);
+  if (role === 'admin') return router.createUrlTree(['/admin/dashboard']);
+
+  return router.createUrlTree(['/']);
 };
