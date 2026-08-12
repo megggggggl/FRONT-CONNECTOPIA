@@ -1,7 +1,7 @@
 // src/app/features/admin/pages/verifications/verifications.ts
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, finalize, of } from 'rxjs';
 import { WebServices } from '../../../../core/services/webServices';
@@ -29,32 +29,53 @@ interface SolicitudVerificacion {
   templateUrl: './verifications.html',
   styleUrls: ['./verifications.css']
 })
-export class VerificationsPageComponent implements OnInit {
+export class VerificationsPageComponent implements OnInit, OnDestroy {
   solicitudes: SolicitudVerificacion[] = [];
   loading = false;
   error = '';
   success = '';
   selectedId: string | null = null;
   motivoRechazo = '';
+  private readonly isBrowser: boolean;
+  private readonly refreshIntervalMs = 5000;
+  private refreshIntervalId: number | null = null;
+  private requestInProgress = false;
 
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
-    private feedback: FeedbackService
-  ) {}
+    private feedback: FeedbackService,
+    @Inject(PLATFORM_ID) platformId: object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {
     this.cargarSolicitudes();
+    this.iniciarActualizacionAutomatica();
   }
 
-  cargarSolicitudes(): void {
-    this.loading = true;
-    this.error = '';
+  ngOnDestroy(): void {
+    if (this.refreshIntervalId !== null) {
+      window.clearInterval(this.refreshIntervalId);
+      this.refreshIntervalId = null;
+    }
+  }
+
+  cargarSolicitudes(mostrarCarga = true): void {
+    if (!this.isBrowser || this.requestInProgress) return;
+
+    this.requestInProgress = true;
+    if (mostrarCarga) {
+      this.loading = true;
+      this.error = '';
+    }
 
     const token = localStorage.getItem('access_token');
     if (!token) {
       this.error = 'No autenticado.';
       this.loading = false;
+      this.requestInProgress = false;
       this.cdr.detectChanges();
       return;
     }
@@ -67,23 +88,46 @@ export class VerificationsPageComponent implements OnInit {
     this.http.get<any>(WebServices.ProfilesList, { headers })
       .pipe(
         catchError((err: HttpErrorResponse) => {
-          this.error = err.error?.error || 'Error al cargar solicitudes.';
-          return of({ data: [] });
+          if (mostrarCarga) {
+            this.error = err.error?.error || 'Error al cargar solicitudes.';
+          }
+          return of({ data: mostrarCarga ? [] : this.solicitudes });
         }),
         finalize(() => {
-          this.loading = false;
+          this.requestInProgress = false;
+          if (mostrarCarga) this.loading = false;
           this.cdr.detectChanges();
         })
       )
       .subscribe({
         next: (resp) => {
           const perfiles: SolicitudVerificacion[] = Array.isArray(resp) ? resp : resp.data ?? [];
-          this.solicitudes = perfiles.filter((perfil) => {
+          const pendientes = perfiles.filter((perfil) => {
             const estado = String(perfil.id_verification_status ?? '').toLowerCase();
             return estado === 'pending' || estado === 'pendiente';
           });
+          const idsActuales = new Set(this.solicitudes.map((solicitud) => solicitud.id));
+          const nuevas = pendientes.filter((solicitud) => !idsActuales.has(solicitud.id));
+          this.solicitudes = pendientes;
+
+          if (!mostrarCarga && nuevas.length > 0) {
+            this.feedback.info(
+              nuevas.length === 1
+                ? 'Hay una nueva solicitud de verificaciÃ³n.'
+                : `Hay ${nuevas.length} nuevas solicitudes de verificaciÃ³n.`
+            );
+          }
         }
       });
+  }
+
+  private iniciarActualizacionAutomatica(): void {
+    if (!this.isBrowser || this.refreshIntervalId !== null) return;
+
+    this.refreshIntervalId = window.setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      this.cargarSolicitudes(false);
+    }, this.refreshIntervalMs);
   }
 
   async aprobar(id: string): Promise<void> {
