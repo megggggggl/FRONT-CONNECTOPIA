@@ -196,21 +196,26 @@ async enviarVerificacion(): Promise<void> {
     this.error = 'Debes subir el anverso del documento.';
     return;
   }
+  if (!this.documentBackFile) {
+    this.error = 'Debes subir el reverso del documento.';
+    return;
+  }
 
   this.cargando = true;
   this.error = '';
   this.exito = '';
 
   const formData = new FormData();
-  formData.append('documento', this.documentFrontFile); // ✅ Solo anverso
+  formData.append('document_front', this.documentFrontFile);
+  formData.append('document_back', this.documentBackFile);
   formData.append('selfie', this.selfieFile);
 
   const email = localStorage.getItem('pending_verification_email') || '';
   formData.append('email', email);
 
-  this.http.post(WebServices.VerificationStart, formData).subscribe({
+  this.http.post(WebServices.VerificationDocument, formData).subscribe({
     next: (respuesta: any) => {
-      this.exito = '✅ Verificación exitosa. Usuario verificado.';
+      this.exito = 'Solicitud enviada. Un administrador revisará tu identidad.';
       this.cargando = false;
       setTimeout(() => {
         localStorage.removeItem('pending_verification_email');

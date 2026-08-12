@@ -85,7 +85,7 @@ export class VerificationsPageComponent implements OnInit, OnDestroy {
       'ngrok-skip-browser-warning': 'true'
     });
 
-    this.http.get<any>(WebServices.ProfilesList, { headers })
+    this.http.get<any>(WebServices.VerificationPending, { headers })
       .pipe(
         catchError((err: HttpErrorResponse) => {
           if (mostrarCarga) {
