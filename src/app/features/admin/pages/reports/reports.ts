@@ -27,6 +27,8 @@ interface CommunityReport {
   styleUrls: ['./reports.css']
 })
 export class ReportsPageComponent {
+  error = '';
+  enviando = false;
   activeFilter: ReportFilter = 'todas';
   searchTerm = '';
   successMessage = '';
@@ -104,6 +106,10 @@ export class ReportsPageComponent {
     this.activeFilter = 'todas';
     this.successMessage = 'Denuncia creada correctamente.';
     window.setTimeout(() => this.successMessage = '', 2500);
+  }
+
+  trackById(_index: number, report: CommunityReport): number {
+    return report.id;
   }
 
   statusLabel(status: ReportStatus): string {
