@@ -75,7 +75,7 @@ export class MenuService {
         label: 'Mi Perfil',
         icon: 'fa-solid fa-circle-user',
         route: '/perfil',
-        roles: ['vecino', 'prestador', 'admin']
+        roles: ['vecino', 'prestador']
       },
       {
         id: 'eventos',
@@ -118,7 +118,7 @@ export class MenuService {
         label: 'Mis Servicios',
         icon: 'fa-solid fa-briefcase',
         route: '/mis-servicios',
-        roles: ['prestador', 'admin']
+        roles: ['prestador']
       },
 
       // ==========================================================
