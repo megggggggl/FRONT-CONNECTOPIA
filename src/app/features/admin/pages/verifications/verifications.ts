@@ -102,10 +102,10 @@ export class VerificationsPageComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (resp) => {
           const perfiles: SolicitudVerificacion[] = Array.isArray(resp) ? resp : resp.data ?? [];
-          const pendientes = perfiles.filter((perfil) => {
-            const estado = String(perfil.id_verification_status ?? '').toLowerCase();
-            return estado === 'pending' || estado === 'pendiente';
-          });
+          // Este endpoint ya devuelve exclusivamente solicitudes pendientes.
+          // Sus elementos no incluyen id_verification_status, por lo que
+          // volver a filtrarlos por ese campo vaciaba incorrectamente la lista.
+          const pendientes = perfiles;
           const idsActuales = new Set(this.solicitudes.map((solicitud) => solicitud.id));
           const nuevas = pendientes.filter((solicitud) => !idsActuales.has(solicitud.id));
           this.solicitudes = pendientes;
