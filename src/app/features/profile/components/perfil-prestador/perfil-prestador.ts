@@ -2,6 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, map, of, timeout } from 'rxjs';
 import { WebServices } from '../../../../core';
 import { EncabezadoPerfil } from '../../../../compartido/componentes/encabezado-perfil/encabezado-perfil';
@@ -24,7 +25,8 @@ interface ServicioForm {
   imports: [
     CommonModule,
     FormsModule,
-    EncabezadoPerfil
+    EncabezadoPerfil,
+    RouterLink
   ],
   templateUrl: './perfil-prestador.html',
   styleUrl: './perfil-prestador.css'

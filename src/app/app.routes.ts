@@ -138,6 +138,12 @@ export const routes: Routes = [
         canActivate: [prestadorGuard]
       },
       {
+        path: 'premium',
+        loadComponent: () => import('./features/prestador/pages/premium/premium')
+          .then(m => m.PremiumPageComponent),
+        canActivate: [prestadorGuard]
+      },
+      {
         path: 'mis-servicios/nuevo',
         redirectTo: 'mis-servicios',
         pathMatch: 'full'

@@ -1,0 +1,60 @@
+<main class="premium-page">
+  <a class="back-link" routerLink="/perfil/prestador">
+    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+    Volver a mi perfil
+  </a>
+
+  <header class="premium-hero">
+    <span class="eyebrow"><i class="fa-solid fa-crown" aria-hidden="true"></i> Connectopia Premium</span>
+    <h1>Haz crecer tu negocio en la comunidad</h1>
+    <p>Destaca tus servicios, conoce mejor a tus clientes y recibe herramientas para impulsar tu perfil profesional.</p>
+    <div class="trust-row" aria-label="Beneficios generales">
+      <span><i class="fa-solid fa-shield-halved"></i> Pago seguro</span>
+      <span><i class="fa-solid fa-rotate"></i> Renovación automática</span>
+      <span><i class="fa-solid fa-ban"></i> Cancela cuando quieras</span>
+    </div>
+  </header>
+
+  <section class="billing-switch" aria-label="Periodo de facturación">
+    <button type="button" [class.active]="billing === 'mensual'" (click)="selectBilling('mensual')">Mensual</button>
+    <button type="button" [class.active]="billing === 'anual'" (click)="selectBilling('anual')">
+      Anual <small>Ahorra 17%</small>
+    </button>
+  </section>
+
+  <section class="plans" aria-label="Planes disponibles">
+    <article class="plan-card free-plan">
+      <div class="plan-heading">
+        <span class="plan-icon"><i class="fa-solid fa-user"></i></span>
+        <div><span>Plan actual</span><h2>Prestador</h2></div>
+      </div>
+      <div class="price"><strong>Gratis</strong><span>para siempre</span></div>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> Perfil profesional</li>
+        <li><i class="fa-solid fa-check"></i> Publicación de servicios básicos</li>
+        <li><i class="fa-solid fa-check"></i> Solicitudes mediante Telegram</li>
+        <li class="muted"><i class="fa-solid fa-minus"></i> Sin prioridad en resultados</li>
+        <li class="muted"><i class="fa-solid fa-minus"></i> Estadísticas limitadas</li>
+      </ul>
+      <button type="button" class="current-button" disabled>Tu plan actual</button>
+    </article>
+
+    <article class="plan-card premium-plan">
+      <span class="recommended">Recomendado</span>
+      <div class="plan-heading">
+        <span class="plan-icon"><i class="fa-solid fa-crown"></i></span>
+        <div><span>Para crecer</span><h2>Premium</h2></div>
+      </div>
+      <div class="price"><strong>{{ price }}</strong><span>{{ periodLabel }}</span></div>
+      <p class="annual-note" *ngIf="billing === 'anual'">Equivale a $8.25 al mes.</p>
+      <ul>
+        <li *ngFor="let benefit of premiumBenefits"><i class="fa-solid fa-check"></i>{{ benefit }}</li>
+      </ul>
+      <button type="button" class="premium-button" (click)="requestPremium()">
+        Mejorar a Premium <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </article>
+  </section>
+
+  <p class="legal-note">La activación de pagos estará disponible próximamente. No se realizará ningún cobro desde esta pantalla.</p>
+</main>
