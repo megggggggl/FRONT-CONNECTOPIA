@@ -41,7 +41,7 @@
 
     <div class="campo">
       <label>Ubicación</label>
-      <button type="button" (click)="obtenerUbicacion()" class="btn-secundario">📍 Obtener ubicación</button>
+      <button type="button" (click)="obtenerUbicacion()" class="btn-secundario"><i class="fa-solid fa-location-crosshairs"></i> Obtener ubicación</button>
       <span *ngIf="lugar.location">
         (Lat: {{ lugar.location.lat }}, Lng: {{ lugar.location.lng }})
       </span>

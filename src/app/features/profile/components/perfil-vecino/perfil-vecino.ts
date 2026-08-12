@@ -91,6 +91,8 @@ export class PerfilVecino implements OnInit {
 
   // Modal de edición
   modalEditarAbierto = false;
+  guardandoPerfil = false;
+  errorGuardado = '';
   formPerfil = {
     name: '',
     phone: '',
@@ -165,7 +167,9 @@ export class PerfilVecino implements OnInit {
       address: this.perfil?.address ?? '',
       avatar_url: this.perfil?.avatar_url ?? ''
     };
+    this.errorGuardado = '';
     this.modalEditarAbierto = true;
+    this.changeDetector.detectChanges();
   }
 
   cerrarModalEditar(): void {
@@ -173,34 +177,51 @@ export class PerfilVecino implements OnInit {
   }
 
   guardarPerfil(): void {
-    if (!this.perfil?.id) return;
+    if (!this.perfil?.id || this.guardandoPerfil) return;
+
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      this.errorGuardado = 'Tu sesión expiró. Iniciá sesión nuevamente.';
+      this.changeDetector.detectChanges();
+      return;
+    }
+
+    if (!this.formPerfil.name.trim()) {
+      this.errorGuardado = 'El nombre es obligatorio.';
+      this.changeDetector.detectChanges();
+      return;
+    }
 
     const datosActualizados = {
-      name: this.formPerfil.name,
-      phone: this.formPerfil.phone,
-      address: this.formPerfil.address,
-      avatar_url: this.formPerfil.avatar_url
+      name: this.formPerfil.name.trim(),
+      phone: this.formPerfil.phone.trim() || null,
+      address: this.formPerfil.address.trim() || null,
+      avatar_url: this.formPerfil.avatar_url.trim() || null
     };
+
+    this.guardandoPerfil = true;
+    this.errorGuardado = '';
 
     this.http.patch<Perfil | RespuestaPerfil>(
       WebServices.ProfileUpdate(this.perfil.id),
-      datosActualizados
+      datosActualizados,
+      { headers: this.crearHeadersNgrok(token) }
     ).subscribe({
       next: (respuesta) => {
-        const perfilActualizado = this.extraerPerfil(respuesta);
-        if (!perfilActualizado) {
-          this.error = 'El servidor devolvió un perfil inválido.';
-          this.changeDetector.detectChanges();
-          return;
-        }
+        const perfilActualizado = this.extraerPerfil(respuesta) ?? {
+          ...this.perfil!,
+          ...datosActualizados
+        };
         this.perfil = perfilActualizado;
         localStorage.setItem('user', JSON.stringify(perfilActualizado));
         this.cargarActividad(perfilActualizado.id);
         this.modalEditarAbierto = false;
+        this.guardandoPerfil = false;
         this.changeDetector.detectChanges();
       },
       error: () => {
-        this.error = 'No se pudo actualizar el perfil.';
+        this.errorGuardado = 'No se pudo guardar el perfil en el servidor.';
+        this.guardandoPerfil = false;
         this.changeDetector.detectChanges();
       }
     });

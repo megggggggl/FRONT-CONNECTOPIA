@@ -2,9 +2,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+<<<<<<< HEAD
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+=======
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
 import { catchError, finalize, of } from 'rxjs';
 import { WebServices } from '../../../../core/services/webServices';
+import { FeedbackService } from '../../../../core/services/feedback.service';
 
 export interface Post {
   id: string;
@@ -50,6 +56,7 @@ export class ModerationComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
+<<<<<<< HEAD
   // ============================================================
   // DATOS
   // ============================================================
@@ -68,6 +75,13 @@ export class ModerationComponent implements OnInit {
   // CONSTRUCTOR
   // ============================================================
   constructor(private http: HttpClient) {}
+=======
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+    private feedback: FeedbackService
+  ) {}
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
 
   // ============================================================
   // NG ON INIT
@@ -93,8 +107,14 @@ export class ModerationComponent implements OnInit {
   loadPosts(): void {
     const token = localStorage.getItem('access_token');
     if (!token) {
+<<<<<<< HEAD
       this.errorMessage = 'No autenticado. Inicia sesión como administrador.';
       this.isLoading = false;
+=======
+      this.error = 'No autenticado. Inicia sesión como administrador.';
+      this.loading = false;
+      this.cdr.detectChanges();
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
       return;
     }
 
@@ -108,23 +128,67 @@ export class ModerationComponent implements OnInit {
       ? WebServices.PostsList 
       : `${WebServices.PostsList}?status=${this.postFilter}`;
 
+<<<<<<< HEAD
     this.http.get<{ data: Post[] }>(url, { headers })
+=======
+    this.http.get<any>(WebServices.ReportsList, { headers })
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
       .pipe(
         catchError((err) => {
           this.errorMessage = err.error?.error || 'Error al cargar publicaciones.';
           return of({ data: [] });
         }),
+<<<<<<< HEAD
         finalize(() => { this.isLoading = false; })
       )
       .subscribe({
         next: (resp) => {
           this.posts = resp.data || [];
           this.filteredPosts = this.posts;
+=======
+        finalize(() => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (resp) => {
+          console.log('✅ Reportes recibidos:', resp);
+          const lista = Array.isArray(resp) ? resp : resp.data ?? [];
+          this.reportes = lista.map((reporte: any) => ({
+            id: reporte.id,
+            reporter_id: reporte.author_id,
+            entity_type: reporte.type || 'report',
+            entity_id: String(reporte.id),
+            reason: reporte.title,
+            description: reporte.description,
+            status: reporte.status === 'en_proceso' ? 'revisado' : reporte.status,
+            created_at: reporte.created_at,
+            resolved_at: reporte.resolved_at,
+            reporter: reporte.author
+          }));
+          this.aplicarFiltros();
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
         }
       });
   }
 
+<<<<<<< HEAD
   loadReports(): void {
+=======
+  aplicarFiltros(): void {
+    if (this.filtroEstado === 'todos') {
+      this.reportesFiltrados = this.reportes;
+    } else {
+      this.reportesFiltrados = this.reportes.filter(r => r.status === this.filtroEstado);
+    }
+    console.log('📋 Reportes filtrados:', this.reportesFiltrados.length);
+  }
+
+  async cambiarEstado(reporte: ReporteContenido, nuevoEstado: string): Promise<void> {
+    if (!await this.feedback.confirm(`¿Cambiar estado a "${nuevoEstado}"?`, { title: 'Actualizar reporte', confirmText: 'Actualizar' })) return;
+
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
     const token = localStorage.getItem('access_token');
     if (!token) {
       this.errorMessage = 'No autenticado. Inicia sesión como administrador.';
@@ -137,6 +201,7 @@ export class ModerationComponent implements OnInit {
       'ngrok-skip-browser-warning': 'true'
     });
 
+<<<<<<< HEAD
     const url = this.reportFilter === 'all' 
       ? WebServices.ContentReportsList 
       : `${WebServices.ContentReportsList}?status=${this.reportFilter}`;
@@ -153,6 +218,36 @@ export class ModerationComponent implements OnInit {
         next: (resp) => {
           this.reports = resp.data || [];
           this.filteredReports = this.reports;
+=======
+    const payload = {
+      status: nuevoEstado === 'revisado' ? 'en_proceso' : nuevoEstado,
+      resolved_at: nuevoEstado === 'resuelto' ? new Date().toISOString() : null
+    };
+
+    this.http.patch(WebServices.ReportUpdate(reporte.id), payload, { headers })
+      .subscribe({
+        next: () => {
+          reporte.status = nuevoEstado as any;
+          if (nuevoEstado === 'resuelto') {
+            reporte.resolved_at = new Date().toISOString();
+          }
+          this.success = `Estado actualizado a "${nuevoEstado}".`;
+          this.aplicarFiltros();
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.success = '';
+            this.cdr.detectChanges();
+          }, 3000);
+        },
+        error: (err) => {
+          console.error('❌ Error al actualizar estado:', err);
+          this.error = err.error?.error || 'Error al actualizar estado.';
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.error = '';
+            this.cdr.detectChanges();
+          }, 3000);
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
         }
       });
   }

@@ -894,3 +894,21 @@ button:disabled {
     align-items: flex-start;
   }
 }
+
+.title-icon i,
+.modal-icon i {
+  color: #24795a;
+  font-size: 34px;
+}
+
+.stat-icon i {
+  color: #287e60;
+  font-size: 25px;
+}
+
+.stat-icon.blue i { color: #356fa7; }
+.stat-icon.purple i { color: #7858b8; }
+.stat-icon.orange i { color: #b66b2e; }
+.search-box > i { color: #708078; }
+.icon-button i { font-size: 14px; }
+.icon-button.danger i { color: #b94747; }

@@ -1,208 +1,213 @@
-<!-- src/app/compartido/componentes/publicidad/publicidad.component.html -->
-<div class="publicidad-container">
-
-  <!-- Banner -->
-  <div class="community-banner">
-    <img src="assets/community-banner.png" alt="Community">
-  </div>
-
-  <!-- Crear publicación -->
+<section class="publicidad-container">
   <div class="crear-post">
-    <img
-      [src]="'assets/avatar.png'"
-      class="avatar"
-      alt="Avatar"
-    />
+    <span class="avatar-fallback"><i class="fa-solid fa-user"></i></span>
     <div class="texto-publicar">
-      <h3>¿Qué quieres publicar hoy?</h3>
-      <span>Comparte algo con tu comunidad</span>
+      <h3>Comparte con tu comunidad</h3>
+      <span>Publica una novedad, oportunidad o alerta.</span>
     </div>
-    <button class="btn-publicar" (click)="abrirModal()">
-      Publicar
+    <button type="button" class="btn-publicar" (click)="abrirModal()">
+      <i class="fa-solid fa-plus"></i>Crear publicación
     </button>
   </div>
-
-  <!-- Encabezado -->
-  <div class="header-publicaciones">
-    <h2>Publicaciones Recientes</h2>
-    <div class="header-botones">
-      <button class="btn-icono" (click)="cargarPosts()">
-        <i class="bi-arrow-clockwise"></i> Actualizar
-      </button>
+  <header class="header-publicaciones">
+    <div>
+      <span class="section-label">Comunidad</span>
+      <h2>Publicaciones recientes</h2>
     </div>
+    <button type="button" class="btn-icono" (click)="cargarPosts()">
+      <i class="fa-solid fa-rotate"></i>Actualizar
+    </button>
+  </header>
+
+  <div *ngIf="loading" class="skeleton-list" aria-label="Cargando publicaciones">
+    <article *ngFor="let item of [1, 2, 3]">
+      <div class="skeleton-avatar"></div>
+      <div class="skeleton-lines"><i></i><i></i></div>
+      <b></b><span></span><span></span>
+    </article>
+  </div>
+  <div *ngIf="error && !loading" class="state-card error">
+    <i class="fa-solid fa-cloud-arrow-down"></i>
+    <h3>No pudimos cargar las publicaciones</h3>
+    <p>{{ error }}</p>
+    <button type="button" (click)="cargarPosts()">Reintentar</button>
   </div>
 
-  <!-- Loading -->
-  <div *ngIf="loading" class="loading">
-    Cargando publicaciones...
-  </div>
-
-  <!-- Error -->
-  <div *ngIf="error && !loading" class="error">
-    {{ error }}
-  </div>
-
-  <!-- Publicaciones -->
   <div class="publicaciones" *ngIf="!loading && !error">
-
-    <div *ngIf="posts.length > 0">
-      <div class="post-facebook" *ngFor="let post of posts">
-
-        <!-- Top -->
-        <div class="post-top">
-          <img
-            [src]="post.author?.avatar_url || 'assets/avatar.png'"
-            class="avatar"
-          />
-          <div class="info">
-            <h4>{{ post.author?.name || 'Usuario' }}</h4>
-            <small>{{ post.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
-          </div>
-          <span class="tipo">{{ post.type | titlecase }}</span>
-          <span *ngIf="post.is_urgent" class="urgente">🔴 Urgente</span>
+    <article class="post-card" *ngFor="let post of posts">
+      <header class="post-top">
+        <span class="avatar-fallback"><i class="fa-solid fa-user"></i></span>
+        <div class="info">
+          <h3>{{ post.author?.name || 'Usuario' }}</h3>
+          <small>{{ post.created_at | date: 'dd MMM y, HH:mm' }}</small>
         </div>
-
-        <!-- Contenido -->
-        <p>{{ post.content }}</p>
-
-        <!-- 👇 EMPLEOS: Detalles específicos -->
-        <div *ngIf="post.type === 'empleo' && post.metadata" class="empleo-detalles">
-          <p *ngIf="post.metadata.empresa"><strong>🏢 Empresa:</strong> {{ post.metadata.empresa }}</p>
-          <p *ngIf="post.metadata.salario"><strong>💰 Salario:</strong> {{ post.metadata.salario }}</p>
-          <p *ngIf="post.metadata.ubicacion"><strong>📍 Ubicación:</strong> {{ post.metadata.ubicacion }}</p>
-          <p *ngIf="post.metadata.jornada"><strong>🕒 Jornada:</strong> {{ post.metadata.jornada | titlecase }}</p>
-        <ng-container *ngIf="post.metadata.requisitos">
-<strong>📋 Requisitos:</strong> {{ obtenerRequisitos(post.metadata.requisitos) }}
-
-  <span *ngIf="!post.metadata.requisitos.length && typeof post.metadata.requisitos === 'string'">
-    {{ post.metadata.requisitos }}
-  </span>
-</ng-container>
-          <p *ngIf="post.metadata.contacto"><strong>📞 Contacto:</strong> {{ post.metadata.contacto }}</p>
-        </div>
-
-        <!-- Imagen -->
-        <img
-          *ngIf="post.images?.length"
-          [src]="post.images[0]"
-          class="post-img"
-          alt="Imagen de la publicación"
-        />
-
-        <!-- Acciones -->
-        <div class="acciones">
-          <button (click)="toggleLike(post)">
-            {{ likesMap[post.id]?.userLiked ? '❤️' : '🤍' }}
-            <span>{{ likesMap[post.id]?.count || 0 }} Me gusta</span>
-          </button>
-          <button (click)="abrirComentarios(post)">
-            💬 <span>Comentar</span>
-          </button>
-        </div>
-
-        <!-- Comentarios -->
-        <div *ngIf="showComments[post.id]" class="comentarios">
-          <div *ngFor="let comment of commentsMap[post.id]" class="comentario">
-            <div class="comentario-header">
-              <img
-                [src]="comment.author?.avatar_url || 'assets/avatar.png'"
-                class="avatar-mini"
-              />
-              <div>
-                <strong>{{ comment.author?.name || 'Usuario' }}</strong>
-                <small>{{ comment.created_at | date:'dd/MM/yyyy HH:mm' }}</small>
-              </div>
-              <button
-                *ngIf="comment.author_id === authService.getUser()?.id"
-                class="btn-eliminar-comentario"
-                (click)="eliminarComentario(comment.id, post.id)"
-              >
-                ✕
-              </button>
-            </div>
-            <p>{{ comment.content }}</p>
-          </div>
-
-          <!-- Input para comentar -->
-          <div class="comentario-input">
-            <input
-              [(ngModel)]="commentText[post.id]"
-              placeholder="Escribe un comentario..."
-              (keydown.enter)="enviarComentario(post.id)"
-            />
-            <button (click)="enviarComentario(post.id)">
-              Enviar
-            </button>
-          </div>
-        </div>
-
+        <span class="tipo">{{ post.type | titlecase }}</span
+        ><span *ngIf="post.is_urgent" class="urgente"
+          ><i class="fa-solid fa-circle-exclamation"></i>Urgente</span
+        ><button
+          *ngIf="puedeEliminarPost(post)"
+          type="button"
+          class="btn-eliminar-post"
+          (click)="eliminarPublicacion(post)"
+          [disabled]="eliminandoPostId === post.id"
+          aria-label="Eliminar publicación"
+        >
+          <i
+            [class]="
+              eliminandoPostId === post.id
+                ? 'fa-solid fa-spinner fa-spin'
+                : 'fa-regular fa-trash-can'
+            "
+          ></i
+          ><span>{{ eliminandoPostId === post.id ? 'Eliminando' : 'Eliminar' }}</span>
+        </button>
+      </header>
+      <p class="post-copy">{{ post.content }}</p>
+      <div *ngIf="post.type === 'empleo' && post.metadata" class="empleo-detalles">
+        <p *ngIf="post.metadata.empresa">
+          <i class="fa-solid fa-building"></i><strong>Empresa</strong>{{ post.metadata.empresa }}
+        </p>
+        <p *ngIf="post.metadata.salario">
+          <i class="fa-solid fa-money-bill-wave"></i><strong>Salario</strong
+          >{{ post.metadata.salario }}
+        </p>
+        <p *ngIf="post.metadata.ubicacion">
+          <i class="fa-solid fa-location-dot"></i><strong>Ubicación</strong
+          >{{ post.metadata.ubicacion }}
+        </p>
+        <p *ngIf="post.metadata.jornada">
+          <i class="fa-regular fa-clock"></i><strong>Jornada</strong
+          >{{ post.metadata.jornada | titlecase }}
+        </p>
+        <p *ngIf="post.metadata.requisitos">
+          <i class="fa-solid fa-list-check"></i><strong>Requisitos</strong
+          >{{ obtenerRequisitos(post.metadata.requisitos) }}
+        </p>
+        <p *ngIf="post.metadata.contacto">
+          <i class="fa-solid fa-phone"></i><strong>Contacto</strong>{{ post.metadata.contacto }}
+        </p>
       </div>
+      <img
+        *ngIf="post.images?.length"
+        [src]="post.images[0]"
+        class="post-img"
+        alt="Imagen de la publicación"
+        (error)="$any($event.target).style.display = 'none'"
+      />
+      <footer class="acciones">
+        <button
+          type="button"
+          [class.liked]="likesMap[post.id]?.userLiked"
+          (click)="toggleLike(post)"
+        >
+          <i
+            [class]="likesMap[post.id]?.userLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"
+          ></i
+          ><span>{{ likesMap[post.id]?.count || 0 }} Me gusta</span></button
+        ><button type="button" (click)="abrirComentarios(post)">
+          <i class="fa-regular fa-comment"></i><span>Comentar</span>
+        </button>
+      </footer>
+      <section *ngIf="showComments[post.id]" class="comentarios">
+        <article *ngFor="let comment of commentsMap[post.id]" class="comentario">
+          <header>
+            <span class="avatar-mini"><i class="fa-solid fa-user"></i></span>
+            <div>
+              <strong>{{ comment.author?.name || 'Usuario' }}</strong
+              ><small>{{ comment.created_at | date: 'dd/MM/yyyy HH:mm' }}</small>
+            </div>
+            <button
+              *ngIf="comment.author_id === authService.getUser()?.id"
+              type="button"
+              class="btn-eliminar-comentario"
+              (click)="eliminarComentario(comment.id, post.id)"
+              aria-label="Eliminar comentario"
+            >
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </header>
+          <p>{{ comment.content }}</p>
+        </article>
+        <div class="comentario-input">
+          <input
+            [(ngModel)]="commentText[post.id]"
+            placeholder="Escribe un comentario"
+            (keydown.enter)="enviarComentario(post.id)"
+          /><button type="button" (click)="enviarComentario(post.id)" aria-label="Enviar">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </section>
+    </article>
+    <div *ngIf="posts.length === 0" class="state-card">
+      <i class="fa-regular fa-comments"></i>
+      <h3>La conversación comienza contigo</h3>
+      <p>Todavía no hay publicaciones. Comparte la primera novedad de la comunidad.</p>
+      <button type="button" (click)="abrirModal()">Crear publicación</button>
     </div>
-
-    <div *ngIf="posts.length === 0" class="no-posts">
-      No hay publicaciones aún. ¡Sé el primero en publicar!
-    </div>
-
   </div>
 
-  <!-- ========================================================== -->
-  <!-- MODAL DE CREACIÓN (CON EMPLEOS) -->
-  <!-- ========================================================== -->
-  <div class="modal-backdrop" *ngIf="modalAbierto">
-    <div class="modal-publicidad">
-      <button class="cerrar" (click)="cerrarModal()">×</button>
-      <h2>Crear publicación</h2>
-
-      <input
-        type="text"
-        [(ngModel)]="nombre"
-        placeholder="Título (opcional)"
-      />
-
-      <textarea
-        [(ngModel)]="contenido"
-        placeholder="Escribe algo..."
-      ></textarea>
-
+  <div class="modal-backdrop" *ngIf="modalAbierto" (click)="cerrarModal()">
+    <section
+      class="modal-publicidad"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="post-modal-title"
+      (click)="$event.stopPropagation()"
+    >
+      <header>
+        <div>
+          <span class="section-label">Nueva publicación</span>
+          <h2 id="post-modal-title">Comparte con Connectopia</h2>
+        </div>
+        <button type="button" class="cerrar" (click)="cerrarModal()" aria-label="Cerrar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+      <label>Título<input type="text" [(ngModel)]="nombre" placeholder="Título opcional" /></label
+      ><label
+        >Contenido<textarea
+          [(ngModel)]="contenido"
+          placeholder="¿Qué quieres compartir?"
+        ></textarea>
+      </label>
       <div class="opciones">
-        <label>
-          <input type="checkbox" [(ngModel)]="isUrgent" />
-          Urgente
-        </label>
-        <select [(ngModel)]="tipoPost">
-          <option value="general">General</option>
-          <option value="anuncio">Anuncio</option>
-          <option value="alerta">Alerta</option>
-          <option value="evento">Evento</option>
-          <option value="empleo">💼 Empleo</option>
-        </select>
+        <label class="check"
+          ><input type="checkbox" [(ngModel)]="isUrgent" />Marcar como urgente</label
+        ><label
+          >Tipo<select [(ngModel)]="tipoPost">
+            <option value="general">General</option>
+            <option value="anuncio">Anuncio</option>
+            <option value="alerta">Alerta</option>
+            <option value="evento">Evento</option>
+            <option value="empleo">Empleo</option>
+          </select></label
+        >
       </div>
-
-      <!-- 👇 CAMPOS DE EMPLEO -->
       <div *ngIf="tipoPost === 'empleo'" class="campos-empleo">
-        <input type="text" [(ngModel)]="empleoEmpresa" placeholder="🏢 Empresa *" />
-        <input type="text" [(ngModel)]="empleoSalario" placeholder="💰 Salario (ej. L 15,000)" />
-        <input type="text" [(ngModel)]="empleoContacto" placeholder="📞 Contacto (email/teléfono)" />
-        <input type="text" [(ngModel)]="empleoUbicacion" placeholder="📍 Ubicación" />
-        <textarea [(ngModel)]="empleoRequisitos" placeholder="📋 Requisitos (separados por coma)"></textarea>
-        <select [(ngModel)]="empleoJornada">
+        <input [(ngModel)]="empleoEmpresa" placeholder="Empresa" /><input
+          [(ngModel)]="empleoSalario"
+          placeholder="Salario"
+        /><input [(ngModel)]="empleoContacto" placeholder="Contacto" /><input
+          [(ngModel)]="empleoUbicacion"
+          placeholder="Ubicación"
+        /><textarea
+          [(ngModel)]="empleoRequisitos"
+          placeholder="Requisitos separados por coma"
+        ></textarea
+        ><select [(ngModel)]="empleoJornada">
           <option value="tiempo_completo">Tiempo completo</option>
           <option value="medio_tiempo">Medio tiempo</option>
           <option value="freelance">Freelance</option>
           <option value="temporal">Temporal</option>
         </select>
       </div>
-
-      <input
-        type="file"
-        (change)="seleccionarImagen($event)"
-        accept="image/*"
-      />
-
-      <button class="btn-modal" (click)="crearPublicacion()">
-        Publicar
+      <label class="upload-field"
+        ><i class="fa-regular fa-image"></i><span>Adjuntar una imagen</span
+        ><input type="file" (change)="seleccionarImagen($event)" accept="image/*" /></label
+      ><button type="button" class="btn-modal" (click)="crearPublicacion()" [disabled]="creandoPublicacion || !contenido.trim()">
+        <i [class]="creandoPublicacion ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-paper-plane'"></i>{{ creandoPublicacion ? 'Publicando...' : 'Publicar' }}
       </button>
-    </div>
+    </section>
   </div>
-
-</div>
+</section>

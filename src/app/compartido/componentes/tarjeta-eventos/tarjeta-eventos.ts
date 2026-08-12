@@ -47,6 +47,20 @@ rsvp(status: 'interested' | 'attending' | 'not_attending'): void {
     return `estado-${estado}`;
   }
 
+  obtenerEtiquetaEstado(): string {
+    const etiquetas: Record<string, string> = {
+      scheduled: 'Programado',
+      programado: 'Programado',
+      active: 'Activo',
+      en_curso: 'En curso',
+      completed: 'Finalizado',
+      finalizado: 'Finalizado',
+      cancelled: 'Cancelado',
+      cancelado: 'Cancelado'
+    };
+    return etiquetas[this.evento?.status] || this.evento?.status || 'Programado';
+  }
+
   obtenerCupo(): string {
     const actual = Number(this.evento?.current_participants ?? 0);
     const maximo = this.evento?.max_participants;

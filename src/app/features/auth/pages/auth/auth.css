@@ -77,6 +77,10 @@
   color: #5e646a;
 }
 
+.auth-info .auth-register-text {
+  margin-bottom: 24px;
+}
+
 .auth-link {
   border: 0;
   background: transparent;

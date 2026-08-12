@@ -1,14 +1,1 @@
-<article class="tarjeta-estadistica">
-  <div class="titulo-con-icono">
-    <img
-      class="icono-estadistica"
-      [src]="icono"
-      [alt]="titulo"
-    />
-
-    <h3>{{ titulo }}</h3>
-  </div>
-
-  <strong>{{ valor }}</strong>
-  <p>{{ descripcion }}</p>
-</article>
+<article class="tarjeta-estadistica"><div class="icono-estadistica"><i [class]="icono" aria-hidden="true"></i></div><div><h3>{{ titulo }}</h3><strong>{{ valor }}</strong><p *ngIf="descripcion">{{ descripcion }}</p></div><i class="fa-solid fa-arrow-right arrow" aria-hidden="true"></i></article>

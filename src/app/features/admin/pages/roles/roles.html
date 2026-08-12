@@ -3,7 +3,7 @@
   <section class="roles-header">
     <div class="roles-title">
       <div class="title-icon">
-        <img src="../../igualdad.gif" alt="" />
+        <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
       </div>
 
       <div>
@@ -13,7 +13,7 @@
     </div>
 
     <button type="button" class="create-role-button" (click)="openCreateRoleModal()">
-    <span>+</span>
+    <i class="fa-solid fa-plus" aria-hidden="true"></i>
         Crear nuevo rol
     </button>
   </section>
@@ -21,7 +21,7 @@
   <section class="roles-stats">
     <article class="stat-card">
       <div class="stat-icon">
-        <img src="../../presentacion.gif" alt="" />
+        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
       </div>
       <div>
         <p>Total de roles</p>
@@ -32,7 +32,7 @@
 
     <article class="stat-card">
       <div class="stat-icon blue">
-        <img src="../../demostracion.gif" alt="" />
+        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
       </div>
       <div>
         <p>Roles activos</p>
@@ -43,7 +43,7 @@
 
     <article class="stat-card">
       <div class="stat-icon purple">
-        <img src="../../exito.gif" alt="" />
+        <i class="fa-solid fa-users" aria-hidden="true"></i>
       </div>
       <div>
         <p>Usuarios asignados</p>
@@ -54,7 +54,7 @@
 
     <article class="stat-card">
       <div class="stat-icon orange">
-        <img src="../../permisos.gif" alt="" />
+        <i class="fa-solid fa-key" aria-hidden="true"></i>
       </div>
       <div>
         <p>Permisos totales</p>
@@ -72,7 +72,7 @@
             placeholder="Buscar rol o permiso..."
             [(ngModel)]="searchText"
           />
-        <img src="lupa.png" alt="Buscar" />
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
       </div><br>
 
   <section class="roles-table-card">
@@ -126,12 +126,12 @@
       <td class="actions">
       
         <button type="button" (click)="openEditRoleModal(role)">
-        <img src="lapiz.png" alt="" />
+        <i class="fa-solid fa-pen" aria-hidden="true"></i>
       </button>
        
 
         <button type="button">
-          <img src="borrador.png" alt="" />
+          <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
         </button>
       </td>
     </tr>
@@ -161,7 +161,7 @@
 
       <div class="modal-header">
         <div class="modal-icon">
-          <img src="crear.png" alt="" />
+          <i class="fa-solid fa-shield" aria-hidden="true"></i>
         </div>
 
         <div>

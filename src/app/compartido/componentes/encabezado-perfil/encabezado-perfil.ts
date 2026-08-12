@@ -10,7 +10,8 @@ import { CommonModule } from '@angular/common';
 })
 export class EncabezadoPerfil {
   @Input() perfil: any;
-  @Output() editarPerfil = new EventEmitter<void>();
+  @Output('editar') editarPerfil = new EventEmitter<void>();
+  avatarError = false;
 
   get inicialPerfil(): string {
     return this.perfil?.name?.charAt(0)?.toUpperCase() || 'P';
@@ -18,5 +19,9 @@ export class EncabezadoPerfil {
 
   abrirEdicion(): void {
     this.editarPerfil.emit();
+  }
+
+  ocultarAvatar(): void {
+    this.avatarError = true;
   }
 }

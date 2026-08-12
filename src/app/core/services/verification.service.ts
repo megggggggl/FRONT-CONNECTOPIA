@@ -8,7 +8,7 @@ export class VerificationService {
   constructor(private api: ApiServicio) {}
 
   iniciarVerificacion(formData: FormData) {
-    return this.api.post<any>('/verification/start', formData).pipe(timeout(30000));
+    return this.api.post<any>('/verification/document', formData).pipe(timeout(30000));
   }
 
   obtenerEstado() {

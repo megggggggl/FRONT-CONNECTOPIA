@@ -9,7 +9,6 @@ import { CategoriesPageComponent } from './pages/categories/categories';
 import { UsersPageComponent } from './pages/users/users';
 import { EventsPageComponent } from './pages/events/events';
 import { ReportsPageComponent } from './pages/reports/reports';
-import { RolesPageComponent } from './pages/roles/roles';
 import { TurismoPageComponent } from './pages/turismo/turismo';
 import { MainLayout } from '../../core/layout/main-layout/main-layout';
 @NgModule({
@@ -23,7 +22,6 @@ import { MainLayout } from '../../core/layout/main-layout/main-layout';
     UsersPageComponent,
     EventsPageComponent,
     ReportsPageComponent,
-    RolesPageComponent,
     TurismoPageComponent
   ]
 })

@@ -98,22 +98,24 @@ export const routes: Routes = [
       // ==========================================================
       {
         path: 'anuncio/nuevo',
-        loadChildren: () => import('./features/vecino/vecino.module').then(m => m.VecinoModule),
-        canActivate: [vecinoGuard]
+        redirectTo: 'comunidad',
+        pathMatch: 'full'
       },
       {
         path: 'alerta/nueva',
-        loadChildren: () => import('./features/vecino/vecino.module').then(m => m.VecinoModule),
-        canActivate: [vecinoGuard]
+        redirectTo: 'comunidad',
+        pathMatch: 'full'
       },
       {
         path: 'denuncia/nueva',
-        loadChildren: () => import('./features/vecino/vecino.module').then(m => m.VecinoModule),
+        loadComponent: () => import('./features/public/pages/denuncias/denunciasForm')
+          .then(m => m.DenunciasComunitariasComponent),
         canActivate: [vecinoGuard]
       },
       {
         path: 'mis-publicaciones',
-        loadChildren: () => import('./features/vecino/vecino.module').then(m => m.VecinoModule),
+        loadComponent: () => import('./features/vecino/pages/public/public')
+          .then(m => m.PublicPageComponent),
         canActivate: [vecinoGuard]
       },
 
@@ -136,19 +138,25 @@ export const routes: Routes = [
         canActivate: [prestadorGuard]
       },
       {
-        path: 'mis-servicios/nuevo',
-        loadChildren: () => import('./features/prestador/prestador.module').then(m => m.PrestadorModule),
+        path: 'premium',
+        loadComponent: () => import('./features/prestador/pages/premium/premium')
+          .then(m => m.PremiumPageComponent),
         canActivate: [prestadorGuard]
+      },
+      {
+        path: 'mis-servicios/nuevo',
+        redirectTo: 'mis-servicios',
+        pathMatch: 'full'
       },
       {
         path: 'mis-servicios/editar/:id',
-        loadChildren: () => import('./features/prestador/prestador.module').then(m => m.PrestadorModule),
-        canActivate: [prestadorGuard]
+        redirectTo: 'mis-servicios',
+        pathMatch: 'full'
       },
       {
         path: 'mis-servicios/estadisticas/:id',
-        loadChildren: () => import('./features/prestador/prestador.module').then(m => m.PrestadorModule),
-        canActivate: [prestadorGuard]
+        redirectTo: 'mis-servicios',
+        pathMatch: 'full'
       },
 
       // ==========================================================
@@ -163,6 +171,11 @@ export const routes: Routes = [
         path: 'mis-notificaciones',
         loadComponent: () => import('./features/public/pages/notificaciones/notificaciones').then(m => m.MisNotificacionesComponent),
         canActivate: [authGuard]
+      },
+      {
+        path: 'mis-citas',
+        redirectTo: 'servicios',
+        pathMatch: 'full'
       },
 
       // ==========================================================
@@ -202,6 +215,16 @@ export const routes: Routes = [
             path: 'events',
             loadComponent: () => import('./features/admin/pages/events/events')
               .then(m => m.EventsPageComponent)
+          },
+          {
+            path: 'reports',
+            loadComponent: () => import('./features/admin/pages/reports/reports')
+              .then(m => m.ReportsPageComponent)
+          },
+          {
+            path: 'turismo',
+            loadComponent: () => import('./features/admin/pages/turismo/turismo')
+              .then(m => m.TurismoPageComponent)
           }
         ]
       }

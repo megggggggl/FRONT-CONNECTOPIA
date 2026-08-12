@@ -118,9 +118,10 @@ export class PlaceService {
    * @returns Observable con el Place creado
    */
   crearLugar(lugar: Partial<Place>): Observable<Place> {
-    return this.http.post<Place>(WebServices.PlacesCreate, lugar)
+    return this.http.post<Place | { data: Place }>(WebServices.PlacesCreate, lugar)
       .pipe(
         timeout(this.defaultTimeout),
+        map((response) => 'data' in response ? response.data : response),
         catchError((error) => {
           console.error('❌ Error al crear lugar:', error);
           return throwError(() => new Error('No se pudo crear el lugar turístico'));

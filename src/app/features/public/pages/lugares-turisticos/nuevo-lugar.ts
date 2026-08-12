@@ -57,7 +57,7 @@ export class NuevoLugarComponent {
     this.placeService.crearLugar(payload).subscribe({
       next: () => {
         this.enviando = false;
-        alert('✅ Lugar creado correctamente');
+        alert('Lugar creado correctamente');
         this.router.navigate(['/lugares-turisticos']);
       },
       error: (err) => {

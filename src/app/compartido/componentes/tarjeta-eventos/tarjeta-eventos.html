@@ -1,96 +1,36 @@
-<article class="tarjeta-evento">
-  <!-- Imagen del evento -->
-  <div class="imagen-evento-contenedor">
-    <img
-      *ngIf="evento.images?.length"
-      [src]="evento.images[0]"
-      [alt]="evento.title"
-      class="imagen-evento"
-    />
-    <div *ngIf="!evento.images?.length" class="imagen-evento-vacia">
-      <span>📅</span>
-    </div>
-    <span class="estado-evento" [ngClass]="obtenerClaseEstado()">
-      {{ evento.status }}
-    </span>
+<article class="event-card">
+  <div class="event-media">
+    <div class="media-fallback"><i class="fa-regular fa-calendar"></i><span>Connectopia Eventos</span></div>
+    <img *ngIf="evento.images?.length" [src]="evento.images[0]" [alt]="evento.title" (error)="$any($event.target).style.display='none'">
+    <span class="status-badge" [ngClass]="obtenerClaseEstado()"><i class="fa-solid fa-circle"></i>{{ obtenerEtiquetaEstado() }}</span>
+    <div class="date-tile"><strong>{{ evento.start_date | date:'dd' }}</strong><span>{{ evento.start_date | date:'MMM' }}</span></div>
   </div>
 
-  <!-- Contenido -->
-  <div class="contenido-evento">
-    <p class="categoria-evento">Evento</p>
-    <h3 class="titulo-evento">{{ evento.title }}</h3>
-    <p class="descripcion-evento">
-      {{ evento.description || 'Sin descripción.' }}
-    </p>
+  <div class="event-content">
+    <div class="event-kicker"><i class="fa-solid fa-people-group"></i><span>Evento comunitario</span></div>
+    <h2>{{ evento.title }}</h2>
+    <p class="description">{{ evento.description || 'Este evento todavía no tiene una descripción disponible.' }}</p>
 
-    <!-- Fechas y ubicación -->
-    <div class="detalles-evento">
-      <div class="detalle">
-        <span class="detalle-icono">📅</span>
-        <span>{{ evento.start_date | date:'dd/MM/yyyy HH:mm' }}</span>
-      </div>
-      <div *ngIf="evento.end_date" class="detalle">
-        <span class="detalle-icono">⏳</span>
-        <span>{{ evento.end_date | date:'dd/MM/yyyy HH:mm' }}</span>
-      </div>
-      <div class="detalle">
-        <span class="detalle-icono">📍</span>
-        <span>{{ evento.address || 'No especificada' }}</span>
-      </div>
+    <div class="event-facts">
+      <div class="fact primary"><span><i class="fa-regular fa-clock"></i></span><div><small>Fecha y hora</small><strong>{{ evento.start_date | date:'EEE, dd MMM · HH:mm' }}</strong></div></div>
+      <div class="fact"><span><i class="fa-solid fa-location-dot"></i></span><div><small>Ubicación</small><strong>{{ evento.address || 'Por confirmar' }}</strong></div></div>
+      <div class="fact"><span><i class="fa-solid fa-users"></i></span><div><small>Participantes</small><strong>{{ obtenerCupo() }}</strong></div></div>
+      <div class="fact" *ngIf="evento.end_date"><span><i class="fa-solid fa-flag-checkered"></i></span><div><small>Finaliza</small><strong>{{ evento.end_date | date:'dd MMM · HH:mm' }}</strong></div></div>
     </div>
 
-    <!-- Cupo -->
-    <p class="cupo-evento">
-      👥 {{ obtenerCupo() }}
-    </p>
-
-    <!-- Acciones -->
-    <div class="acciones-evento">
-      <!-- Botón Eliminar (solo admin) -->
-      <button
-        *ngIf="esAdmin"
-        type="button"
-        class="boton-eliminar"
-        [disabled]="eliminando"
-        (click)="emitirEliminar()"
-      >
-        {{ eliminando ? 'Eliminando...' : 'Eliminar' }}
-      </button>
-
-      <!-- Botón de Registrarse / Cancelar (solo si NO es admin) -->
+    <div class="registration-actions">
+      <button *ngIf="esAdmin" type="button" class="danger-action" [disabled]="eliminando" (click)="emitirEliminar()"><i class="fa-regular fa-trash-can"></i>{{ eliminando ? 'Eliminando…' : 'Eliminar evento' }}</button>
       <ng-container *ngIf="!esAdmin">
-        <button
-          *ngIf="!estaInscrito"
-          type="button"
-          class="boton-registrarse"
-          [disabled]="registrandose"
-          (click)="emitirRegistrarse()"
-        >
-          {{ registrandose ? 'Registrando...' : 'Registrarme' }}
-        </button>
-
-        <button
-          *ngIf="estaInscrito"
-          type="button"
-          class="boton-cancelar"
-          [disabled]="cancelandoRegistro"
-          (click)="emitirCancelarRegistro()"
-        >
-          {{ cancelandoRegistro ? 'Cancelando...' : 'Cancelar inscripción' }}
-        </button>
+        <button *ngIf="!estaInscrito" type="button" class="primary-action" [disabled]="registrandose" (click)="emitirRegistrarse()"><i class="fa-solid fa-ticket"></i>{{ registrandose ? 'Registrando…' : 'Reservar mi lugar' }}</button>
+        <button *ngIf="estaInscrito" type="button" class="registered-action" [disabled]="cancelandoRegistro" (click)="emitirCancelarRegistro()"><i class="fa-solid fa-circle-check"></i>{{ cancelandoRegistro ? 'Cancelando…' : 'Inscripción confirmada' }}</button>
       </ng-container>
-   <div class="rsvp-section">
-  <button class="btn-rsvp" [class.active]="rsvpStatus === 'interested'" (click)="rsvp('interested')">
-    💡 Me interesa
-  </button>
-  <button class="btn-rsvp" [class.active]="rsvpStatus === 'attending'" (click)="rsvp('attending')">
-    ✅ Asistiré
-  </button>
-  <button *ngIf="rsvpStatus !== 'none'" class="btn-rsvp" (click)="rsvp('not_attending')">
-    ❌ Cancelar
-  </button>
-  <span class="rsvp-count">👥 {{ rsvpCounts.confirmados }} asistentes</span>
-</div>
     </div>
+
+    <footer class="social-actions" *ngIf="!esAdmin">
+      <button type="button" [class.active]="rsvpStatus === 'interested'" (click)="rsvp('interested')"><i class="fa-regular fa-star"></i><span>Me interesa</span></button>
+      <button type="button" [class.active]="rsvpStatus === 'attending'" (click)="rsvp('attending')"><i class="fa-regular fa-calendar-check"></i><span>Asistiré</span></button>
+      <button *ngIf="rsvpStatus !== 'none'" type="button" class="cancel-rsvp" (click)="rsvp('not_attending')" aria-label="Cancelar respuesta"><i class="fa-solid fa-xmark"></i></button>
+      <span class="attendees"><i class="fa-solid fa-users"></i>{{ rsvpCounts.confirmados }} asistirán</span>
+    </footer>
   </div>
 </article>

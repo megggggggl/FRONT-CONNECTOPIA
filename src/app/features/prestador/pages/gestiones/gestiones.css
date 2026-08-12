@@ -1,6 +1,6 @@
 /* ===== CONTENEDOR PRINCIPAL ===== */
 .dashboard-container {
-  padding: 24px;
+  padding: 0;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -10,7 +10,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
+  padding: 27px 29px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #142d25, #245b47);
+  color: white;
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -19,12 +23,12 @@
   font-size: 28px;
   font-weight: 700;
   margin: 0;
-  color: #1a202c;
+  color: #fff;
 }
 
 .dashboard-header p {
   margin: 4px 0 0;
-  color: #64748b;
+  color: #c7dbd3;
 }
 
 /* ===== BOTONES ===== */
@@ -124,7 +128,8 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #e1e8e4;
+  box-shadow: 0 8px 22px rgba(25,48,39,.05);
 }
 
 .stat-icon {
@@ -134,7 +139,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 13px;
+  font-size: 17px;
 }
 
 .green { background: #dcfce7; }
@@ -160,7 +166,8 @@
   border-radius: 12px;
   padding: 16px 20px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #dbe8e3;
+  box-shadow: 0 8px 22px rgba(25,48,39,.05);
 }
 
 .telegram-header {
@@ -201,7 +208,8 @@
   border-radius: 12px;
   padding: 16px 20px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #e1e8e4;
+  box-shadow: 0 8px 22px rgba(25,48,39,.05);
 }
 
 .citas-resumen h3 {
@@ -236,7 +244,8 @@
   background: white;
   border-radius: 12px;
   padding: 16px 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #e1e8e4;
+  box-shadow: 0 8px 22px rgba(25,48,39,.05);
 }
 
 .servicios-list h2 {
@@ -317,7 +326,8 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(10,24,19,.68);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -326,7 +336,7 @@
 
 .modal-content {
   background: white;
-  border-radius: 16px;
+  border-radius: 20px;
   max-width: 600px;
   width: 95%;
   max-height: 90vh;
@@ -421,3 +431,5 @@
     justify-content: flex-end;
   }
 }
+
+.image-field{display:flex;align-items:center;gap:8px;padding-left:11px;border:1px dashed #9db9ad;border-radius:10px;color:#2e8b6c}.image-field input{flex:1;border:0}.servicio-meta i{color:#2e8b6c}.telegram-header h3 i{color:#229ed9;margin-right:6px}.telegram-status span{display:flex;align-items:center;gap:6px}.empty-state::before{content:'\f0ae';display:grid;place-items:center;width:54px;height:54px;margin:0 auto 12px;border-radius:50%;background:#e8f5ef;color:#2e8b6c;font:900 20px/1 "Font Awesome 7 Free"}

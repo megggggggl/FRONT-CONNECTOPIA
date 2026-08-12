@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!-- src/app/features/admin/pages/verifications/verifications.component.html -->
 <div class="admin-page">
   <div class="page-header">
@@ -101,3 +102,28 @@
     </div>
   </div>
 </div>
+=======
+<section class="admin-page verification-page">
+  <header class="module-header">
+    <div class="module-title"><span class="title-icon"><i class="fa-solid fa-id-card" aria-hidden="true"></i></span><div><span class="eyebrow">Confianza y seguridad</span><h1>Verificaciones de identidad</h1><p>Evalúa solicitudes pendientes y protege la autenticidad de la comunidad.</p></div></div>
+    <button type="button" class="refresh-button" (click)="cargarSolicitudes()" [disabled]="loading"><i class="fa-solid fa-rotate" [class.spinning]="loading" aria-hidden="true"></i>{{ loading ? 'Actualizando' : 'Actualizar solicitudes' }}</button>
+  </header>
+
+  <div *ngIf="error" class="notice error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>{{ error }}</div>
+  <div *ngIf="success" class="notice success" role="status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i>{{ success }}</div>
+
+  <section class="queue-card">
+    <header class="queue-header"><div><span class="eyebrow">Bandeja de validación</span><h2>Solicitudes pendientes</h2></div><span class="queue-count" *ngIf="!loading">{{ solicitudes.length }}</span></header>
+    <div *ngIf="loading" class="skeleton-grid" aria-label="Cargando solicitudes"><div class="skeleton-card" *ngFor="let item of [1,2,3]"><i></i><span></span><span></span><b></b></div></div>
+    <div class="verificaciones-grid" *ngIf="!loading && solicitudes.length">
+      <article *ngFor="let sol of solicitudes" class="verificacion-card">
+        <header class="card-header"><span class="identity-avatar">{{ sol.name.charAt(0) }}</span><div><h3>{{ sol.name }}</h3><span>{{ sol.email }}</span></div><span class="badge">{{ sol.id_document_type || 'Documento' }}</span></header>
+        <dl class="identity-data"><div><dt>Teléfono</dt><dd>{{ sol.phone || 'No registrado' }}</dd></div><div><dt>Número de documento</dt><dd>{{ sol.id_document_number || 'No registrado' }}</dd></div><div><dt>Intentos</dt><dd>{{ sol.id_verification_attempts || 0 }}</dd></div><div><dt>Solicitud</dt><dd>{{ sol.created_at | date:'dd MMM y, HH:mm' }}</dd></div></dl>
+        <button type="button" class="photos-button" *ngIf="sol.id_document_photo_url" (click)="abrirFotos({ doc: sol.id_document_photo_url, selfie: sol.id_selfie_photo_url })"><i class="fa-regular fa-images" aria-hidden="true"></i>Revisar evidencias</button>
+        <footer class="acciones"><button type="button" class="btn-approve" (click)="aprobar(sol.id)"><i class="fa-solid fa-check" aria-hidden="true"></i>Aprobar</button><button type="button" class="btn-reject" (click)="rechazar(sol.id)"><i class="fa-solid fa-xmark" aria-hidden="true"></i>Rechazar</button></footer>
+      </article>
+    </div>
+    <div *ngIf="!loading && solicitudes.length === 0" class="empty-state"><span><i class="fa-solid fa-user-check" aria-hidden="true"></i></span><h3>No hay verificaciones pendientes</h3><p>La bandeja está al día. Las nuevas solicitudes aparecerán aquí.</p></div>
+  </section>
+</section>
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44

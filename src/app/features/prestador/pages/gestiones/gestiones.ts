@@ -28,8 +28,11 @@ interface ServicioForm {
   imports: [
     CommonModule,
     FormsModule
+<<<<<<< HEAD
     
   
+=======
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
   ],
   templateUrl: './gestiones.html',
   styleUrls: ['./gestiones.css']

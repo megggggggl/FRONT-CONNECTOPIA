@@ -1,85 +1,68 @@
-<!-- src/app/features/public/pages/servicios/servicios.html -->
-<div class="servicios-page">
-  <div class="page-header">
-    <h1>Servicios disponibles</h1>
-    <p>Encuentra profesionales y servicios cerca de ti</p>
-  </div>
-
-  <!-- Filtros -->
-  <div class="filtros">
-    <div class="filtro-busqueda">
-      <input
-        type="text"
+<section class="servicios-page">
+  <header class="page-header">
+    <div>
+      <span>Directorio local</span>
+      <h1>Servicios para tu día a día</h1>
+      <p>Encuentra profesionales de confianza dentro de tu comunidad.</p>
+    </div>
+    <i class="fa-solid fa-handshake-angle"></i>
+  </header>
+  <section class="filtros">
+    <label class="search"
+      ><i class="fa-solid fa-magnifying-glass"></i
+      ><input
         [(ngModel)]="searchTerm"
         (input)="onSearch()"
-        placeholder="Buscar servicios..."
-        class="input-busqueda"
-      />
-    </div>
-
-    <div class="filtro-categoria">
-      <select
-        [(ngModel)]="filtroCategoria"
-        (change)="onCategoryChange()"
-        class="select-categoria"
-      >
-        <option value="">Todas las categorías</option>
-        <option *ngFor="let cat of categorias" [value]="cat.id">
-          {{ cat.name }}
-        </option>
-      </select>
-    </div>
-
-    <div class="filtro-orden">
-      <select
-        [(ngModel)]="ordenPor"
-        (change)="onOrderChange()"
-        class="select-orden"
-      >
-        <option value="reciente">Más recientes</option>
-        <option value="nombre">Por nombre</option>
-        <option value="popular">Más populares</option>
-      </select>
-    </div>
-
-    <div class="filtro-especial">
-      <select
-        [(ngModel)]="filtroEspecial"
-        (change)="onFiltroEspecialChange()"
-        class="select-especial"
-      >
-        <option value="todos">Todos</option>
-        <option value="cercanos">Cercanos</option>
-        <option value="frecuentes">Mis frecuentes</option>
-      </select>
-    </div>
-
-    <button class="btn-limpiar" (click)="limpiarFiltros()">
-      Limpiar filtros
+        placeholder="¿Qué servicio necesitas?" /></label
+    ><select [(ngModel)]="filtroCategoria" (change)="onCategoryChange()">
+      <option value="">Todas las categorías</option>
+      <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.name }}</option></select
+    ><select [(ngModel)]="ordenPor" (change)="onOrderChange()">
+      <option value="reciente">Más recientes</option>
+      <option value="nombre">Nombre A–Z</option>
+      <option value="popular">Más populares</option></select
+    ><select [(ngModel)]="filtroEspecial" (change)="onFiltroEspecialChange()">
+      <option value="todos">Todos</option>
+      <option value="cercanos">Cerca de mí</option>
+      <option value="frecuentes">Mis frecuentes</option></select
+    ><button type="button" class="btn-limpiar" (click)="limpiarFiltros()">
+      <i class="fa-solid fa-filter-circle-xmark"></i>Limpiar
     </button>
+  </section>
+  <div *ngIf="filtroEspecial === 'cercanos' && !ubicacion && !cargandoUbicacion" class="notice">
+    <i class="fa-solid fa-location-crosshairs"></i
+    ><span>Activa tu ubicación para encontrar servicios cercanos.</span
+    ><button (click)="obtenerUbicacion()">Intentar de nuevo</button>
   </div>
-
-  <!-- Mensajes ubicación -->
-  <div *ngIf="filtroEspecial === 'cercanos' && !ubicacion && !cargandoUbicacion" class="sin-ubicacion">
-    <p>⚠️ Activa tu ubicación para ver servicios cercanos.</p>
-    <button class="btn-limpiar" (click)="obtenerUbicacion()">Intentar de nuevo</button>
+  <div *ngIf="cargandoUbicacion" class="notice">
+    <i class="fa-solid fa-location-dot pulse"></i>Obteniendo ubicación segura…
   </div>
-  <div *ngIf="cargandoUbicacion" class="cargando-ubicacion">
-    <span>📍 Obteniendo ubicación...</span>
+  <div *ngIf="loading" class="skeleton-grid">
+    <article *ngFor="let item of [1, 2, 3, 4, 5, 6]">
+      <i></i><span></span><span></span><b></b>
+    </article>
   </div>
-
-  <!-- Estado -->
-  <div *ngIf="loading" class="loading">Cargando servicios...</div>
-  <div *ngIf="error && !loading" class="error">{{ error }}</div>
-
-  <!-- Lista -->
+  <div *ngIf="error && !loading" class="state error">
+    <i class="fa-solid fa-cloud-arrow-down"></i>
+    <h2>No pudimos cargar los servicios</h2>
+    <p>{{ error }}</p>
+    <button (click)="limpiarFiltros()">Reintentar</button>
+  </div>
   <div *ngIf="!loading && !error">
-    <div *ngIf="serviciosFiltrados.length === 0" class="sin-resultados">
-      <p>No hay servicios que coincidan con los filtros.</p>
-      <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
+    <div *ngIf="serviciosFiltrados.length === 0" class="state">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <h2>Sin resultados por ahora</h2>
+      <p>Prueba con otra categoría o un término de búsqueda diferente.</p>
+      <button (click)="limpiarFiltros()">Restablecer filtros</button>
     </div>
-
-    <div class="grid-servicios" *ngIf="serviciosFiltrados.length > 0">
+    <header class="results-header" *ngIf="serviciosFiltrados.length">
+      <div>
+        <span>Resultados</span>
+        <h2>Profesionales disponibles</h2>
+      </div>
+      <strong>{{ serviciosFiltrados.length }} servicio(s)</strong>
+    </header>
+    <div class="grid-servicios" *ngIf="serviciosFiltrados.length">
       <app-tarjeta-servicio
         *ngFor="let servicio of serviciosFiltrados"
         [servicio]="servicio"
@@ -87,23 +70,19 @@
         [solicitandoCita]="solicitandoMap[servicio.id] || false"
         [esFavorito]="favoritosIds.has(servicio.id)"
         [mostrarCalificar]="puedeCalificar(servicio.id)"
+        [mostrarEliminar]="puedeEliminar(servicio)"
+        [eliminando]="eliminandoMap[servicio.id] || false"
         (toggleFavorito)="onToggleFavorito($event)"
         (solicitarCita)="onSolicitarCita(servicio)"
         (calificar)="abrirModalCalificacion(servicio.id)"
-      >
-      </app-tarjeta-servicio>
+        (eliminar)="eliminarServicio($event)"
+      ></app-tarjeta-servicio>
     </div>
   </div>
-
-  <!-- ========================================================== -->
-  <!-- MODALES -->
-  <!-- ========================================================== -->
-
-
   <app-calificar-servicio-modal
     *ngIf="modalCalificacionAbierto && servicioParaCalificarId"
     [servicioId]="servicioParaCalificarId"
     (cerrar)="cerrarModalCalificacion()"
     (calificado)="cerrarModalCalificacion()"
   ></app-calificar-servicio-modal>
-</div>
+</section>

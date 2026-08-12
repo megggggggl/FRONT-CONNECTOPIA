@@ -9,14 +9,22 @@ import { CategoryService, Category } from '../../../../core/services/category.se
 import { AuthService } from '../../../../core/services/auth.service';
 import { TelegramCitasService } from '../../../../compartido/servicios/appointment.service';
 import { CalificarServicioModal } from '../../../../compartido/componentes/calificarServicio/calificarServicio';
+<<<<<<< HEAD
 import { WebServices } from '../../../../core/services/webServices';
+=======
+import { FeedbackService } from '../../../../core/services/feedback.service';
+
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
 @Component({
   selector: 'app-servicios',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
+<<<<<<< HEAD
     
+=======
+>>>>>>> 7f1e234e4f14af969eed5735e14e56a6589a8c44
     TarjetaServicio,
  
     CalificarServicioModal
@@ -42,6 +50,7 @@ export class ServiciosPageComponent implements OnInit {
   cargandoUbicacion = false;
   serviciosFrecuentesIds: Set<string> = new Set();
   solicitandoMap: Record<string, boolean> = {};
+  eliminandoMap: Record<string, boolean> = {};
 
   // Modales
   modalDenunciaAbierto = false;
@@ -56,14 +65,14 @@ export class ServiciosPageComponent implements OnInit {
     private authService: AuthService,
     private telegramCitas: TelegramCitasService,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private feedback: FeedbackService
   ) {}
 
   ngOnInit(): void {
     this.cargarCategorias();
     this.cargarServicios();
     this.cargarDatosUsuario();
-    this.obtenerUbicacion();
   }
 
   // ============================================================
@@ -407,5 +416,46 @@ export class ServiciosPageComponent implements OnInit {
   // ============================================================
   recargarFavoritos(): void {
     this.cargarFavoritos();
+  }
+
+  puedeEliminar(servicio: Service): boolean {
+    const usuario = this.authService.getUser();
+    if (!usuario) return false;
+    const rol = this.authService.getUserRole();
+    if (rol === 'admin') return true;
+    const usuarioId = String(usuario.id ?? usuario.profile_id ?? usuario.user_id ?? '');
+    return rol === 'prestador' && !!usuarioId && String(servicio.provider_id) === usuarioId;
+  }
+
+  async eliminarServicio(servicio: Service): Promise<void> {
+    if (!servicio.id || this.eliminandoMap[servicio.id] || !this.puedeEliminar(servicio)) return;
+    const confirmado = await this.feedback.confirm(
+      `¿Querés eliminar el servicio "${servicio.name}"?`,
+      { title: 'Eliminar servicio', confirmText: 'Eliminar', danger: true }
+    );
+    if (!confirmado) return;
+
+    const indice = this.servicios.findIndex((item) => item.id === servicio.id);
+    this.eliminandoMap[servicio.id] = true;
+    this.servicios = this.servicios.filter((item) => item.id !== servicio.id);
+    this.cdr.detectChanges();
+
+    this.serviceService.eliminarServicio(servicio.id).subscribe({
+      next: () => {
+        delete this.eliminandoMap[servicio.id];
+        this.favoritosIds.delete(servicio.id);
+        this.favoritosMap.delete(servicio.id);
+        this.feedback.success('Servicio eliminado correctamente.');
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        delete this.eliminandoMap[servicio.id];
+        const posicion = indice >= 0 ? indice : this.servicios.length;
+        this.servicios = [...this.servicios.slice(0, posicion), servicio, ...this.servicios.slice(posicion)];
+        console.error('Error al eliminar servicio:', error);
+        this.feedback.error('No se pudo eliminar el servicio.');
+        this.cdr.detectChanges();
+      }
+    });
   }
 }
