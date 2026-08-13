@@ -213,7 +213,7 @@ export class VerificationForm implements OnInit {
     const formData = new FormData();
     formData.append('documento', this.documentFrontFile);
     formData.append('selfie', this.selfieFile);
-
+    formData.append('email', this.authService.getUser()?.email || '');
     // 🔥 OBTENER TOKEN Y AGREGARLO EXPLÍCITAMENTE
     const token = this.authService.getToken();
     console.log('🔑 Enviando verificación con token:', token ? '✅ Sí' : '❌ No');
